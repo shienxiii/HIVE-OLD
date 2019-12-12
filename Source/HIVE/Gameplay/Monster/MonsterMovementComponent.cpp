@@ -100,7 +100,7 @@ void UMonsterMovementComponent::OnMovementUpdated(float deltaTime, const FVector
 {
 	Super::OnMovementUpdated(deltaTime, oldLocation, oldVelocity); 
 
-	if (CharacterOwner)
+	if (!CharacterOwner)
 	{
 		return;
 	}
@@ -169,7 +169,6 @@ void UMonsterMovementComponent::SetMaxWalkSpeed(float newWalkSpeed)
 	if (PawnOwner->IsLocallyControlled())
 	{
 		newMaxWalkSpeed = newWalkSpeed; // client side
-		newMaxWalkSpeed;
 		Server_SetMaxWalkSpeed(newMaxWalkSpeed); // server side
 	}
 	
