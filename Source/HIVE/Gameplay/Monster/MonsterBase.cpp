@@ -93,5 +93,6 @@ void AMonsterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AMonsterBase, health);
+	DOREPLIFETIME(AMonsterBase, currentTarget);
 }
 #pragma endregion

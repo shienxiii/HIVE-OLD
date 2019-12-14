@@ -14,10 +14,10 @@ class HIVE_API AMonsterBase : public ACharacter
 
 protected:
 	// Lock On
-	UPROPERTY(Category = LockOn, BlueprintReadOnly, VisibleAnywhere) float lockOnRange = 5000.0f;
-	UPROPERTY(Replicated) AActor* currentTarget = nullptr;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = LockOn) float lockOnRange = 5000.0f;
+	UPROPERTY(Replicated, BlueprintReadOnly, VisibleAnywhere, Category = LockOn) AActor* currentTarget = nullptr;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Stats", meta = (DisplayName = "Health", ClampMin = "0", UIMin = "0"))float health = 100.0f;
+	UPROPERTY(Replicated, BlueprintReadOnly, VisibleAnywhere, Category = "Stats", meta = (DisplayName = "Health", ClampMin = "0", UIMin = "0"))float health = 100.0f;
 
 public:
 	// Sets default values for this character's properties
