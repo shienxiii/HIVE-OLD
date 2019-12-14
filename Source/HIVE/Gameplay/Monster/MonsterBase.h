@@ -13,6 +13,10 @@ class HIVE_API AMonsterBase : public ACharacter
 	GENERATED_BODY()
 
 protected:
+	// Lock On
+	UPROPERTY(Category = LockOn, BlueprintReadOnly, VisibleAnywhere) float lockOnRange = 5000.0f;
+	UPROPERTY(Replicated) AActor* currentTarget = nullptr;
+
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Stats", meta = (DisplayName = "Health", ClampMin = "0", UIMin = "0"))float health = 100.0f;
 
 public:
@@ -26,14 +30,25 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	// Called by Tick() on every frame
+	void LockedOnTick(float deltaTime);
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual void PostInitializeComponents() override;
 
-
 	// Returns the character movement component type defined to a UMonsterMovementComponent
 	UFUNCTION(BlueprintPure) UMonsterMovementComponent* GetMonsterMovementComponent() { return (UMonsterMovementComponent*)GetCharacterMovement(); }
+
+
+	/**
+	 * Returns an array of potential lock on target
+	 */
+	TArray<AActor*> GetPotentialLockOnTargets();
+
+#pragma region Networking
+	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
+#pragma endregion
 
 };
