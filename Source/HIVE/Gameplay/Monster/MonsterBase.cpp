@@ -7,6 +7,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Engine.h"
 
 // Sets default values
 AMonsterBase::AMonsterBase(const FObjectInitializer& ObjectInitializer)
@@ -35,11 +36,11 @@ void AMonsterBase::BeginPlay()
 void AMonsterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	LockedOnTick(DeltaTime);
 }
 
 // Called by Tick() on every frame
-void AMonsterBase::LockedOnTick(float deltaTime)
+void AMonsterBase::LockedOnTick(float DeltaTime)
 {
 	if (currentTarget)
 	{
@@ -48,7 +49,7 @@ void AMonsterBase::LockedOnTick(float deltaTime)
 		finalRotation.Pitch = 0.0f;
 		finalRotation.Roll = 0.0f;
 
-		FRotator deltaRotation = UKismetMathLibrary::RInterpTo(GetActorRotation(), finalRotation, deltaTime, 45.0f);
+		FRotator deltaRotation = UKismetMathLibrary::RInterpTo(GetActorRotation(), finalRotation, DeltaTime, 45.0f);
 
 		//FRotator::
 		SetActorRotation(deltaRotation);
@@ -60,12 +61,48 @@ void AMonsterBase::LockedOnTick(float deltaTime)
 void AMonsterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	/*InputComponent->BindAxis("Forward", this, &AMonsterBase::MoveForward);
+	InputComponent->BindAxis("Right", this, &AMonsterBase::MoveRight);
+
+	InputComponent->BindAction("Block", EInputEvent::IE_Pressed, this, &AMonsterBase::StartBlock);
+	InputComponent->BindAction("Block", EInputEvent::IE_Released, this, &AMonsterBase::EndBlock);*/
+
+	PlayerInputComponent->BindAction("LockOn", EInputEvent::IE_Pressed, this, &AMonsterBase::ToggleLockOn);
 
 }
 
 void AMonsterBase::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+}
+
+void AMonsterBase::ToggleLockOn()
+{
+	if (currentTarget == nullptr)
+	{
+		currentTarget = GetLockOnTarget();
+	}
+	else
+	{
+		currentTarget = nullptr;
+	}
+}
+
+AActor* AMonsterBase::GetLockOnTarget()
+{
+	TArray<AActor*> lockOnTargets = GetPotentialLockOnTargets();
+
+	int32 targetIndex = lockOnTargets.Num() - 1;
+
+	for (int32 i = targetIndex - 1; i > -1; i--)
+	{
+		if (GetDistanceTo(lockOnTargets[i]) < GetDistanceTo(lockOnTargets[targetIndex]))
+		{
+			targetIndex = i;
+		}
+	}
+
+	return targetIndex > -1 ? lockOnTargets[targetIndex] : nullptr;
 }
 
 TArray<AActor*> AMonsterBase::GetPotentialLockOnTargets()

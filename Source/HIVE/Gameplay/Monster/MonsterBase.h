@@ -31,7 +31,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	// Called by Tick() on every frame
-	void LockedOnTick(float deltaTime);
+	void LockedOnTick(float DeltaTime);
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -41,6 +41,10 @@ public:
 	// Returns the character movement component type defined to a UMonsterMovementComponent
 	UFUNCTION(BlueprintPure) UMonsterMovementComponent* GetMonsterMovementComponent() { return (UMonsterMovementComponent*)GetCharacterMovement(); }
 
+
+	void ToggleLockOn();
+
+	AActor* GetLockOnTarget();
 
 	/**
 	 * Returns an array of potential lock on target
