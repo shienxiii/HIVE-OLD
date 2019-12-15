@@ -42,19 +42,29 @@ void AMonsterBase::Tick(float DeltaTime)
 // Called by Tick() on every frame
 void AMonsterBase::LockedOnTick(float DeltaTime)
 {
-	if (currentTarget)
+	if (!currentTarget)
 	{
+		// to be removed after refining lock on
+		if (!(GetCharacterMovement()->bOrientRotationToMovement))
+		{
+			GetCharacterMovement()->bOrientRotationToMovement = true;
+		}
 
-		FRotator finalRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), currentTarget->GetActorLocation());
-		finalRotation.Pitch = 0.0f;
-		finalRotation.Roll = 0.0f;
-
-		FRotator deltaRotation = UKismetMathLibrary::RInterpTo(GetActorRotation(), finalRotation, DeltaTime, 45.0f);
-
-		//FRotator::
-		SetActorRotation(deltaRotation);
-
+		return;
 	}
+	else
+	{
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+	}
+
+	FRotator finalRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), currentTarget->GetActorLocation());
+	finalRotation.Pitch = 0.0f;
+	finalRotation.Roll = 0.0f;
+
+	FRotator deltaRotation = UKismetMathLibrary::RInterpTo_Constant(GetActorRotation(), finalRotation, DeltaTime, GetCharacterMovement()->RotationRate.Yaw * 5.0f);
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, deltaRotation.ToString());
+	//FRotator::
+	SetActorRotation(deltaRotation);
 }
 
 // Called to bind functionality to input
@@ -76,15 +86,27 @@ void AMonsterBase::PostInitializeComponents()
 	Super::PostInitializeComponents();
 }
 
+bool AMonsterBase::Server_SetLockOnTarget_Validate(AActor* Target)
+{
+	return true;
+}
+
+void AMonsterBase::Server_SetLockOnTarget_Implementation(AActor* Target)
+{
+	currentTarget = Target;
+}
+
 void AMonsterBase::ToggleLockOn()
 {
 	if (currentTarget == nullptr)
 	{
 		currentTarget = GetLockOnTarget();
+		Server_SetLockOnTarget(currentTarget);
 	}
 	else
 	{
 		currentTarget = nullptr;
+		Server_SetLockOnTarget();
 	}
 }
 

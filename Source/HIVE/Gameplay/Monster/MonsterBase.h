@@ -42,6 +42,7 @@ public:
 	UFUNCTION(BlueprintPure) UMonsterMovementComponent* GetMonsterMovementComponent() { return (UMonsterMovementComponent*)GetCharacterMovement(); }
 
 
+	UFUNCTION(Server, Reliable, WithValidation) void Server_SetLockOnTarget(AActor* Target = nullptr);
 	void ToggleLockOn();
 
 	AActor* GetLockOnTarget();
