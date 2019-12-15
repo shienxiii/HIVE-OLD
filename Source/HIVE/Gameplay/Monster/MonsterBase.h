@@ -42,13 +42,21 @@ public:
 	UFUNCTION(BlueprintPure) UMonsterMovementComponent* GetMonsterMovementComponent() { return (UMonsterMovementComponent*)GetCharacterMovement(); }
 
 
-	UFUNCTION(Server, Reliable, WithValidation) void Server_SetLockOnTarget(AActor* Target = nullptr);
 	void ToggleLockOn();
+	/**
+	 * Called when there is a change in the currentTarget variable in this AMonsterBase instance so the server can update it
+	 *
+	 * @param Target AActor to set currentTarget to, default is null
+	 */
+	UFUNCTION(Server, Reliable, WithValidation) void Server_SetLockOnTarget(AActor* Target = nullptr);
 
-	AActor* GetLockOnTarget();
+
+	UFUNCTION(BlueprintPure) AActor* GetLockOnTarget();
 
 	/**
-	 * Returns an array of potential lock on target
+	 * Find all possible lock on target in the level, filtering self and any within the same time
+	 *
+	 * return All eligible lock on target
 	 */
 	TArray<AActor*> GetPotentialLockOnTargets();
 

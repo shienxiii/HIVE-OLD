@@ -86,16 +86,6 @@ void AMonsterBase::PostInitializeComponents()
 	Super::PostInitializeComponents();
 }
 
-bool AMonsterBase::Server_SetLockOnTarget_Validate(AActor* Target)
-{
-	return true;
-}
-
-void AMonsterBase::Server_SetLockOnTarget_Implementation(AActor* Target)
-{
-	currentTarget = Target;
-}
-
 void AMonsterBase::ToggleLockOn()
 {
 	if (currentTarget == nullptr)
@@ -108,6 +98,16 @@ void AMonsterBase::ToggleLockOn()
 		currentTarget = nullptr;
 		Server_SetLockOnTarget();
 	}
+}
+
+bool AMonsterBase::Server_SetLockOnTarget_Validate(AActor* Target)
+{
+	return true;
+}
+
+void AMonsterBase::Server_SetLockOnTarget_Implementation(AActor* Target)
+{
+	currentTarget = Target;
 }
 
 AActor* AMonsterBase::GetLockOnTarget()
