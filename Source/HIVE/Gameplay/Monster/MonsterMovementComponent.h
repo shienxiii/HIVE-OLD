@@ -51,11 +51,11 @@ class HIVE_API UMonsterMovementComponent : public UCharacterMovementComponent
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "Dodge")
-		float DodgeSpeed = 1000.0f;
+		float DodgeSpeed = 5000.0f;
 	UPROPERTY(EditAnywhere, Category = "Dodge")
 		float DodgeDistance = 200.0f;
 	FVector DodgeDirection = FVector::ZeroVector;
-	float remainingDodgeDistance = 0.0f;
+	float RemainingDodgeDistance = 0.0f;
 
 
 public:
@@ -68,6 +68,9 @@ public:
 
 	// Custom Movement setting
 	void PhysCustom(float DeltaTime, int32 Iterations) override;
+	void DodgeTick(float DeltaTime);
+	
+	
 
 #pragma region MaxWalkSpeedChange
 	// Set MaxWalkSpeed
@@ -82,6 +85,10 @@ public:
 #pragma endregion
 
 	void Dodge();
+	FVector GetDodgeVelocity();
+
+	UFUNCTION(Reliable, Server, WithValidation)
+		void Server_Dodge(FVector InDodgeDirection);
 
 
 };

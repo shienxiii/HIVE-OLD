@@ -125,12 +125,39 @@ void UMonsterMovementComponent::PhysCustom(float DeltaTime, int32 Iterations)
 	switch (CustomMovementMode)
 	{
 		case (uint8)ECustomMovement::CM_DODGE:
-			//DodgeTick(DeltaTime);
+			DodgeTick(DeltaTime);
 			break;
 		default:
 			break;
 	}
 }
+
+void UMonsterMovementComponent::DodgeTick(float DeltaTime)
+{
+	FindFloor(UpdatedComponent->GetComponentLocation(), CurrentFloor, false);
+	AdjustFloorHeight();
+	SetBaseFromFloor(CurrentFloor);
+
+	if (CurrentFloor.bBlockingHit)
+	{
+		Velocity = GetDodgeVelocity();
+
+		float dodgeDelta = Velocity.Size() * DeltaTime;
+		dodgeDelta = dodgeDelta < RemainingDodgeDistance ? dodgeDelta : RemainingDodgeDistance;
+
+		// To be swapped with dodge delta
+		MoveAlongFloor(Velocity, DeltaTime);
+		RemainingDodgeDistance -= dodgeDelta;
+	}
+
+	if (RemainingDodgeDistance <= 0.0f)
+	{
+		SetMovementMode(EMovementMode::MOVE_Walking);
+		Velocity = FVector::ZeroVector;
+	}
+}
+
+
 
 
 #pragma region WalkSpeed
@@ -162,21 +189,35 @@ void UMonsterMovementComponent::Dodge()
 	if (PawnOwner->IsLocallyControlled())
 	{
 		DodgeDirection = PawnOwner->GetLastMovementInputVector();
+		if (DodgeDirection.Size() < 0.1f)
+		{
+			DodgeDirection = PawnOwner->GetActorForwardVector() * -1;
+		}
+
 		DodgeDirection.Normalize();
 
+		RemainingDodgeDistance = DodgeDistance;
+
+		Server_Dodge(DodgeDirection);
 		SetMovementMode(EMovementMode::MOVE_Custom, (uint8)ECustomMovement::CM_DODGE);
 	}
+
+	//bDodge = true;
 }
 
+FVector UMonsterMovementComponent::GetDodgeVelocity()
+{
+	return DodgeDirection * DodgeSpeed;
+}
 
-//void UMonsterMovementComponent::Dodge()
-//{
-//	if (PawnOwner->IsLocallyControlled())
-//	{
-//		DodgeDirection = PawnOwner->GetLastMovementInputVector();
-//		Server_DodgeDirection(DodgeDirection);
-//		SetMovementMode(EMovementMode::MOVE_Custom, (uint8)ECustomMovement::CM_DODGE);
-//	}
-//
-//	//bDodge = true;
-//}
+bool UMonsterMovementComponent::Server_Dodge_Validate(FVector InDodgeDirection)
+{
+	return true;
+}
+
+void UMonsterMovementComponent::Server_Dodge_Implementation(FVector InDodgeDirection)
+{
+	DodgeDirection = InDodgeDirection;
+	RemainingDodgeDistance = DodgeDistance;
+	SetMovementMode(EMovementMode::MOVE_Custom, (uint8)ECustomMovement::CM_DODGE);
+}

@@ -42,6 +42,7 @@ public:
 	virtual void MoveRight(float inAxis);
 	FRotator GetViewRotator();
 
+	UFUNCTION(BlueprintCallable) void ExecuteDodge();
 #pragma endregion
 	// Returns the character movement component type defined to a UMonsterMovementComponent
 	UFUNCTION(BlueprintPure) UMonsterMovementComponent* GetMonsterMovementComponent() { return (UMonsterMovementComponent*)GetCharacterMovement(); }
@@ -67,7 +68,6 @@ public:
 	TArray<AActor*> GetPotentialLockOnTargets();
 #pragma endregion
 
-	UFUNCTION(BlueprintCallable) void ExecuteDodge();
 
 #pragma region Networking
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;

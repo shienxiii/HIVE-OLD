@@ -69,6 +69,7 @@ void AMonsterBase::LockedOnTick(float DeltaTime)
 	SetActorRotation(deltaRotation);
 }
 
+#pragma region Input
 // Called to bind functionality to input
 void AMonsterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -99,6 +100,13 @@ FRotator AMonsterBase::GetViewRotator()
 	controlRotation.Pitch = 0.0f;
 	return controlRotation;
 }
+
+void AMonsterBase::ExecuteDodge()
+{
+	GetMonsterMovementComponent()->Dodge();
+}
+
+#pragma endregion
 
 
 #pragma region LockOn
@@ -165,10 +173,7 @@ TArray<AActor*> AMonsterBase::GetPotentialLockOnTargets()
 
 #pragma endregion
 
-void AMonsterBase::ExecuteDodge()
-{
-	//GetMonsterMovementComponent()->Dodge();
-}
+
 
 #pragma region Networking
 void AMonsterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
