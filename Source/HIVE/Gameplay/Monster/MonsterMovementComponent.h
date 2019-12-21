@@ -13,10 +13,6 @@ protected:
 	// Walk Speed update
 	uint8 bSavedRequestMaxWalkSpeedChange : 1;
 
-	// Dodge
-	uint8 bSavedDodge : 1;
-	FVector savedDodgeDirection;
-
 public:
 	typedef FSavedMove_Character Super;
 
@@ -38,6 +34,13 @@ public:
 	virtual FSavedMovePtr AllocateNewMove() override;
 };
 
+enum class ECustomMovement : uint8
+{
+	CM_DODGE UMETA(DisplayName="Dodge")
+};
+
+
+
 /**
  * MovementComponent class shared by all monsters
  */
@@ -48,34 +51,37 @@ class HIVE_API UMonsterMovementComponent : public UCharacterMovementComponent
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "Dodge")
-		float dodgeStrength = 1000.0f;
+		float DodgeSpeed = 1000.0f;
+	UPROPERTY(EditAnywhere, Category = "Dodge")
+		float DodgeDistance = 200.0f;
+	FVector DodgeDirection = FVector::ZeroVector;
+	float remainingDodgeDistance = 0.0f;
 
 
 public:
 	typedef UCharacterMovementComponent Super;
 
 	
-	void OnMovementUpdated(float deltaTime, const FVector& oldLocation, const FVector& oldVelocity); // NOTE: All update to movement component need to happen here, otherwise net correction will happen
-	virtual void UpdateFromCompressedFlags(uint8 flags) override;
+	void OnMovementUpdated(float DeltaTime, const FVector& OldLocation, const FVector& OldVelocity); // NOTE: All update to movement component need to happen here, otherwise net correction will happen
+	virtual void UpdateFromCompressedFlags(uint8 Flags) override;
 	virtual class FNetworkPredictionData_Client* GetPredictionData_Client() const override;
 
+	// Custom Movement setting
+	void PhysCustom(float DeltaTime, int32 Iterations) override;
+
+#pragma region MaxWalkSpeedChange
 	// Set MaxWalkSpeed
 	uint8 bRequestWalkSpeedChange : 1;
-	float newMaxWalkSpeed; // NOTE: Needed as an intermediate otherwise net correction will happen
+	float NewMaxWalkSpeed; // NOTE: Needed as an intermediate otherwise net correction will happen
 
 	UFUNCTION(Reliable, Server, WithValidation)
-		void Server_SetMaxWalkSpeed(const float newWalkSpeed);
+		void Server_SetMaxWalkSpeed(const float InWalkSpeed);
 
 	UFUNCTION(BlueprintCallable, Category = "Walk Speed")
-		void SetMaxWalkSpeed(float newWalkSpeed);
+		void SetMaxWalkSpeed(float InWalkSpeed);
+#pragma endregion
 
-	// Dodge
-	uint8 bDodge : 1;
-	FVector dodgeDirection;
+	void Dodge();
 
-	UFUNCTION(Reliable, Server, WithValidation)
-		void Server_DodgeDirection(const FVector& dodgeDir);
 
-	UFUNCTION(BlueprintCallable, Category = "Dodge")
-		void Dodge();
 };

@@ -42,6 +42,7 @@ void AMonsterBase::Tick(float DeltaTime)
 // Called by Tick() on every frame
 void AMonsterBase::LockedOnTick(float DeltaTime)
 {
+	// Check if there is a target currently being locked on
 	if (!currentTarget)
 	{
 		// to be removed after refining lock on
@@ -57,13 +58,14 @@ void AMonsterBase::LockedOnTick(float DeltaTime)
 		GetCharacterMovement()->bOrientRotationToMovement = true;
 	}
 
+	// Calculate the desired final rotation
 	FRotator finalRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), currentTarget->GetActorLocation());
 	finalRotation.Pitch = 0.0f;
 	finalRotation.Roll = 0.0f;
 
+	// Calculate the rotation delta
 	FRotator deltaRotation = UKismetMathLibrary::RInterpTo_Constant(GetActorRotation(), finalRotation, DeltaTime, GetCharacterMovement()->RotationRate.Yaw * 5.0f);
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, deltaRotation.ToString());
-	//FRotator::
+
 	SetActorRotation(deltaRotation);
 }
 
@@ -71,20 +73,35 @@ void AMonsterBase::LockedOnTick(float DeltaTime)
 void AMonsterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	/*InputComponent->BindAxis("Forward", this, &AMonsterBase::MoveForward);
+	InputComponent->BindAxis("Forward", this, &AMonsterBase::MoveForward);
 	InputComponent->BindAxis("Right", this, &AMonsterBase::MoveRight);
 
-	InputComponent->BindAction("Block", EInputEvent::IE_Pressed, this, &AMonsterBase::StartBlock);
-	InputComponent->BindAction("Block", EInputEvent::IE_Released, this, &AMonsterBase::EndBlock);*/
+	//InputComponent->BindAction("Block", EInputEvent::IE_Pressed, this, &AMonsterBase::StartBlock);
+	//InputComponent->BindAction("Block", EInputEvent::IE_Released, this, &AMonsterBase::EndBlock);
 
 	PlayerInputComponent->BindAction("LockOn", EInputEvent::IE_Pressed, this, &AMonsterBase::ToggleLockOn);
-
+	PlayerInputComponent->BindAction("Dodge", EInputEvent::IE_Pressed, this, &AMonsterBase::ExecuteDodge);
 }
 
-void AMonsterBase::PostInitializeComponents()
+void AMonsterBase::MoveForward(float inAxis)
 {
-	Super::PostInitializeComponents();
+	AddMovementInput(UKismetMathLibrary::GetForwardVector(GetViewRotator()), inAxis);
 }
+
+void AMonsterBase::MoveRight(float inAxis)
+{
+	AddMovementInput(UKismetMathLibrary::GetRightVector(GetViewRotator()), inAxis);
+}
+
+FRotator AMonsterBase::GetViewRotator()
+{
+	FRotator controlRotation = GetViewRotation();
+	controlRotation.Pitch = 0.0f;
+	return controlRotation;
+}
+
+
+#pragma region LockOn
 
 void AMonsterBase::ToggleLockOn()
 {
@@ -144,6 +161,13 @@ TArray<AActor*> AMonsterBase::GetPotentialLockOnTargets()
 	return lockOnTargets;
 
 	return TArray<AActor*>();
+}
+
+#pragma endregion
+
+void AMonsterBase::ExecuteDodge()
+{
+	//GetMonsterMovementComponent()->Dodge();
 }
 
 #pragma region Networking

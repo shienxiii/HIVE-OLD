@@ -13,16 +13,6 @@ bool FSavedMove_Monster::CanCombineWith(const FSavedMovePtr& newMove, ACharacter
 		return false;
 	}
 
-	if (bSavedDodge != ((FSavedMove_Monster*)&newMove)->bSavedDodge)
-	{
-		return false;
-	}
-
-	if (savedDodgeDirection != ((FSavedMove_Monster*)&newMove)->savedDodgeDirection)
-	{
-		return false;
-	}
-
 	return Super::CanCombineWith(newMove, inCharacter, maxDelta);
 }
 
@@ -31,8 +21,6 @@ void FSavedMove_Monster::Clear()
 	Super::Clear();
 
 	bSavedRequestMaxWalkSpeedChange = false;
-	bSavedDodge = false;
-	savedDodgeDirection = FVector::ZeroVector;
 }
 
 uint8 FSavedMove_Monster::GetCompressedFlags() const
@@ -42,11 +30,6 @@ uint8 FSavedMove_Monster::GetCompressedFlags() const
 	if (bSavedRequestMaxWalkSpeedChange)
 	{
 		result |= FLAG_Custom_0;
-	}
-
-	if (bSavedDodge)
-	{
-		result |= FLAG_Custom_1;
 	}
 
 	return result;
@@ -61,8 +44,6 @@ void FSavedMove_Monster::SetMoveFor(ACharacter* character, float inDeltaTime, FV
 	if (movement)
 	{
 		bSavedRequestMaxWalkSpeedChange = movement->bRequestWalkSpeedChange;
-		bSavedDodge = movement->bDodge;
-		savedDodgeDirection = movement->dodgeDirection;
 	}
 }
 
@@ -74,7 +55,7 @@ void FSavedMove_Monster::PrepMoveFor(ACharacter* character)
 
 	if (movement)
 	{
-		movement->dodgeDirection = savedDodgeDirection;
+		//movement->DodgeDirection = savedDodgeDirection;
 	}
 }
 
@@ -96,9 +77,9 @@ FSavedMovePtr FNetworkPredictionData_Client_Monster::AllocateNewMove()
 #pragma endregion
 
 
-void UMonsterMovementComponent::OnMovementUpdated(float deltaTime, const FVector& oldLocation, const FVector& oldVelocity)
+void UMonsterMovementComponent::OnMovementUpdated(float DeltaTime, const FVector& OldLocation, const FVector& OldVelocity)
 {
-	Super::OnMovementUpdated(deltaTime, oldLocation, oldVelocity); 
+	Super::OnMovementUpdated(DeltaTime, OldLocation, OldVelocity); 
 
 	if (!CharacterOwner)
 	{
@@ -108,32 +89,16 @@ void UMonsterMovementComponent::OnMovementUpdated(float deltaTime, const FVector
 	if (bRequestWalkSpeedChange)
 	{
 		bRequestWalkSpeedChange = false;
-		MaxWalkSpeed = newMaxWalkSpeed;
-	}
-
-	if (bDodge)
-	{
-		bDodge = false;
-
-		// Only dodge when on ground
-		if (IsMovingOnGround())
-		{
-			dodgeDirection.Normalize();
-			FVector dodgeVelocity = dodgeDirection * dodgeStrength;
-			dodgeVelocity.Z = 0.0f;
-
-			Launch(dodgeVelocity);
-		}
+		MaxWalkSpeed = NewMaxWalkSpeed;
 	}
 }
 
 
-void UMonsterMovementComponent::UpdateFromCompressedFlags(uint8 flags)
+void UMonsterMovementComponent::UpdateFromCompressedFlags(uint8 Flags)
 {
-	Super::UpdateFromCompressedFlags(flags);
+	Super::UpdateFromCompressedFlags(Flags);
 
-	bRequestWalkSpeedChange = (flags & FSavedMove_Character::FLAG_Custom_0) != 0;
-	bDodge = (flags & FSavedMove_Character::FLAG_Custom_1) != 0;
+	bRequestWalkSpeedChange = (Flags & FSavedMove_Character::FLAG_Custom_0) != 0;
 }
 
 FNetworkPredictionData_Client* UMonsterMovementComponent::GetPredictionData_Client() const
@@ -153,47 +118,65 @@ FNetworkPredictionData_Client* UMonsterMovementComponent::GetPredictionData_Clie
 	return ClientPredictionData;
 }
 
+void UMonsterMovementComponent::PhysCustom(float DeltaTime, int32 Iterations)
+{
+	Super::PhysCustom(DeltaTime, Iterations);
 
-bool UMonsterMovementComponent::Server_SetMaxWalkSpeed_Validate(const float newWalkSpeed)
+	switch (CustomMovementMode)
+	{
+		case (uint8)ECustomMovement::CM_DODGE:
+			//DodgeTick(DeltaTime);
+			break;
+		default:
+			break;
+	}
+}
+
+
+#pragma region WalkSpeed
+bool UMonsterMovementComponent::Server_SetMaxWalkSpeed_Validate(const float InWalkSpeed)
 {
 	return true;
 }
 
-void UMonsterMovementComponent::Server_SetMaxWalkSpeed_Implementation(const float newWalkSpeed)
+void UMonsterMovementComponent::Server_SetMaxWalkSpeed_Implementation(const float InWalkSpeed)
 {
-	newMaxWalkSpeed = newWalkSpeed;
+	NewMaxWalkSpeed = InWalkSpeed;
 }
 
-void UMonsterMovementComponent::SetMaxWalkSpeed(float newWalkSpeed)
+void UMonsterMovementComponent::SetMaxWalkSpeed(float InWalkSpeed)
 {
 	if (PawnOwner->IsLocallyControlled())
 	{
-		newMaxWalkSpeed = newWalkSpeed; // client side
-		Server_SetMaxWalkSpeed(newMaxWalkSpeed); // server side
+		NewMaxWalkSpeed = InWalkSpeed; // client side
+		Server_SetMaxWalkSpeed(NewMaxWalkSpeed); // server side
 	}
 	
 	bRequestWalkSpeedChange = true;
 
 }
-
-
-bool UMonsterMovementComponent::Server_DodgeDirection_Validate(const FVector& dodgeDir)
-{
-	return true;
-}
-
-void UMonsterMovementComponent::Server_DodgeDirection_Implementation(const FVector& dodgeDir)
-{
-	dodgeDirection = dodgeDir;
-}
+#pragma endregion
 
 void UMonsterMovementComponent::Dodge()
 {
 	if (PawnOwner->IsLocallyControlled())
 	{
-		dodgeDirection = PawnOwner->GetLastMovementInputVector();
-		Server_DodgeDirection(dodgeDirection);
-	}
+		DodgeDirection = PawnOwner->GetLastMovementInputVector();
+		DodgeDirection.Normalize();
 
-	bDodge = true;
+		SetMovementMode(EMovementMode::MOVE_Custom, (uint8)ECustomMovement::CM_DODGE);
+	}
 }
+
+
+//void UMonsterMovementComponent::Dodge()
+//{
+//	if (PawnOwner->IsLocallyControlled())
+//	{
+//		DodgeDirection = PawnOwner->GetLastMovementInputVector();
+//		Server_DodgeDirection(DodgeDirection);
+//		SetMovementMode(EMovementMode::MOVE_Custom, (uint8)ECustomMovement::CM_DODGE);
+//	}
+//
+//	//bDodge = true;
+//}

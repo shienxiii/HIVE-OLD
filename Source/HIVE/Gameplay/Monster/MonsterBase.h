@@ -33,15 +33,21 @@ public:
 	// Called by Tick() on every frame
 	void LockedOnTick(float DeltaTime);
 
+#pragma region Input
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	virtual void PostInitializeComponents() override;
+	// Axis Input
+	virtual void MoveForward(float inAxis);
+	virtual void MoveRight(float inAxis);
+	FRotator GetViewRotator();
 
+#pragma endregion
 	// Returns the character movement component type defined to a UMonsterMovementComponent
 	UFUNCTION(BlueprintPure) UMonsterMovementComponent* GetMonsterMovementComponent() { return (UMonsterMovementComponent*)GetCharacterMovement(); }
 
 
+#pragma region LockOn
 	void ToggleLockOn();
 	/**
 	 * Called when there is a change in the currentTarget variable in this AMonsterBase instance so the server can update it
@@ -49,16 +55,19 @@ public:
 	 * @param Target AActor to set currentTarget to, default is null
 	 */
 	UFUNCTION(Server, Reliable, WithValidation) void Server_SetLockOnTarget(AActor* Target = nullptr);
-
-
+	/**
+	 * Get the closest target this monster can lock on to
+	 */
 	UFUNCTION(BlueprintPure) AActor* GetLockOnTarget();
-
 	/**
 	 * Find all possible lock on target in the level, filtering self and any within the same time
 	 *
 	 * return All eligible lock on target
 	 */
 	TArray<AActor*> GetPotentialLockOnTargets();
+#pragma endregion
+
+	UFUNCTION(BlueprintCallable) void ExecuteDodge();
 
 #pragma region Networking
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
