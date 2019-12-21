@@ -13,6 +13,12 @@ protected:
 	// Walk Speed update
 	uint8 bSavedRequestMaxWalkSpeedChange : 1;
 
+	// Override Movement Mode
+	uint8 bSavedRequestOverrideMovementMode : 1;
+	EMovementMode SavedMovementMode;
+	uint8 SavedCustomMovement;
+	FVector SavedAxisDirection;
+
 public:
 	typedef FSavedMove_Character Super;
 
@@ -55,7 +61,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Dodge")
 		float DodgeDistance = 200.0f;
 	FVector DodgeDirection = FVector::ZeroVector;
-	float RemainingDodgeDistance = 0.0f;
+	float RemainingDodgeDistance = DodgeDistance;
 
 
 public:
@@ -68,7 +74,7 @@ public:
 
 	// Custom Movement setting
 	void PhysCustom(float DeltaTime, int32 Iterations) override;
-	void DodgeTick(float DeltaTime);
+	
 	
 	
 
@@ -84,11 +90,26 @@ public:
 		void SetMaxWalkSpeed(float InWalkSpeed);
 #pragma endregion
 
+#pragma region OverrideMovementMode
+	uint8 bRequestOverrideMovementMode : 1;
+	EMovementMode NewMovementMode;
+	uint8 NewCustomMode;
+	FVector AxisDirection;
+
+	UFUNCTION(Reliable, Server, WithValidation)
+		void Server_OverrideMovementMode(const EMovementMode InNewMovementMode, uint8 InNewCustomMode, FVector InAxisDirection = FVector::ZeroVector);
+
+	UFUNCTION(BlueprintCallable, Category = "Override Movement Mode")
+		void OverrideMovementMode(EMovementMode InNewMovementMode, uint8 InNewCustomMode, FVector InAxisDirection = FVector::ZeroVector);
+#pragma endregion
+
+#pragma region Dodge
+	void DodgeTick(float DeltaTime);
 	void Dodge();
 	FVector GetDodgeVelocity();
 
 	UFUNCTION(Reliable, Server, WithValidation)
 		void Server_Dodge(FVector InDodgeDirection);
-
+#pragma endregion
 
 };
