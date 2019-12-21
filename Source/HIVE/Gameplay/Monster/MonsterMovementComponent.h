@@ -61,7 +61,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Dodge")
 		float DodgeDistance = 200.0f;
 	FVector DodgeDirection = FVector::ZeroVector;
-	float RemainingDodgeDistance = DodgeDistance;
+	float RemainingDodgeDistance;
 
 
 public:

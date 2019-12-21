@@ -112,6 +112,12 @@ void UMonsterMovementComponent::OnMovementUpdated(float DeltaTime, const FVector
 	if (bRequestOverrideMovementMode)
 	{
 		bRequestOverrideMovementMode = false;
+		if (NewMovementMode == EMovementMode::MOVE_Custom)
+		{
+			// Only dodge for now
+			RemainingDodgeDistance = DodgeDistance;
+		}
+
 		SetMovementMode(NewMovementMode, NewCustomMode);
 	}
 }
@@ -234,7 +240,6 @@ void UMonsterMovementComponent::DodgeTick(float DeltaTime)
 	if (RemainingDodgeDistance <= 0.0f)
 	{
 		SetMovementMode(EMovementMode::MOVE_Walking);
-		RemainingDodgeDistance = DodgeDistance;
 		Velocity = FVector::ZeroVector;
 	}
 }
@@ -274,7 +279,6 @@ bool UMonsterMovementComponent::Server_Dodge_Validate(FVector InDodgeDirection)
 void UMonsterMovementComponent::Server_Dodge_Implementation(FVector InDodgeDirection)
 {
 	DodgeDirection = InDodgeDirection;
-	RemainingDodgeDistance = DodgeDistance;
 	SetMovementMode(EMovementMode::MOVE_Custom, (uint8)ECustomMovement::CM_DODGE);
 }
 #pragma endregion
