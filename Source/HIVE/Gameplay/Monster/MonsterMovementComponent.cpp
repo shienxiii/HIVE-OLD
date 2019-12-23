@@ -21,6 +21,9 @@ void FSavedMove_Monster::Clear()
 	Super::Clear();
 
 	bSavedRequestMaxWalkSpeedChange = false;
+	bSavedRequestLaunch = false;
+	SavedLaunchDirection = FVector::ZeroVector;
+	SavedLaunchStrength = 0.0f;
 }
 
 uint8 FSavedMove_Monster::GetCompressedFlags() const
@@ -30,6 +33,11 @@ uint8 FSavedMove_Monster::GetCompressedFlags() const
 	if (bSavedRequestMaxWalkSpeedChange)
 	{
 		result |= FLAG_Custom_0;
+	}
+
+	if (bSavedRequestLaunch)
+	{
+		result |= FLAG_Custom_1;
 	}
 
 	return result;
@@ -44,6 +52,9 @@ void FSavedMove_Monster::SetMoveFor(ACharacter* character, float inDeltaTime, FV
 	if (movement)
 	{
 		bSavedRequestMaxWalkSpeedChange = movement->bRequestWalkSpeedChange;
+		bSavedRequestLaunch = movement->bRequestLaunch;
+		SavedLaunchDirection = movement->LaunchDirection;
+		SavedLaunchStrength = movement->LaunchStrength;
 	}
 }
 
@@ -52,6 +63,12 @@ void FSavedMove_Monster::PrepMoveFor(ACharacter* character)
 	Super::PrepMoveFor(character);
 
 	UMonsterMovementComponent* movement = Cast<UMonsterMovementComponent>(character->GetCharacterMovement());
+
+	if (movement)
+	{
+		movement->LaunchDirection = SavedLaunchDirection;
+		movement->LaunchStrength = SavedLaunchStrength;
+	}
 }
 
 #pragma endregion
@@ -87,6 +104,20 @@ void UMonsterMovementComponent::OnMovementUpdated(float DeltaTime, const FVector
 		bRequestWalkSpeedChange = false;
 		MaxWalkSpeed = NewMaxWalkSpeed;
 	}
+
+	if (bRequestLaunch)
+	{
+		bRequestLaunch = false;
+		// Only dodge when on ground
+		if (IsMovingOnGround())
+		{
+			LaunchDirection.Normalize();
+			FVector dodgeVelocity = LaunchDirection * LaunchStrength;
+			dodgeVelocity.Z = 0.0f;
+
+			Launch(dodgeVelocity);
+		}
+	}
 }
 
 
@@ -95,6 +126,7 @@ void UMonsterMovementComponent::UpdateFromCompressedFlags(uint8 Flags)
 	Super::UpdateFromCompressedFlags(Flags);
 
 	bRequestWalkSpeedChange = (Flags & FSavedMove_Character::FLAG_Custom_0) != 0;
+	bRequestLaunch = (Flags & FSavedMove_Character::FLAG_Custom_1) != 0;
 }
 
 FNetworkPredictionData_Client* UMonsterMovementComponent::GetPredictionData_Client() const
@@ -127,7 +159,7 @@ void UMonsterMovementComponent::Server_SetMaxWalkSpeed_Implementation(const floa
 	NewMaxWalkSpeed = InWalkSpeed;
 }
 
-void UMonsterMovementComponent::SetMaxWalkSpeed(float InWalkSpeed)
+void UMonsterMovementComponent::Client_SetMaxWalkSpeed(float InWalkSpeed)
 {
 	if (PawnOwner->IsLocallyControlled())
 	{
@@ -138,4 +170,30 @@ void UMonsterMovementComponent::SetMaxWalkSpeed(float InWalkSpeed)
 	bRequestWalkSpeedChange = true;
 
 }
+#pragma endregion
+
+#pragma region LaunchMonster
+bool UMonsterMovementComponent::Server_LaunchMonster_Validate(FVector InLaunchDirection, float InLaunchStrength)
+{
+	return true;
+}
+
+void UMonsterMovementComponent::Server_LaunchMonster_Implementation(FVector InLaunchDirection, float InLaunchStrength)
+{
+	LaunchDirection = InLaunchDirection;
+	LaunchStrength = InLaunchStrength;
+}
+
+void UMonsterMovementComponent::Client_LaunchMonster(FVector InLaunchDirection, float InLaunchStrength)
+{
+	if (PawnOwner->IsLocallyControlled())
+	{
+		LaunchDirection = InLaunchDirection;
+		LaunchStrength = InLaunchStrength;
+		Server_LaunchMonster(LaunchDirection, LaunchStrength);
+	}
+
+	bRequestLaunch = true;
+}
+
 #pragma endregion

@@ -43,7 +43,7 @@ void AMonsterBase::Tick(float DeltaTime)
 void AMonsterBase::LockedOnTick(float DeltaTime)
 {
 	// Check if there is a target currently being locked on
-	if (!currentTarget)
+	if (!CurrentTarget)
 	{
 		// to be removed after refining lock on
 		if (!(GetCharacterMovement()->bOrientRotationToMovement))
@@ -58,8 +58,9 @@ void AMonsterBase::LockedOnTick(float DeltaTime)
 		GetCharacterMovement()->bOrientRotationToMovement = true;
 	}
 
+	
 	// Calculate the desired final rotation
-	FRotator finalRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), currentTarget->GetActorLocation());
+	FRotator finalRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), CurrentTarget->GetActorLocation());
 	finalRotation.Pitch = 0.0f;
 	finalRotation.Roll = 0.0f;
 
@@ -104,6 +105,14 @@ FRotator AMonsterBase::GetViewRotator()
 void AMonsterBase::ExecuteDodge()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "Execute Dodge");
+	FVector dodgeDirection = GetLastMovementInputVector();
+	if (dodgeDirection.IsNearlyZero())
+	{
+		dodgeDirection = GetActorForwardVector() * -1.0f;
+	}
+	dodgeDirection.Normalize();
+
+	GetMonsterMovementComponent()->Client_LaunchMonster(dodgeDirection, DodgeStrength);
 	//GetMonsterMovementComponent()->Dodge();
 }
 
@@ -114,14 +123,14 @@ void AMonsterBase::ExecuteDodge()
 
 void AMonsterBase::ToggleLockOn()
 {
-	if (currentTarget == nullptr)
+	if (CurrentTarget == nullptr)
 	{
-		currentTarget = GetLockOnTarget();
-		Server_SetLockOnTarget(currentTarget);
+		CurrentTarget = GetLockOnTarget();
+		Server_SetLockOnTarget(CurrentTarget);
 	}
 	else
 	{
-		currentTarget = nullptr;
+		CurrentTarget = nullptr;
 		Server_SetLockOnTarget();
 	}
 }
@@ -133,7 +142,7 @@ bool AMonsterBase::Server_SetLockOnTarget_Validate(AActor* Target)
 
 void AMonsterBase::Server_SetLockOnTarget_Implementation(AActor* Target)
 {
-	currentTarget = Target;
+	CurrentTarget = Target;
 }
 
 AActor* AMonsterBase::GetLockOnTarget()
@@ -161,7 +170,7 @@ TArray<AActor*> AMonsterBase::GetPotentialLockOnTargets()
 	for (int32 i = lockOnTargets.Num() - 1; i >= 0; i--)
 	{
 		// Remove any target that is out of view or out of range
-		if (!(lockOnTargets[i]->WasRecentlyRendered()) || GetDistanceTo(lockOnTargets[i]) > lockOnRange || lockOnTargets[i] == this)
+		if (!(lockOnTargets[i]->WasRecentlyRendered()) || GetDistanceTo(lockOnTargets[i]) > LockOnRange || lockOnTargets[i] == this)
 		{
 			lockOnTargets.RemoveAt(i);
 		}
@@ -181,7 +190,7 @@ void AMonsterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AMonsterBase, health);
-	DOREPLIFETIME(AMonsterBase, currentTarget);
+	DOREPLIFETIME(AMonsterBase, Health);
+	DOREPLIFETIME(AMonsterBase, CurrentTarget);
 }
 #pragma endregion

@@ -13,6 +13,11 @@ protected:
 	// Walk Speed update
 	uint8 bSavedRequestMaxWalkSpeedChange : 1;
 
+	// Launch Monster
+	uint8 bSavedRequestLaunch : 1;
+	FVector SavedLaunchDirection;
+	float SavedLaunchStrength;
+
 public:
 	typedef FSavedMove_Character Super;
 
@@ -34,13 +39,6 @@ public:
 	virtual FSavedMovePtr AllocateNewMove() override;
 };
 
-enum class ECustomMovement : uint8
-{
-	CM_DODGE UMETA(DisplayName="Dodge")
-};
-
-
-
 /**
  * MovementComponent class shared by all monsters
  */
@@ -52,7 +50,6 @@ class HIVE_API UMonsterMovementComponent : public UCharacterMovementComponent
 protected:
 	UPROPERTY(EditAnywhere, Category = "Dodge")
 		float DodgeStrength = 5000.0f;
-	FVector DodgeDirection = FVector::ZeroVector;
 
 
 public:
@@ -67,15 +64,26 @@ public:
 	
 
 #pragma region MaxWalkSpeedChange
-	// Set MaxWalkSpeed
 	uint8 bRequestWalkSpeedChange : 1;
-	float NewMaxWalkSpeed; // NOTE: Needed as an intermediate otherwise net correction will happen
+	float NewMaxWalkSpeed;
 
 	UFUNCTION(Reliable, Server, WithValidation)
 		void Server_SetMaxWalkSpeed(const float InWalkSpeed);
 
 	UFUNCTION(BlueprintCallable, Category = "Walk Speed")
-		void SetMaxWalkSpeed(float InWalkSpeed);
+		void Client_SetMaxWalkSpeed(float InWalkSpeed);
+#pragma endregion
+
+#pragma region LaunchCharacter
+	uint8 bRequestLaunch : 1;
+	FVector LaunchDirection;
+	float LaunchStrength;
+
+	UFUNCTION(Reliable, Server, WithValidation)
+		void Server_LaunchMonster(FVector InLaunchDirection, float InLaunchStrength);
+	
+	UFUNCTION(BlueprintCallable, Category = "Launch")
+		void Client_LaunchMonster(FVector InLaunchDirection, float InLaunchStrength = 1000.0f);
 #pragma endregion
 
 };
