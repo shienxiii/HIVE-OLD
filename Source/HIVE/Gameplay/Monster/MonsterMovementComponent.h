@@ -39,6 +39,12 @@ public:
 	virtual FSavedMovePtr AllocateNewMove() override;
 };
 
+enum class ELaunchType : uint8
+{
+	LT_NULL	UMETA(DisplayName = "NULL"),
+	LT_DODGE	UMETA(DisplayName = "Dodge")
+};
+
 /**
  * MovementComponent class shared by all monsters
  */
@@ -51,6 +57,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Dodge")
 		float DodgeStrength = 5000.0f;
 
+	ELaunchType launchType = ELaunchType::LT_NULL;
+	
+	virtual void PhysWalking(float DeltaTime, int32 Iterations) override;
 
 public:
 	typedef UCharacterMovementComponent Super;

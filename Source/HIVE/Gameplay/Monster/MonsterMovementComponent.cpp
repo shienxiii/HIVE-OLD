@@ -90,6 +90,29 @@ FSavedMovePtr FNetworkPredictionData_Client_Monster::AllocateNewMove()
 
 
 #pragma region NetworkPrediciton
+void UMonsterMovementComponent::PhysWalking(float DeltaTime, int32 Iterations)
+{
+	if (launchType == ELaunchType::LT_NULL)
+	{
+		Super::PhysWalking(DeltaTime, Iterations);
+		return;
+	}
+	Super::PhysWalking(DeltaTime, Iterations);
+	if (PawnOwner->Role == ROLE_Authority)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, Velocity.ToString());
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, Velocity.ToString());
+	}
+
+	if (Velocity.IsNearlyZero())
+	{
+		launchType = ELaunchType::LT_NULL;
+	}
+}
+
 void UMonsterMovementComponent::OnMovementUpdated(float DeltaTime, const FVector& OldLocation, const FVector& OldVelocity)
 {
 	Super::OnMovementUpdated(DeltaTime, OldLocation, OldVelocity); 
@@ -114,7 +137,7 @@ void UMonsterMovementComponent::OnMovementUpdated(float DeltaTime, const FVector
 			LaunchDirection.Normalize();
 			FVector dodgeVelocity = LaunchDirection * LaunchStrength;
 			dodgeVelocity.Z = 0.0f;
-
+			launchType = ELaunchType::LT_DODGE;
 			Launch(dodgeVelocity);
 		}
 	}
