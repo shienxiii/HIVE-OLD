@@ -218,15 +218,25 @@ void UMonsterMovementComponent::OverrideMovementMode(EMovementMode InNewMovement
 #pragma region Dodge
 void UMonsterMovementComponent::DodgeTick(float DeltaTime)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, "Dodging");
-
 	FindFloor(UpdatedComponent->GetComponentLocation(), CurrentFloor, false);
 	AdjustFloorHeight();
 	SetBaseFromFloor(CurrentFloor);
 
 	if (CurrentFloor.bBlockingHit)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Yellow, "Dodging");
+		/*if ((PawnOwner->Role) == ROLE_Authority)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Yellow, "Server Dodging");
+		}
+		else if((PawnOwner->Role) == ROLE_AutonomousProxy)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Yellow, "AP Dodging");
+		}
+		else if ((PawnOwner->Role) == ROLE_SimulatedProxy)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Yellow, "SIM Dodging");
+		}*/
+
 		Velocity = GetDodgeVelocity();
 
 		float dodgeDelta = Velocity.Size() * DeltaTime;
@@ -239,8 +249,21 @@ void UMonsterMovementComponent::DodgeTick(float DeltaTime)
 
 	if (RemainingDodgeDistance <= 0.0f)
 	{
-		SetMovementMode(EMovementMode::MOVE_Walking);
+		/*if ((PawnOwner->Role) == ROLE_Authority)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, "Server End");
+		}
+		else if ((PawnOwner->Role) == ROLE_AutonomousProxy)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, "AP End");
+		}
+		else if ((PawnOwner->Role) == ROLE_SimulatedProxy)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, "SIM End");
+		}*/
 		Velocity = FVector::ZeroVector;
+		OverrideMovementMode(EMovementMode::MOVE_Walking);
+		//SetMovementMode(EMovementMode::MOVE_Walking);
 	}
 }
 
@@ -248,22 +271,13 @@ void UMonsterMovementComponent::Dodge()
 {
 	if (PawnOwner->IsLocallyControlled())
 	{
-		OverrideMovementMode(EMovementMode::MOVE_Custom, (uint8)ECustomMovement::CM_DODGE, PawnOwner->GetLastMovementInputVector());
-		/*DodgeDirection = PawnOwner->GetLastMovementInputVector();
-		if (DodgeDirection.Size() < 0.1f)
+		FVector InputAxisDirection = PawnOwner->GetLastMovementInputVector();
+		if (InputAxisDirection.IsNearlyZero())
 		{
-			DodgeDirection = PawnOwner->GetActorForwardVector() * -1;
+			InputAxisDirection = PawnOwner->GetActorForwardVector() * -1;
 		}
-
-		DodgeDirection.Normalize();
-
-		RemainingDodgeDistance = DodgeDistance;
-
-		Server_Dodge(DodgeDirection);
-		SetMovementMode(EMovementMode::MOVE_Custom, (uint8)ECustomMovement::CM_DODGE);*/
+		OverrideMovementMode(EMovementMode::MOVE_Custom, (uint8)ECustomMovement::CM_DODGE, InputAxisDirection);
 	}
-
-	//bDodge = true;
 }
 
 FVector UMonsterMovementComponent::GetDodgeVelocity()

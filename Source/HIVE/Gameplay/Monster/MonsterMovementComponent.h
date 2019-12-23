@@ -100,7 +100,7 @@ public:
 		void Server_OverrideMovementMode(const EMovementMode InNewMovementMode, uint8 InNewCustomMode, FVector InAxisDirection = FVector::ZeroVector);
 
 	UFUNCTION(BlueprintCallable, Category = "Override Movement Mode")
-		void OverrideMovementMode(EMovementMode InNewMovementMode, uint8 InNewCustomMode, FVector InAxisDirection = FVector::ZeroVector);
+		void OverrideMovementMode(EMovementMode InNewMovementMode, uint8 InNewCustomMode = 0, FVector InAxisDirection = FVector::ZeroVector);
 #pragma endregion
 
 #pragma region Dodge
