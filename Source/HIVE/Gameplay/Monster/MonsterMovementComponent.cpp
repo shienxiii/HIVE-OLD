@@ -13,12 +13,6 @@ bool FSavedMove_Monster::CanCombineWith(const FSavedMovePtr& newMove, ACharacter
 	{
 		return false;
 	}
-
-	if (bSavedRequestOverrideMovementMode != ((FSavedMove_Monster*)&newMove)->bSavedRequestOverrideMovementMode)
-	{
-		return false;
-	}
-
 	return Super::CanCombineWith(newMove, inCharacter, maxDelta);
 }
 
@@ -27,7 +21,6 @@ void FSavedMove_Monster::Clear()
 	Super::Clear();
 
 	bSavedRequestMaxWalkSpeedChange = false;
-	bSavedRequestOverrideMovementMode = false;
 }
 
 uint8 FSavedMove_Monster::GetCompressedFlags() const
@@ -37,11 +30,6 @@ uint8 FSavedMove_Monster::GetCompressedFlags() const
 	if (bSavedRequestMaxWalkSpeedChange)
 	{
 		result |= FLAG_Custom_0;
-	}
-
-	if (bSavedRequestOverrideMovementMode)
-	{
-		result |= FLAG_Custom_1;
 	}
 
 	return result;
@@ -56,10 +44,6 @@ void FSavedMove_Monster::SetMoveFor(ACharacter* character, float inDeltaTime, FV
 	if (movement)
 	{
 		bSavedRequestMaxWalkSpeedChange = movement->bRequestWalkSpeedChange;
-		bSavedRequestOverrideMovementMode = movement->bRequestOverrideMovementMode;
-		SavedAxisDirection = movement->AxisDirection;
-		/*bSavedDodge = movement->bDodge;
-		savedDodgeDirection = movement->dodgeDirection;*/
 	}
 }
 
@@ -68,11 +52,6 @@ void FSavedMove_Monster::PrepMoveFor(ACharacter* character)
 	Super::PrepMoveFor(character);
 
 	UMonsterMovementComponent* movement = Cast<UMonsterMovementComponent>(character->GetCharacterMovement());
-
-	if (movement)
-	{
-		movement->AxisDirection = SavedAxisDirection;
-	}
 }
 
 #pragma endregion
@@ -108,18 +87,6 @@ void UMonsterMovementComponent::OnMovementUpdated(float DeltaTime, const FVector
 		bRequestWalkSpeedChange = false;
 		MaxWalkSpeed = NewMaxWalkSpeed;
 	}
-
-	if (bRequestOverrideMovementMode)
-	{
-		bRequestOverrideMovementMode = false;
-		if (NewMovementMode == EMovementMode::MOVE_Custom)
-		{
-			// Only dodge for now
-			RemainingDodgeDistance = DodgeDistance;
-		}
-
-		SetMovementMode(NewMovementMode, NewCustomMode);
-	}
 }
 
 
@@ -128,7 +95,6 @@ void UMonsterMovementComponent::UpdateFromCompressedFlags(uint8 Flags)
 	Super::UpdateFromCompressedFlags(Flags);
 
 	bRequestWalkSpeedChange = (Flags & FSavedMove_Character::FLAG_Custom_0) != 0;
-	bRequestOverrideMovementMode = (Flags & FSavedMove_Character::FLAG_Custom_1) != 0;
 }
 
 FNetworkPredictionData_Client* UMonsterMovementComponent::GetPredictionData_Client() const
@@ -148,21 +114,6 @@ FNetworkPredictionData_Client* UMonsterMovementComponent::GetPredictionData_Clie
 	return ClientPredictionData;
 }
 #pragma endregion
-
-
-void UMonsterMovementComponent::PhysCustom(float DeltaTime, int32 Iterations)
-{
-	Super::PhysCustom(DeltaTime, Iterations);
-
-	switch (CustomMovementMode)
-	{
-		case (uint8)ECustomMovement::CM_DODGE:
-			DodgeTick(DeltaTime);
-			break;
-		default:
-			break;
-	}
-}
 
 
 #pragma region WalkSpeed
@@ -186,113 +137,5 @@ void UMonsterMovementComponent::SetMaxWalkSpeed(float InWalkSpeed)
 	
 	bRequestWalkSpeedChange = true;
 
-}
-#pragma endregion
-
-bool UMonsterMovementComponent::Server_OverrideMovementMode_Validate(const EMovementMode InNewMovementMode, uint8 InNewCustomMode, FVector InAxisDirection)
-{
-	return true;
-}
-
-void UMonsterMovementComponent::Server_OverrideMovementMode_Implementation(const EMovementMode InNewMovementMode, uint8 InNewCustomMode, FVector InAxisDirection)
-{
-	NewMovementMode = InNewMovementMode;
-	NewCustomMode = InNewCustomMode;
-	AxisDirection = InAxisDirection;
-}
-
-void UMonsterMovementComponent::OverrideMovementMode(EMovementMode InNewMovementMode, uint8 InNewCustomMode, FVector InAxisDirection)
-{
-	if(PawnOwner->IsLocallyControlled())
-	{
-		NewMovementMode = InNewMovementMode;
-		NewCustomMode = InNewCustomMode;
-		AxisDirection = InAxisDirection;
-		AxisDirection.Normalize();
-		Server_OverrideMovementMode(NewMovementMode, NewCustomMode, AxisDirection);
-	}
-
-	bRequestOverrideMovementMode = true;
-}
-
-#pragma region Dodge
-void UMonsterMovementComponent::DodgeTick(float DeltaTime)
-{
-	FindFloor(UpdatedComponent->GetComponentLocation(), CurrentFloor, false);
-	AdjustFloorHeight();
-	SetBaseFromFloor(CurrentFloor);
-
-	if (CurrentFloor.bBlockingHit)
-	{
-		/*if ((PawnOwner->Role) == ROLE_Authority)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Yellow, "Server Dodging");
-		}
-		else if((PawnOwner->Role) == ROLE_AutonomousProxy)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Yellow, "AP Dodging");
-		}
-		else if ((PawnOwner->Role) == ROLE_SimulatedProxy)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Yellow, "SIM Dodging");
-		}*/
-
-		Velocity = GetDodgeVelocity();
-
-		float dodgeDelta = Velocity.Size() * DeltaTime;
-		dodgeDelta = dodgeDelta < RemainingDodgeDistance ? dodgeDelta : RemainingDodgeDistance;
-
-		// To be swapped with dodge delta
-		MoveAlongFloor(Velocity, DeltaTime);
-		RemainingDodgeDistance -= dodgeDelta;
-	}
-
-	if (RemainingDodgeDistance <= 0.0f)
-	{
-		/*if ((PawnOwner->Role) == ROLE_Authority)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, "Server End");
-		}
-		else if ((PawnOwner->Role) == ROLE_AutonomousProxy)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, "AP End");
-		}
-		else if ((PawnOwner->Role) == ROLE_SimulatedProxy)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, "SIM End");
-		}*/
-		Velocity = FVector::ZeroVector;
-		OverrideMovementMode(EMovementMode::MOVE_Walking);
-		//SetMovementMode(EMovementMode::MOVE_Walking);
-	}
-}
-
-void UMonsterMovementComponent::Dodge()
-{
-	if (PawnOwner->IsLocallyControlled())
-	{
-		FVector InputAxisDirection = PawnOwner->GetLastMovementInputVector();
-		if (InputAxisDirection.IsNearlyZero())
-		{
-			InputAxisDirection = PawnOwner->GetActorForwardVector() * -1;
-		}
-		OverrideMovementMode(EMovementMode::MOVE_Custom, (uint8)ECustomMovement::CM_DODGE, InputAxisDirection);
-	}
-}
-
-FVector UMonsterMovementComponent::GetDodgeVelocity()
-{
-	return AxisDirection * DodgeSpeed;
-}
-
-bool UMonsterMovementComponent::Server_Dodge_Validate(FVector InDodgeDirection)
-{
-	return true;
-}
-
-void UMonsterMovementComponent::Server_Dodge_Implementation(FVector InDodgeDirection)
-{
-	DodgeDirection = InDodgeDirection;
-	SetMovementMode(EMovementMode::MOVE_Custom, (uint8)ECustomMovement::CM_DODGE);
 }
 #pragma endregion

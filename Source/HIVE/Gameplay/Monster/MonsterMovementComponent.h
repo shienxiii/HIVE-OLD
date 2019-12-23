@@ -13,12 +13,6 @@ protected:
 	// Walk Speed update
 	uint8 bSavedRequestMaxWalkSpeedChange : 1;
 
-	// Override Movement Mode
-	uint8 bSavedRequestOverrideMovementMode : 1;
-	EMovementMode SavedMovementMode;
-	uint8 SavedCustomMovement;
-	FVector SavedAxisDirection;
-
 public:
 	typedef FSavedMove_Character Super;
 
@@ -57,11 +51,8 @@ class HIVE_API UMonsterMovementComponent : public UCharacterMovementComponent
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "Dodge")
-		float DodgeSpeed = 5000.0f;
-	UPROPERTY(EditAnywhere, Category = "Dodge")
-		float DodgeDistance = 200.0f;
+		float DodgeStrength = 5000.0f;
 	FVector DodgeDirection = FVector::ZeroVector;
-	float RemainingDodgeDistance;
 
 
 public:
@@ -71,9 +62,6 @@ public:
 	void OnMovementUpdated(float DeltaTime, const FVector& OldLocation, const FVector& OldVelocity); // NOTE: All update to movement component need to happen here, otherwise net correction will happen
 	virtual void UpdateFromCompressedFlags(uint8 Flags) override;
 	virtual class FNetworkPredictionData_Client* GetPredictionData_Client() const override;
-
-	// Custom Movement setting
-	void PhysCustom(float DeltaTime, int32 Iterations) override;
 	
 	
 	
@@ -88,28 +76,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Walk Speed")
 		void SetMaxWalkSpeed(float InWalkSpeed);
-#pragma endregion
-
-#pragma region OverrideMovementMode
-	uint8 bRequestOverrideMovementMode : 1;
-	EMovementMode NewMovementMode;
-	uint8 NewCustomMode;
-	FVector AxisDirection;
-
-	UFUNCTION(Reliable, Server, WithValidation)
-		void Server_OverrideMovementMode(const EMovementMode InNewMovementMode, uint8 InNewCustomMode, FVector InAxisDirection = FVector::ZeroVector);
-
-	UFUNCTION(BlueprintCallable, Category = "Override Movement Mode")
-		void OverrideMovementMode(EMovementMode InNewMovementMode, uint8 InNewCustomMode = 0, FVector InAxisDirection = FVector::ZeroVector);
-#pragma endregion
-
-#pragma region Dodge
-	void DodgeTick(float DeltaTime);
-	void Dodge();
-	FVector GetDodgeVelocity();
-
-	UFUNCTION(Reliable, Server, WithValidation)
-		void Server_Dodge(FVector InDodgeDirection);
 #pragma endregion
 
 };

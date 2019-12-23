@@ -103,7 +103,8 @@ FRotator AMonsterBase::GetViewRotator()
 
 void AMonsterBase::ExecuteDodge()
 {
-	GetMonsterMovementComponent()->Dodge();
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "Execute Dodge");
+	//GetMonsterMovementComponent()->Dodge();
 }
 
 #pragma endregion
