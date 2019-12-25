@@ -1,4 +1,4 @@
-// Copyright of Rabbit Games
+// Copyright of Honeycomb Studio
 
 
 #include "MonsterMovementComponent.h"
@@ -92,25 +92,21 @@ FSavedMovePtr FNetworkPredictionData_Client_Monster::AllocateNewMove()
 #pragma region NetworkPrediciton
 void UMonsterMovementComponent::PhysWalking(float DeltaTime, int32 Iterations)
 {
-	if (launchType == ELaunchType::LT_NULL)
+	if (LaunchState != ELaunchType::LT_NULL)
 	{
-		Super::PhysWalking(DeltaTime, Iterations);
-		return;
-	}
-	Super::PhysWalking(DeltaTime, Iterations);
-	if (PawnOwner->Role == ROLE_Authority)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, Velocity.ToString());
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, Velocity.ToString());
+		if (Velocity.IsNearlyZero())
+		{
+			LaunchState = ELaunchType::LT_NULL;
+			GroundFriction = 8.0f;
+		}
 	}
 
-	if (Velocity.IsNearlyZero())
-	{
-		launchType = ELaunchType::LT_NULL;
-	}
+	Super::PhysWalking(DeltaTime, Iterations);
+}
+
+FVector UMonsterMovementComponent::ConsumeInputVector()
+{
+	return PawnOwner && LaunchState == ELaunchType::LT_NULL ? PawnOwner->Internal_ConsumeMovementInputVector() : FVector::ZeroVector;
 }
 
 void UMonsterMovementComponent::OnMovementUpdated(float DeltaTime, const FVector& OldLocation, const FVector& OldVelocity)
@@ -137,7 +133,8 @@ void UMonsterMovementComponent::OnMovementUpdated(float DeltaTime, const FVector
 			LaunchDirection.Normalize();
 			FVector dodgeVelocity = LaunchDirection * LaunchStrength;
 			dodgeVelocity.Z = 0.0f;
-			launchType = ELaunchType::LT_DODGE;
+			LaunchState = ELaunchType::LT_DODGE;
+			GroundFriction = 0.0f;
 			Launch(dodgeVelocity);
 		}
 	}
@@ -209,14 +206,22 @@ void UMonsterMovementComponent::Server_LaunchMonster_Implementation(FVector InLa
 
 void UMonsterMovementComponent::Client_LaunchMonster(FVector InLaunchDirection, float InLaunchStrength)
 {
-	if (PawnOwner->IsLocallyControlled())
+	if (PawnOwner->IsLocallyControlled() && LaunchState == ELaunchType::LT_NULL)
 	{
 		LaunchDirection = InLaunchDirection;
 		LaunchStrength = InLaunchStrength;
 		Server_LaunchMonster(LaunchDirection, LaunchStrength);
+		bRequestLaunch = true;
 	}
 
-	bRequestLaunch = true;
 }
 
+
+#pragma endregion
+
+#pragma region Networking
+void UMonsterMovementComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+}
 #pragma endregion

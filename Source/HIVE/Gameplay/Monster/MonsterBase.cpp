@@ -1,4 +1,4 @@
-// Copyright of Rabbit Games
+// Copyright of Honeycomb Studio
 
 
 #include "MonsterBase.h"
@@ -104,7 +104,6 @@ FRotator AMonsterBase::GetViewRotator()
 
 void AMonsterBase::ExecuteDodge()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "Execute Dodge");
 	FVector dodgeDirection = GetLastMovementInputVector();
 	if (dodgeDirection.IsNearlyZero())
 	{

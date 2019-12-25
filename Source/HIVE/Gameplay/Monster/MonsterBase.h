@@ -1,4 +1,4 @@
-// Copyright of Rabbit Games
+// Copyright of Honeycomb Studio
 
 #pragma once
 

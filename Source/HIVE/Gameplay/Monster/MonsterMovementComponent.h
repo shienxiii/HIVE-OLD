@@ -1,4 +1,4 @@
-// Copyright of Rabbit Games
+// Copyright of Honeycomb Studio
 
 #pragma once
 
@@ -39,6 +39,8 @@ public:
 	virtual FSavedMovePtr AllocateNewMove() override;
 };
 
+
+UENUM()
 enum class ELaunchType : uint8
 {
 	LT_NULL	UMETA(DisplayName = "NULL"),
@@ -57,18 +59,20 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Dodge")
 		float DodgeStrength = 5000.0f;
 
-	ELaunchType launchType = ELaunchType::LT_NULL;
+	UPROPERTY(Replicated)
+		ELaunchType LaunchState = ELaunchType::LT_NULL;
 	
 	virtual void PhysWalking(float DeltaTime, int32 Iterations) override;
 
 public:
 	typedef UCharacterMovementComponent Super;
 
-	
+	virtual FVector ConsumeInputVector() override;
 	void OnMovementUpdated(float DeltaTime, const FVector& OldLocation, const FVector& OldVelocity); // NOTE: All update to movement component need to happen here, otherwise net correction will happen
 	virtual void UpdateFromCompressedFlags(uint8 Flags) override;
 	virtual class FNetworkPredictionData_Client* GetPredictionData_Client() const override;
 	
+	UFUNCTION(BlueprintPure) ELaunchType GetLaunchState() { return LaunchState; }
 	
 	
 
@@ -93,6 +97,10 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "Launch")
 		void Client_LaunchMonster(FVector InLaunchDirection, float InLaunchStrength = 1000.0f);
+#pragma endregion
+
+#pragma region Networking
+	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 #pragma endregion
 
 };
