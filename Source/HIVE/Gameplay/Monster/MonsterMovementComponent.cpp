@@ -152,7 +152,7 @@ void UMonsterMovementComponent::UpdateFromCompressedFlags(uint8 Flags)
 FNetworkPredictionData_Client* UMonsterMovementComponent::GetPredictionData_Client() const
 {
 	check(PawnOwner != NULL);
-	check(PawnOwner->GetLocalRole() < ROLE_Authority);
+	//check(PawnOwner->GetLocalRole() < ROLE_Authority);
 
 	if (!ClientPredictionData)
 	{
