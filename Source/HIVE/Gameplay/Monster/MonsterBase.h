@@ -35,8 +35,6 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	// Called by Tick() on every frame
-	void LockedOnTick(float DeltaTime);
 
 #pragma region Input
 	// Called to bind functionality to input
@@ -54,6 +52,8 @@ public:
 
 
 #pragma region LockOn
+	AActor* GetCurrentLockOnTarget() { return CurrentTarget; };
+
 	void ToggleLockOn();
 	/**
 	 * Called when there is a change in the currentTarget variable in this AMonsterBase instance so the server can update it

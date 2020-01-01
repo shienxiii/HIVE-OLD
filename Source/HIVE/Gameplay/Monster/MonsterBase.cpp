@@ -23,6 +23,8 @@ AMonsterBase::AMonsterBase(const FObjectInitializer& ObjectInitializer)
 	bAlwaysRelevant = true;
 	bOnlyRelevantToOwner = false;
 	bNetLoadOnClient = true;
+
+	//GetMovementComponent()->bWantsInitializeComponent = true;
 }
 
 // Called when the game starts or when spawned
@@ -36,38 +38,6 @@ void AMonsterBase::BeginPlay()
 void AMonsterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	LockedOnTick(DeltaTime);
-}
-
-// Called by Tick() on every frame
-void AMonsterBase::LockedOnTick(float DeltaTime)
-{
-	// Check if there is a target currently being locked on
-	if (!CurrentTarget)
-	{
-		// to be removed after refining lock on
-		if (!(GetCharacterMovement()->bOrientRotationToMovement))
-		{
-			GetCharacterMovement()->bOrientRotationToMovement = true;
-		}
-
-		return;
-	}
-	else
-	{
-		GetCharacterMovement()->bOrientRotationToMovement = true;
-	}
-
-	
-	// Calculate the desired final rotation
-	FRotator finalRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), CurrentTarget->GetActorLocation());
-	finalRotation.Pitch = 0.0f;
-	finalRotation.Roll = 0.0f;
-
-	// Calculate the rotation delta
-	FRotator deltaRotation = UKismetMathLibrary::RInterpTo_Constant(GetActorRotation(), finalRotation, DeltaTime, GetCharacterMovement()->RotationRate.Yaw * 5.0f);
-
-	SetActorRotation(deltaRotation);
 }
 
 #pragma region Input

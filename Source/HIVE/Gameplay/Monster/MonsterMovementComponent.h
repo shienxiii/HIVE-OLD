@@ -6,6 +6,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "MonsterMovementComponent.generated.h"
 
+class AMonsterBase;
 
 class FSavedMove_Monster : public FSavedMove_Character
 {
@@ -56,6 +57,8 @@ class HIVE_API UMonsterMovementComponent : public UCharacterMovementComponent
 	GENERATED_BODY()
 
 protected:
+	AMonsterBase* MonsterOwner;
+
 	UPROPERTY(EditAnywhere, Category = "Dodge")
 		float DodgeStrength = 5000.0f;
 
@@ -66,14 +69,17 @@ protected:
 
 public:
 	typedef UCharacterMovementComponent Super;
+	virtual void InitializeComponent() override;
 
+#pragma region NetworkPrediction
 	virtual FVector ConsumeInputVector() override;
+	virtual FRotator ComputeOrientToMovementRotation(const FRotator& CurrentRotation, float DeltaTime, FRotator& DeltaRotation) const override;
 	void OnMovementUpdated(float DeltaTime, const FVector& OldLocation, const FVector& OldVelocity); // NOTE: All update to movement component need to happen here, otherwise net correction will happen
 	virtual void UpdateFromCompressedFlags(uint8 Flags) override;
 	virtual class FNetworkPredictionData_Client* GetPredictionData_Client() const override;
 	
 	UFUNCTION(BlueprintPure) ELaunchType GetLaunchState() { return LaunchState; }
-	
+#pragma endregion
 	
 
 #pragma region MaxWalkSpeedChange

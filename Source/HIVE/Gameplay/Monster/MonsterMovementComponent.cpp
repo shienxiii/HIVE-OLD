@@ -2,7 +2,9 @@
 
 
 #include "MonsterMovementComponent.h"
-#include "GameFramework/Character.h"
+//#include "GameFramework/Character.h"
+#include "MonsterBase.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Engine.h"
 
 #pragma region FSavedMove_Monster
@@ -89,6 +91,13 @@ FSavedMovePtr FNetworkPredictionData_Client_Monster::AllocateNewMove()
 #pragma endregion
 
 
+void UMonsterMovementComponent::InitializeComponent()
+{
+	Super::InitializeComponent();
+
+	MonsterOwner = Cast<AMonsterBase>(PawnOwner);
+}
+
 #pragma region NetworkPrediciton
 void UMonsterMovementComponent::PhysWalking(float DeltaTime, int32 Iterations)
 {
@@ -104,9 +113,23 @@ void UMonsterMovementComponent::PhysWalking(float DeltaTime, int32 Iterations)
 	Super::PhysWalking(DeltaTime, Iterations);
 }
 
+
 FVector UMonsterMovementComponent::ConsumeInputVector()
 {
 	return PawnOwner && LaunchState == ELaunchType::LT_NULL ? PawnOwner->Internal_ConsumeMovementInputVector() : FVector::ZeroVector;
+}
+
+FRotator UMonsterMovementComponent::ComputeOrientToMovementRotation(const FRotator& CurrentRotation, float DeltaTime, FRotator& DeltaRotation) const
+{
+	// No point using this UMonsterMovementComponent outside of a class of AMonsterBase
+	check(MonsterOwner != NULL);
+
+	if (MonsterOwner->GetCurrentLockOnTarget())
+	{
+		return UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), MonsterOwner->GetCurrentLockOnTarget()->GetActorLocation());
+	}
+
+	return Super::ComputeOrientToMovementRotation(CurrentRotation, DeltaTime, DeltaRotation);
 }
 
 void UMonsterMovementComponent::OnMovementUpdated(float DeltaTime, const FVector& OldLocation, const FVector& OldVelocity)
