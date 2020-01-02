@@ -75,6 +75,10 @@ public:
 	 * return All eligible lock on target
 	 */
 	TArray<AActor*> GetPotentialLockOnTargets();
+
+	void TurnToLockOnTarget(float DeltaTime);
+
+	//void FaceRotation(FRotator NewControlRotation, float DeltaTime) override;
 #pragma endregion
 
 

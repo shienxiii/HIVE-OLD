@@ -38,6 +38,8 @@ void AMonsterBase::BeginPlay()
 void AMonsterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	TurnToLockOnTarget(DeltaTime);
+	// Update controller rotation to player rotation
 }
 
 #pragma region Input
@@ -75,6 +77,7 @@ FRotator AMonsterBase::GetViewRotator()
 {
 	FRotator controlRotation = GetViewRotation();
 	controlRotation.Pitch = 0.0f;
+	controlRotation.Roll = 0.0f;
 	return controlRotation;
 }
 
@@ -155,6 +158,32 @@ TArray<AActor*> AMonsterBase::GetPotentialLockOnTargets()
 
 	return TArray<AActor*>();
 }
+
+void AMonsterBase::TurnToLockOnTarget(float DeltaTime)
+{
+	if (!CurrentTarget)
+	{
+		return;
+	}
+
+	// Calculate the desired final rotation
+	FRotator finalRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), CurrentTarget->GetActorLocation());
+	finalRotation.Pitch = 0.0f;
+	finalRotation.Roll = 0.0f;
+
+	// Calculate the rotation delta
+	FRotator deltaRotation = UKismetMathLibrary::RInterpTo_Constant(GetActorRotation(), finalRotation, DeltaTime, GetCharacterMovement()->RotationRate.Yaw * 1.5f);
+
+	if (GetLocalRole() >= ROLE_AutonomousProxy)
+	{
+		Controller->SetControlRotation(deltaRotation);
+	}
+}
+
+//void AMonsterBase::FaceRotation(FRotator NewControlRotation, float DeltaTime)
+//{
+//	Super::FaceRotation(NewControlRotation, DeltaTime);
+//}
 
 #pragma endregion
 
