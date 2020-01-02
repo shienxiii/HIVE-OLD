@@ -47,6 +47,7 @@ void AMonsterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	InputComponent->BindAxis("Forward", this, &AMonsterBase::MoveForward);
 	InputComponent->BindAxis("Right", this, &AMonsterBase::MoveRight);
+	InputComponent->BindAxis("Turn", this, &AMonsterBase::Turn);
 
 	//InputComponent->BindAction("Block", EInputEvent::IE_Pressed, this, &AMonsterBase::StartBlock);
 	//InputComponent->BindAction("Block", EInputEvent::IE_Released, this, &AMonsterBase::EndBlock);
@@ -67,7 +68,7 @@ void AMonsterBase::MoveRight(float inAxis)
 
 void AMonsterBase::Turn(float inAxis)
 {
-	AddControllerYawInput(inAxis * TurnRate);
+	AddControllerYawInput(inAxis * TurnRate * UGameplayStatics::GetWorldDeltaSeconds(this));
 }
 
 FRotator AMonsterBase::GetViewRotator()
