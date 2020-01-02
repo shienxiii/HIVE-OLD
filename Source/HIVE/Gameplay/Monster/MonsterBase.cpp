@@ -65,6 +65,11 @@ void AMonsterBase::MoveRight(float inAxis)
 	AddMovementInput(UKismetMathLibrary::GetRightVector(GetViewRotator()), inAxis);
 }
 
+void AMonsterBase::Turn(float inAxis)
+{
+	AddControllerYawInput(inAxis * TurnRate);
+}
+
 FRotator AMonsterBase::GetViewRotator()
 {
 	FRotator controlRotation = GetViewRotation();

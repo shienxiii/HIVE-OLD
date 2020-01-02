@@ -13,10 +13,13 @@ class HIVE_API AMonsterBase : public ACharacter
 	GENERATED_BODY()
 
 protected:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Movement")
+		float TurnRate = 90.0f;
+
 	// Lock On
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = LockOn)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "LockOn")
 		float LockOnRange = 5000.0f;
-	UPROPERTY(Replicated, BlueprintReadOnly, VisibleAnywhere, Category = LockOn)
+	UPROPERTY(Replicated, BlueprintReadOnly, VisibleAnywhere, Category = "LockOn")
 		AActor* CurrentTarget = nullptr;
 
 	UPROPERTY(Replicated, BlueprintReadOnly, VisibleAnywhere, Category = "Stats", meta = (DisplayName = "Health", ClampMin = "0", UIMin = "0"))
@@ -43,6 +46,7 @@ public:
 	// Axis Input
 	virtual void MoveForward(float inAxis);
 	virtual void MoveRight(float inAxis);
+	virtual void Turn(float inAxis);
 	FRotator GetViewRotator();
 
 	UFUNCTION(BlueprintCallable) void ExecuteDodge();
