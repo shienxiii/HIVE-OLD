@@ -87,12 +87,12 @@ FRotator AMonsterBase::GetViewRotator()
 
 void AMonsterBase::LightAttack()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "Light Attack Phase 1");
 	if (!CurrentTarget)
 	{
 		return;
 	}
-
-	CurrentTarget->TakeDamage(10.0f, FDamageEvent(), GetController(), this);
+	Server_AttackHit(10.0f, FDamageEvent(), GetController(), this);
 }
 
 void AMonsterBase::HeavyAttack()
@@ -102,7 +102,7 @@ void AMonsterBase::HeavyAttack()
 		return;
 	}
 
-	CurrentTarget->TakeDamage(100.0f, FDamageEvent(), GetController(), this);
+	Server_AttackHit(100.0f, FDamageEvent(), GetController(), this);
 }
 
 void AMonsterBase::ExecuteDodge()
@@ -210,16 +210,19 @@ void AMonsterBase::TurnToLockOnTarget(float DeltaTime)
 #pragma region Damage
 bool AMonsterBase::Server_AttackHit_Validate(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "Server Attack Validation");
 	return true;
 }
 
 void AMonsterBase::Server_AttackHit_Implementation(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "Server Attack Hit");
 	Health = FMath::Clamp(Health - DamageAmount, 0.0f, 100.0f);
 }
 
 float AMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "Take Damage Phase 1");
 	//Health = FMath::Clamp(Health - DamageAmount, 0.0f, 100.0f);
 	Server_AttackHit(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
