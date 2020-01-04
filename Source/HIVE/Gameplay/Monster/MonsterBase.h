@@ -49,6 +49,9 @@ public:
 	virtual void Turn(float inAxis);
 	FRotator GetViewRotator();
 
+	// Action Input
+	UFUNCTION(BlueprintCallable) void LightAttack();
+	UFUNCTION(BlueprintCallable) void HeavyAttack();
 	UFUNCTION(BlueprintCallable) void ExecuteDodge();
 #pragma endregion
 	// Returns the character movement component type defined to a UMonsterMovementComponent
@@ -77,10 +80,11 @@ public:
 	TArray<AActor*> GetPotentialLockOnTargets();
 
 	void TurnToLockOnTarget(float DeltaTime);
-
-	//void FaceRotation(FRotator NewControlRotation, float DeltaTime) override;
 #pragma endregion
 
+#pragma region Damage
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+#pragma endregion
 
 #pragma region Networking
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;

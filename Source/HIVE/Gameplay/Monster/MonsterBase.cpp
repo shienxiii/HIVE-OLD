@@ -39,7 +39,6 @@ void AMonsterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	TurnToLockOnTarget(DeltaTime);
-	// Update controller rotation to player rotation
 }
 
 #pragma region Input
@@ -54,8 +53,10 @@ void AMonsterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	//InputComponent->BindAction("Block", EInputEvent::IE_Pressed, this, &AMonsterBase::StartBlock);
 	//InputComponent->BindAction("Block", EInputEvent::IE_Released, this, &AMonsterBase::EndBlock);
 
-	PlayerInputComponent->BindAction("LockOn", EInputEvent::IE_Pressed, this, &AMonsterBase::ToggleLockOn);
-	PlayerInputComponent->BindAction("Dodge", EInputEvent::IE_Pressed, this, &AMonsterBase::ExecuteDodge);
+	InputComponent->BindAction("LockOn", EInputEvent::IE_Pressed, this, &AMonsterBase::ToggleLockOn);
+	InputComponent->BindAction("LightAttack", EInputEvent::IE_Pressed, this, &AMonsterBase::LightAttack);
+	InputComponent->BindAction("HeavyAttack", EInputEvent::IE_Pressed, this, &AMonsterBase::HeavyAttack);
+	InputComponent->BindAction("Dodge", EInputEvent::IE_Pressed, this, &AMonsterBase::ExecuteDodge);
 }
 
 void AMonsterBase::MoveForward(float inAxis)
@@ -70,7 +71,10 @@ void AMonsterBase::MoveRight(float inAxis)
 
 void AMonsterBase::Turn(float inAxis)
 {
-	AddControllerYawInput(inAxis * TurnRate * UGameplayStatics::GetWorldDeltaSeconds(this));
+	if (!CurrentTarget)
+	{
+		AddControllerYawInput(inAxis * TurnRate * UGameplayStatics::GetWorldDeltaSeconds(this));
+	}
 }
 
 FRotator AMonsterBase::GetViewRotator()
@@ -79,6 +83,26 @@ FRotator AMonsterBase::GetViewRotator()
 	controlRotation.Pitch = 0.0f;
 	controlRotation.Roll = 0.0f;
 	return controlRotation;
+}
+
+void AMonsterBase::LightAttack()
+{
+	if (!CurrentTarget)
+	{
+		return;
+	}
+
+	CurrentTarget->TakeDamage(10.0f, FDamageEvent(), GetController(), this);
+}
+
+void AMonsterBase::HeavyAttack()
+{
+	if (!CurrentTarget)
+	{
+		return;
+	}
+
+	CurrentTarget->TakeDamage(100.0f, FDamageEvent(), GetController(), this);
 }
 
 void AMonsterBase::ExecuteDodge()
@@ -180,16 +204,21 @@ void AMonsterBase::TurnToLockOnTarget(float DeltaTime)
 	}
 }
 
-//void AMonsterBase::FaceRotation(FRotator NewControlRotation, float DeltaTime)
-//{
-//	Super::FaceRotation(NewControlRotation, DeltaTime);
-//}
 
 #pragma endregion
 
+#pragma region Damage
 
+float AMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	Health = FMath::Clamp(Health - DamageAmount, 0.0f, 100.0f);
+	return DamageAmount;
+}
+
+#pragma endregion
 
 #pragma region Networking
+
 void AMonsterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
