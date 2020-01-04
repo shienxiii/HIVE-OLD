@@ -50,10 +50,15 @@ public:
 	FRotator GetViewRotator();
 
 	// Action Input
-	UFUNCTION(BlueprintCallable) void LightAttack();
-	UFUNCTION(BlueprintCallable) void HeavyAttack();
-	UFUNCTION(BlueprintCallable) void ExecuteDodge();
+	UFUNCTION(BlueprintCallable)
+		void LightAttack();
+	UFUNCTION(BlueprintCallable)
+		void HeavyAttack();
+	UFUNCTION(BlueprintCallable)
+		void ExecuteDodge();
+
 #pragma endregion
+
 	// Returns the character movement component type defined to a UMonsterMovementComponent
 	UFUNCTION(BlueprintPure) UMonsterMovementComponent* GetMonsterMovementComponent() { return (UMonsterMovementComponent*)GetCharacterMovement(); }
 
@@ -67,7 +72,8 @@ public:
 	 *
 	 * @param Target AActor to set currentTarget to, default is null
 	 */
-	UFUNCTION(Server, Reliable, WithValidation) void Server_SetLockOnTarget(AActor* Target = nullptr);
+	UFUNCTION(Server, Reliable, WithValidation)
+		void Server_SetLockOnTarget(AActor* Target = nullptr);
 	/**
 	 * Get the closest target this monster can lock on to
 	 */
@@ -83,6 +89,9 @@ public:
 #pragma endregion
 
 #pragma region Damage
+	UFUNCTION(Reliable, Server, WithValidation)
+		virtual void Server_AttackHit(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
+
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 #pragma endregion
 

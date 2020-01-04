@@ -208,10 +208,21 @@ void AMonsterBase::TurnToLockOnTarget(float DeltaTime)
 #pragma endregion
 
 #pragma region Damage
+bool AMonsterBase::Server_AttackHit_Validate(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	return true;
+}
+
+void AMonsterBase::Server_AttackHit_Implementation(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	Health = FMath::Clamp(Health - DamageAmount, 0.0f, 100.0f);
+}
 
 float AMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	Health = FMath::Clamp(Health - DamageAmount, 0.0f, 100.0f);
+	//Health = FMath::Clamp(Health - DamageAmount, 0.0f, 100.0f);
+	Server_AttackHit(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
 	return DamageAmount;
 }
 
