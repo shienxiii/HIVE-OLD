@@ -53,6 +53,8 @@ void AMonsterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	//InputComponent->BindAction("Block", EInputEvent::IE_Pressed, this, &AMonsterBase::StartBlock);
 	//InputComponent->BindAction("Block", EInputEvent::IE_Released, this, &AMonsterBase::EndBlock);
 
+	InputComponent->BindAction("Jump", EInputEvent::IE_Pressed, this, &AMonsterBase::Jump);
+	InputComponent->BindAction("Jump", EInputEvent::IE_Released, this, &AMonsterBase::StopJumping);
 	InputComponent->BindAction("LockOn", EInputEvent::IE_Pressed, this, &AMonsterBase::ToggleLockOn);
 	InputComponent->BindAction("LightAttack", EInputEvent::IE_Pressed, this, &AMonsterBase::LightAttack);
 	InputComponent->BindAction("HeavyAttack", EInputEvent::IE_Pressed, this, &AMonsterBase::HeavyAttack);
@@ -210,19 +212,16 @@ void AMonsterBase::TurnToLockOnTarget(float DeltaTime)
 #pragma region Damage
 bool AMonsterBase::Server_AttackHit_Validate(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "Server Attack Validation");
 	return true;
 }
 
 void AMonsterBase::Server_AttackHit_Implementation(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "Server Attack Hit");
 	Health = FMath::Clamp(Health - DamageAmount, 0.0f, 100.0f);
 }
 
 float AMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "Take Damage Phase 1");
 	//Health = FMath::Clamp(Health - DamageAmount, 0.0f, 100.0f);
 	Server_AttackHit(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
