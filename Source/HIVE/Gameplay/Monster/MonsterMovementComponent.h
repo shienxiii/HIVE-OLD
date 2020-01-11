@@ -62,6 +62,11 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Dodge")
 		float DodgeStrength = 5000.0f;
 
+	
+	UPROPERTY(EditAnywhere, Category = "Movement")
+		float MaxHeadRotatingAngle = 90.0f;
+	bool FixBodyRotation = false;
+
 	UPROPERTY(Replicated)
 		ELaunchType LaunchState = ELaunchType::LT_NULL;
 	

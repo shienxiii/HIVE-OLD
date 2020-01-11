@@ -187,7 +187,7 @@ TArray<AActor*> AMonsterBase::GetPotentialLockOnTargets()
 
 void AMonsterBase::TurnToLockOnTarget(float DeltaTime)
 {
-	if (!CurrentTarget)
+	if (!CurrentTarget || GetLocalRole() < ROLE_AutonomousProxy)
 	{
 		return;
 	}
@@ -198,12 +198,9 @@ void AMonsterBase::TurnToLockOnTarget(float DeltaTime)
 	finalRotation.Roll = 0.0f;
 
 	// Calculate the rotation delta
-	FRotator deltaRotation = UKismetMathLibrary::RInterpTo_Constant(GetActorRotation(), finalRotation, DeltaTime, GetCharacterMovement()->RotationRate.Yaw * 1.5f);
+	FRotator deltaRotation = UKismetMathLibrary::RInterpTo_Constant(Controller->GetControlRotation(), finalRotation, DeltaTime, GetCharacterMovement()->RotationRate.Yaw * 2.0f);
 
-	if (GetLocalRole() >= ROLE_AutonomousProxy)
-	{
-		Controller->SetControlRotation(deltaRotation);
-	}
+	Controller->SetControlRotation(deltaRotation);
 }
 
 
