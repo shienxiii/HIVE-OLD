@@ -123,7 +123,7 @@ FRotator UMonsterMovementComponent::ComputeOrientToMovementRotation(const FRotat
 	// No point using this UMonsterMovementComponent outside of a class of AMonsterBase
 	check(MonsterOwner != NULL);
 
-	if (MonsterOwner->GetCurrentLockOnTarget())
+	if (MonsterOwner->GetCurrentLockOnTarget() && Acceleration.Size() > 0.0f)
 	{
 		return UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), MonsterOwner->GetCurrentLockOnTarget()->GetActorLocation());
 	}
