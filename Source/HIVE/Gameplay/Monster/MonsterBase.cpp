@@ -24,7 +24,9 @@ AMonsterBase::AMonsterBase(const FObjectInitializer& ObjectInitializer)
 	bOnlyRelevantToOwner = false;
 	bNetLoadOnClient = true;
 
-	//GetMovementComponent()->bWantsInitializeComponent = true;
+
+	bUseControllerRotationYaw = false;
+	GetMonsterMovement()->bOrientRotationToMovement = true;
 }
 
 // Called when the game starts or when spawned
@@ -116,7 +118,7 @@ void AMonsterBase::ExecuteDodge()
 	}
 	dodgeDirection.Normalize();
 
-	GetMonsterMovementComponent()->Client_LaunchMonster(dodgeDirection, DodgeStrength);
+	GetMonsterMovement()->Client_LaunchMonster(dodgeDirection, DodgeStrength);
 	//GetMonsterMovementComponent()->Dodge();
 }
 

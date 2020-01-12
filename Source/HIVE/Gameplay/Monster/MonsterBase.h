@@ -60,7 +60,7 @@ public:
 #pragma endregion
 
 	// Returns the character movement component type defined to a UMonsterMovementComponent
-	UFUNCTION(BlueprintPure) UMonsterMovementComponent* GetMonsterMovementComponent() { return (UMonsterMovementComponent*)GetCharacterMovement(); }
+	UFUNCTION(BlueprintPure) UMonsterMovementComponent* GetMonsterMovement() { return (UMonsterMovementComponent*)GetCharacterMovement(); }
 
 
 #pragma region LockOn
@@ -88,12 +88,16 @@ public:
 	void TurnToLockOnTarget(float DeltaTime);
 #pragma endregion
 
+
+
 #pragma region Damage
 	UFUNCTION(Server, Reliable, WithValidation)
 		virtual void Server_AttackHit(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 #pragma endregion
+
+
 
 #pragma region Networking
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
