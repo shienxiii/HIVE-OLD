@@ -19,7 +19,7 @@ private:
 public:
 	UHiveGameInstance(const FObjectInitializer& ObjectInitializer);
 
-	UFUNCTION(Exec)
+	UFUNCTION(Exec, BlueprintCallable)
 		void LoadMenu();
 
 
