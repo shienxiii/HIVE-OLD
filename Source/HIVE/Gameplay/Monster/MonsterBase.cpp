@@ -91,7 +91,6 @@ FRotator AMonsterBase::GetViewRotator()
 
 void AMonsterBase::LightAttack()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "Light Attack Phase 1");
 	if (!CurrentTarget)
 	{
 		return;
