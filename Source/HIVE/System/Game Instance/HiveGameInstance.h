@@ -13,11 +13,15 @@ UCLASS()
 class HIVE_API UHiveGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
-	
+private:
+	TSubclassOf<class UUserWidget> MenuClass;
 
 public:
-	/*UHiveGameInstance(const FObjectInitializer& ObjectInitializer);
-	virtual void Init() override;*/
+	UHiveGameInstance(const FObjectInitializer& ObjectInitializer);
+
+	UFUNCTION(Exec)
+		void LoadMenu();
+
 
 #pragma region Multiplayer
 	UFUNCTION(Exec)

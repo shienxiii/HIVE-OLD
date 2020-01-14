@@ -3,22 +3,37 @@
 
 #include "HiveGameInstance.h"
 #include "Engine/World.h"
-#include "Engine.h"
+#include "Blueprint/UserWidget.h"
+#include "UObject/ConstructorHelpers.h"
+
+UHiveGameInstance::UHiveGameInstance(const FObjectInitializer& ObjectInitializer)
+{
+	static ConstructorHelpers::FClassFinder<UUserWidget> MenuBP(TEXT("/Game/Blueprint/UI/MainMenu/MainMenu.MainMenu_C"));
+
+	if (MenuBP.Class != nullptr)
+	{
+		MenuClass = MenuBP.Class;
+	}
+}
+
+void UHiveGameInstance::LoadMenu()
+{
+	if (MenuClass == nullptr) return;
+
+	UUserWidget* menu = CreateWidget<UUserWidget>(this, MenuClass);
+	menu->AddToViewport();
+}
 
 void UHiveGameInstance::Host()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "Hosting");
-
 	UWorld* world = GetWorld();
 	if (!ensure(world != nullptr)) { return; }
 
-	world->ServerTravel("/Game/ThirdPersonBP/Maps/ThirdPersonExampleMap?listen");
+	world->ServerTravel("/Game/Blueprint/Maps/ThirdPersonExampleMap?listen");
 }
 
 void UHiveGameInstance::Join(const FString& InAddress)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, FString::Printf(TEXT("Joining %s"), *InAddress));
-
 	APlayerController* controller = GetFirstLocalPlayerController();
 	if (!ensure(controller != nullptr)) { return; }
 
