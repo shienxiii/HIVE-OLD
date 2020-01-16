@@ -121,7 +121,15 @@ FVector UMonsterMovementComponent::ConsumeInputVector()
 
 FRotator UMonsterMovementComponent::GetDeltaRotation(float DeltaTime) const
 {
-	return Super::GetDeltaRotation(DeltaTime * (Acceleration.Size() / MaxAcceleration));
+	// No point using this UMonsterMovementComponent outside of a class of AMonsterBase
+	check(MonsterOwner != NULL);
+
+	if (MonsterOwner->GetCurrentLockOnTarget() && LaunchState == ELaunchType::LT_NULL)
+	{
+		return Super::GetDeltaRotation(DeltaTime * (Acceleration.Size() / MaxAcceleration));
+	}
+
+	return Super::GetDeltaRotation(DeltaTime);
 }
 
 FRotator UMonsterMovementComponent::ComputeOrientToMovementRotation(const FRotator& CurrentRotation, float DeltaTime, FRotator& DeltaRotation) const
