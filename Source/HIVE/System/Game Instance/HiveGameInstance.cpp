@@ -8,7 +8,7 @@
 
 UHiveGameInstance::UHiveGameInstance(const FObjectInitializer& ObjectInitializer)
 {
-	static ConstructorHelpers::FClassFinder<UUserWidget> MenuBP(TEXT("/Game/Blueprint/UI/MainMenu/MainMenu.MainMenu_C"));
+	static ConstructorHelpers::FClassFinder<UUserWidget> MenuBP(TEXT("/Game/Blueprint/UI/MainMenu/LAN_Menu.LAN_Menu_C"));
 
 	if (MenuBP.Class != nullptr)
 	{
@@ -22,6 +22,28 @@ void UHiveGameInstance::LoadMenu()
 
 	UUserWidget* menu = CreateWidget<UUserWidget>(this, MenuClass);
 	menu->AddToViewport();
+
+	APlayerController* controller = GetFirstLocalPlayerController();
+	if (!ensure(controller != nullptr)) { return; }
+
+	FInputModeUIOnly uiInputMode;
+	uiInputMode.SetWidgetToFocus(menu->TakeWidget());
+	uiInputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+
+	SetupPlayerController(uiInputMode, true, controller);
+
+}
+
+void UHiveGameInstance::SetupPlayerController(const FInputModeDataBase& InInputMode, bool bShowMouseCursor, APlayerController* InPlayerController)
+{
+	if (!InPlayerController)
+	{
+		InPlayerController = GetFirstLocalPlayerController();
+
+	}
+
+	InPlayerController->SetInputMode(InInputMode);
+	InPlayerController->bShowMouseCursor = bShowMouseCursor;
 }
 
 void UHiveGameInstance::Host()

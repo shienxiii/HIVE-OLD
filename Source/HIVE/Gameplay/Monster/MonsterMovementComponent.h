@@ -56,14 +56,17 @@ class HIVE_API UMonsterMovementComponent : public UCharacterMovementComponent
 {
 	GENERATED_BODY()
 
+private:
+	float BaseYawRotation = 0.0f;
+
 protected:
 	AMonsterBase* MonsterOwner;
 
-	UPROPERTY(EditAnywhere, Category = "Dodge")
+	UPROPERTY(EditAnywhere, Category = "MonsterMovement(Dodge)")
 		float DodgeStrength = 5000.0f;
 
 	
-	UPROPERTY(EditAnywhere, Category = "Movement")
+	UPROPERTY(EditAnywhere, Category = "Monster Movement(Rotation Setting)")
 		float MaxHeadRotatingAngle = 90.0f;
 	bool FixBodyRotation = false;
 
@@ -78,6 +81,7 @@ public:
 
 #pragma region NetworkPrediction
 	virtual FVector ConsumeInputVector() override;
+	virtual FRotator GetDeltaRotation(float DeltaTime) const override;
 	virtual FRotator ComputeOrientToMovementRotation(const FRotator& CurrentRotation, float DeltaTime, FRotator& DeltaRotation) const override;
 	void OnMovementUpdated(float DeltaTime, const FVector& OldLocation, const FVector& OldVelocity); // NOTE: All update to movement component need to happen here, otherwise net correction will happen
 	virtual void UpdateFromCompressedFlags(uint8 Flags) override;

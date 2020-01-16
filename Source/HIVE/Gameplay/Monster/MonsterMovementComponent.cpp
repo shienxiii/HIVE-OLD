@@ -95,6 +95,7 @@ void UMonsterMovementComponent::InitializeComponent()
 	Super::InitializeComponent();
 
 	MonsterOwner = Cast<AMonsterBase>(PawnOwner);
+	BaseYawRotation = RotationRate.Yaw;
 }
 
 #pragma region NetworkPrediciton
@@ -118,13 +119,21 @@ FVector UMonsterMovementComponent::ConsumeInputVector()
 	return PawnOwner && LaunchState == ELaunchType::LT_NULL ? PawnOwner->Internal_ConsumeMovementInputVector() : FVector::ZeroVector;
 }
 
+FRotator UMonsterMovementComponent::GetDeltaRotation(float DeltaTime) const
+{
+	return Super::GetDeltaRotation(DeltaTime * (Acceleration.Size() / MaxAcceleration));
+}
+
 FRotator UMonsterMovementComponent::ComputeOrientToMovementRotation(const FRotator& CurrentRotation, float DeltaTime, FRotator& DeltaRotation) const
 {
 	// No point using this UMonsterMovementComponent outside of a class of AMonsterBase
 	check(MonsterOwner != NULL);
 
-	if (MonsterOwner->GetCurrentLockOnTarget() && Acceleration.Size() > 0.0f)
+
+	if (MonsterOwner->GetCurrentLockOnTarget() &&
+		(Acceleration.Size() > 0.0f || LaunchState == ELaunchType::LT_DODGE))
 	{
+		// Rotate towards the currently locked on target if is accelerating or dodging
 		return UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), MonsterOwner->GetCurrentLockOnTarget()->GetActorLocation());
 	}
 
