@@ -12,9 +12,6 @@ bool UMainMenu::Initialize()
 	GameInstance = Cast<UHiveGameInstance>(GetGameInstance());
 	check(GameInstance);
 
-
-	bIsFocusable = true;
-
 	HostBtn->OnClicked.AddDynamic(this, &UMainMenu::HostClickEvent);
 
 	return true;

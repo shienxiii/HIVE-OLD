@@ -21,6 +21,8 @@ void UHiveGameInstance::LoadMenu()
 	if (MenuClass == nullptr) return;
 
 	UUserWidget* menu = CreateWidget<UUserWidget>(this, MenuClass);
+	if (!(menu->bIsFocusable)) { menu->bIsFocusable = true; }
+
 	menu->AddToViewport();
 
 	APlayerController* controller = GetFirstLocalPlayerController();
