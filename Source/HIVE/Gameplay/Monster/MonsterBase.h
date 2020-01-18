@@ -89,14 +89,12 @@ public:
 #pragma endregion
 
 
-
 #pragma region Damage
 	UFUNCTION(Server, Reliable, WithValidation)
 		virtual void Server_AttackHit(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 #pragma endregion
-
 
 
 #pragma region Networking
