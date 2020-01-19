@@ -21,31 +21,6 @@ void UHiveGameInstance::LoadMenu()
 	if (MenuClass == nullptr) return;
 
 	UUserWidget* menu = CreateWidget<UUserWidget>(this, MenuClass);
-	if (!(menu->bIsFocusable)) { menu->bIsFocusable = true; }
-
-	menu->AddToViewport();
-
-	APlayerController* controller = GetFirstLocalPlayerController();
-	if (!ensure(controller != nullptr)) { return; }
-
-	FInputModeUIOnly uiInputMode;
-	uiInputMode.SetWidgetToFocus(menu->TakeWidget());
-	uiInputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-
-	SetupPlayerController(uiInputMode, true, controller);
-
-}
-
-void UHiveGameInstance::SetupPlayerController(const FInputModeDataBase& InInputMode, bool bShowMouseCursor, APlayerController* InPlayerController)
-{
-	if (!InPlayerController)
-	{
-		InPlayerController = GetFirstLocalPlayerController();
-
-	}
-
-	InPlayerController->SetInputMode(InInputMode);
-	InPlayerController->bShowMouseCursor = bShowMouseCursor;
 }
 
 void UHiveGameInstance::Host()

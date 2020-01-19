@@ -24,15 +24,6 @@ public:
 	UFUNCTION(Exec, BlueprintCallable)
 		void LoadMenu();
 
-	/**
-	 * Setup the player controller input mode
-	 *
-	 * @param InInputMode The new input mode to set this controller to
-	 * @param bShowMouseCursor Set whether or not to show the mouse cursor on the viewport. Default is false
-	 * @param InPlayerController The player controller to set the new input mode to. Default will set to the player controller 0
-	 */
-	void SetupPlayerController(const FInputModeDataBase& InInputMode, bool bShowMouseCursor = false, APlayerController* InPlayerController = nullptr);
-
 
 #pragma region Multiplayer
 	UFUNCTION(Exec)

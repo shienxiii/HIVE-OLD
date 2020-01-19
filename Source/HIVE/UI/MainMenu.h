@@ -30,6 +30,9 @@ protected:
 
 public:
     virtual bool Initialize() override;
+    virtual void OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld) override;
+
+    void Setup();
 
     UFUNCTION()
         void HostClickEvent();
