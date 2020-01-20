@@ -15,7 +15,9 @@ bool UMainMenu::Initialize()
 	if (!GameInstance) { return false; }
 
 	HostBtn->OnClicked.AddDynamic(this, &UMainMenu::HostClickEvent);
-
+	JoinBtn->OnClicked.AddDynamic(this, &UMainMenu::JoinClickEvent);
+	JoinServerBtn->OnClicked.AddDynamic(this, &UMainMenu::JoinServerClickEvent);
+	BackBtn->OnClicked.AddDynamic(this, &UMainMenu::BackClickEvent);
 	Setup();
 
 	return true;
@@ -53,4 +55,29 @@ void UMainMenu::Setup()
 void UMainMenu::HostClickEvent()
 {
 	GameInstance->Host();
+}
+
+void UMainMenu::JoinClickEvent()
+{
+	if (MenuSwitcher->GetChildrenCount() >= 2)
+	{
+		MenuSwitcher->SetActiveWidgetIndex(1);
+	}
+}
+
+void UMainMenu::JoinServerClickEvent()
+{
+	if (!TargetIP->Text.IsEmpty())
+	{
+		GameInstance->Join(TargetIP->Text.ToString());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("NO IP detected"));
+	}
+}
+
+void UMainMenu::BackClickEvent()
+{
+	MenuSwitcher->SetActiveWidgetIndex(0);
 }
