@@ -6,7 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/WidgetSwitcher.h"
 #include "Components/EditableTextBox.h"
-#include "MainMenu.generated.h"
+#include "MainMenuBase.generated.h"
 
 class UHiveGameInstance;
 class UButton;
@@ -15,7 +15,7 @@ class UButton;
  * 
  */
 UCLASS()
-class HIVE_API UMainMenu : public UUserWidget
+class HIVE_API UMainMenuBase : public UUserWidget
 {
 	GENERATED_BODY()
 

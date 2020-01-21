@@ -1,11 +1,11 @@
 // Copyright of Honeycomb Studio
 
 
-#include "MainMenu.h"
+#include "MainMenuBase.h"
 #include "Components/Button.h"
 #include "HIVE/System/Game Instance/HiveGameInstance.h"
 
-bool UMainMenu::Initialize()
+bool UMainMenuBase::Initialize()
 {
 	Super::Initialize();
 
@@ -14,16 +14,16 @@ bool UMainMenu::Initialize()
 	GameInstance = Cast<UHiveGameInstance>(GetGameInstance());
 	if (!GameInstance) { return false; }
 
-	HostBtn->OnClicked.AddDynamic(this, &UMainMenu::HostClickEvent);
-	JoinBtn->OnClicked.AddDynamic(this, &UMainMenu::JoinClickEvent);
-	JoinServerBtn->OnClicked.AddDynamic(this, &UMainMenu::JoinServerClickEvent);
-	BackBtn->OnClicked.AddDynamic(this, &UMainMenu::BackClickEvent);
+	HostBtn->OnClicked.AddDynamic(this, &UMainMenuBase::HostClickEvent);
+	JoinBtn->OnClicked.AddDynamic(this, &UMainMenuBase::JoinClickEvent);
+	JoinServerBtn->OnClicked.AddDynamic(this, &UMainMenuBase::JoinServerClickEvent);
+	BackBtn->OnClicked.AddDynamic(this, &UMainMenuBase::BackClickEvent);
 	Setup();
 
 	return true;
 }
 
-void UMainMenu::OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld)
+void UMainMenuBase::OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld)
 {
 	Super::OnLevelRemovedFromWorld(InLevel, InWorld);
 
@@ -33,7 +33,7 @@ void UMainMenu::OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld)
 	controller->bShowMouseCursor = false;
 }
 
-void UMainMenu::Setup()
+void UMainMenuBase::Setup()
 {
 	UWorld* world = GetWorld();
 	if (!world) { return; }
@@ -52,12 +52,12 @@ void UMainMenu::Setup()
 	controller->bShowMouseCursor = true;
 }
 
-void UMainMenu::HostClickEvent()
+void UMainMenuBase::HostClickEvent()
 {
 	GameInstance->Host();
 }
 
-void UMainMenu::JoinClickEvent()
+void UMainMenuBase::JoinClickEvent()
 {
 	if (MenuSwitcher->GetChildrenCount() >= 2)
 	{
@@ -65,7 +65,7 @@ void UMainMenu::JoinClickEvent()
 	}
 }
 
-void UMainMenu::JoinServerClickEvent()
+void UMainMenuBase::JoinServerClickEvent()
 {
 	if (!TargetIP->Text.IsEmpty())
 	{
@@ -77,7 +77,7 @@ void UMainMenu::JoinServerClickEvent()
 	}
 }
 
-void UMainMenu::BackClickEvent()
+void UMainMenuBase::BackClickEvent()
 {
 	MenuSwitcher->SetActiveWidgetIndex(0);
 }

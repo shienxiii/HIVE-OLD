@@ -14,12 +14,16 @@ UHiveGameInstance::UHiveGameInstance(const FObjectInitializer& ObjectInitializer
 	{
 		MenuClass = MenuBP.Class;
 	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Fail to find BP"));
+	}
 }
 
 void UHiveGameInstance::LoadMenu()
 {
 	if (MenuClass == nullptr) return;
-
+	UE_LOG(LogTemp, Warning, TEXT("Generating Widget"));
 	UUserWidget* menu = CreateWidget<UUserWidget>(this, MenuClass);
 }
 
