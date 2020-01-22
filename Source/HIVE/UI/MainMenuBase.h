@@ -23,6 +23,7 @@ protected:
     UHiveGameInstance* GameInstance;
 
     // A UPROPERTY with BindWidget metadata will automatically bind the button on the editor to the variable
+
     UPROPERTY(meta = (BindWidget))
         UWidgetSwitcher* MenuSwitcher;
 
@@ -43,6 +44,8 @@ protected:
 
 public:
     virtual bool Initialize() override;
+
+    // Automatically called when the level in which this widget belonged to is removed from the world
     virtual void OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld) override;
 
     void Setup();
