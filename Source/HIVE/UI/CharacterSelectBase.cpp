@@ -2,24 +2,55 @@
 
 
 #include "CharacterSelectBase.h"
-#include "CharacterPanelBase.h"
+#include "Components/PanelWidget.h"
+#include "Components/VerticalBox.h"
+#include "Components/HorizontalBox.h"
+#include "CharacterSlotBase.h"
+
+void UCharacterSelectBase::RecursiveRefreshCharacterPanel(UWidget* InWidget)
+{
+	if (IsAcceptablePanel(InWidget))
+	{
+		TArray<UWidget*> panel = (Cast<UPanelWidget>(InWidget))->GetAllChildren();
+
+		for (int i = 0; i < panel.Num(); i++)
+		{
+			if (panel[i]->IsA<UVerticalBox>() || panel[i]->IsA<UHorizontalBox>() || panel[i]->IsA<UCharacterSlotBase>())
+			{
+				RecursiveRefreshCharacterPanel(panel[i]);
+			}
+		}
+
+		return;
+	}
+
+	if (InWidget->IsA<UCharacterSlotBase>())
+	{
+		Cast<UCharacterSlotBase>(InWidget)->SyncButtonAppearance();
+	}
+}
+
+bool UCharacterSelectBase::IsAcceptablePanel(UWidget* InWidget)
+{
+	if (InWidget->IsA<UVerticalBox>() || InWidget->IsA<UHorizontalBox>())
+	{
+		return true;
+	}
+
+	return false;
+}
 
 void UCharacterSelectBase::RefreshCharacterPanel()
 {
-	TArray<UWidget*> children = CharacterOptions->GetAllChildren();
+	// Get the child of CharacterOptions
+	TArray<UWidget*> topPanel = CharacterOptions->GetAllChildren();
 
-	for (int i = 0; i < children.Num(); i++)
+	for (int i = 0; i < topPanel.Num(); i++)
 	{
-		UCharacterPanelBase* currentChild = Cast<UCharacterPanelBase>(children[i]);
-
-		if (currentChild)
+		// Run each child of CharacterOptions through the RecursiveRefreshCharacterPanel if they meet the required condition
+		if (topPanel[i]->IsA<UVerticalBox>() || topPanel[i]->IsA<UHorizontalBox>() || topPanel[i]->IsA<UCharacterSlotBase>())
 		{
-			currentChild->SyncButtonAppearance();
-			UE_LOG(LogTemp, Warning, TEXT("Found Character panel"));
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Found non-child"));
+			RecursiveRefreshCharacterPanel(topPanel[i]);
 		}
 	}
 }

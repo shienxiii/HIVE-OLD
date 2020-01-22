@@ -1,9 +1,9 @@
 // Copyright of Honeycomb Studio
 
 
-#include "CharacterPanelBase.h"
+#include "CharacterSlotBase.h"
 
-UCharacterPanelBase::UCharacterPanelBase(const FObjectInitializer& ObjectInitializer)
+UCharacterSlotBase::UCharacterSlotBase(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 
 {
@@ -20,7 +20,7 @@ UCharacterPanelBase::UCharacterPanelBase(const FObjectInitializer& ObjectInitial
 	WidgetStyle.Pressed.DrawAs = ESlateBrushDrawType::Image;
 }
 
-void UCharacterPanelBase::SyncButtonAppearance()
+void UCharacterSlotBase::SyncButtonAppearance()
 {
 	WidgetStyle.Normal.SetResourceObject(PlayerImage);
 	WidgetStyle.Normal.SetImageSize(FVector2D(150.0f, 150.0f));

@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/Button.h"
 #include "UObject/UObjectGlobals.h"
-#include "CharacterPanelBase.generated.h"
+#include "CharacterSlotBase.generated.h"
 
 class AMonsterBase;
 
@@ -13,7 +13,7 @@ class AMonsterBase;
  * 
  */
 UCLASS()
-class HIVE_API UCharacterPanelBase : public UButton
+class HIVE_API UCharacterSlotBase : public UButton
 {
 	GENERATED_BODY()
 
@@ -25,7 +25,7 @@ protected:
 		TSubclassOf<AMonsterBase> Monster;
 
 public:
-	UCharacterPanelBase(const FObjectInitializer& ObjectInitializer);
+	UCharacterSlotBase(const FObjectInitializer& ObjectInitializer);
 
 	UFUNCTION(BlueprintCallable)
 		void SyncButtonAppearance();
