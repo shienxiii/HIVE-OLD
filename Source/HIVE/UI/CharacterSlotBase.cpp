@@ -26,18 +26,24 @@ UCharacterSlotBase::UCharacterSlotBase(const FObjectInitializer& ObjectInitializ
 
 void UCharacterSlotBase::SyncButtonAppearance(UMaterialInterface* NormalMat, UMaterialInterface* HoverMat, UMaterialInterface* ClickMat)
 {
-	UMaterialInstanceDynamic* i = UMaterialInstanceDynamic::Create(NormalMat, this);
-	i->SetTextureParameterValue("UI_Image", PlayerImage);
+	UMaterialInstanceDynamic* normal = UMaterialInstanceDynamic::Create(NormalMat, this);
+	normal->SetTextureParameterValue("UI_Image", PlayerImage);
 
-	WidgetStyle.Normal.SetResourceObject(i);
+	WidgetStyle.Normal.SetResourceObject(normal);
 	WidgetStyle.Normal.SetImageSize(FVector2D(150.0f, 150.0f));
 	WidgetStyle.Normal.DrawAs = ESlateBrushDrawType::Image;
 
-	WidgetStyle.Hovered.SetResourceObject(HoverMat);
+	UMaterialInstanceDynamic* hover = UMaterialInstanceDynamic::Create(HoverMat, this);
+	hover->SetTextureParameterValue("UI_Image", PlayerImage);
+
+	WidgetStyle.Hovered.SetResourceObject(hover);
 	WidgetStyle.Hovered.SetImageSize(FVector2D(150.0f, 150.0f));
 	WidgetStyle.Hovered.DrawAs = ESlateBrushDrawType::Image;
 
-	WidgetStyle.Pressed.SetResourceObject(ClickMat);
+	UMaterialInstanceDynamic* click = UMaterialInstanceDynamic::Create(ClickMat, this);
+	click->SetTextureParameterValue("UI_Image", PlayerImage);
+
+	WidgetStyle.Pressed.SetResourceObject(click);
 	WidgetStyle.Pressed.SetImageSize(FVector2D(150.0f, 150.0f));
 	WidgetStyle.Pressed.DrawAs = ESlateBrushDrawType::Image;
 }
