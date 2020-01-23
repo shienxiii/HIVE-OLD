@@ -26,7 +26,7 @@ void UCharacterSelectBase::RecursiveRefreshCharacterPanel(UWidget* InWidget)
 
 	if (InWidget->IsA<UCharacterSlotBase>())
 	{
-		Cast<UCharacterSlotBase>(InWidget)->SyncButtonAppearance();
+		Cast<UCharacterSlotBase>(InWidget)->SyncButtonAppearance(NormalMat, HoverMat, ClickMat);
 	}
 }
 

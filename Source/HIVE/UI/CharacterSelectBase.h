@@ -7,6 +7,8 @@
 #include "CharacterSelectBase.generated.h"
 
 class UPanelWidget;
+class UMaterialInterface;
+class UMaterialInstanceDynamic;
 
 /**
  * Base class for a character selection system.
@@ -32,9 +34,14 @@ private:
 	bool IsAcceptablePanel(UWidget* InWidget);
 
 protected:
-	/**
-	 * 
-	 */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Select", meta = (AllowPrivateAccess = "true", DisplayThumbnail = "true"))
+		UMaterialInterface* NormalMat;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Character Select")
+		UMaterialInterface* HoverMat;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Character Select")
+		UMaterialInterface* ClickMat;
+
+
 	UPROPERTY(meta = (BindWidget))
 		UPanelWidget* CharacterOptions;
 	
