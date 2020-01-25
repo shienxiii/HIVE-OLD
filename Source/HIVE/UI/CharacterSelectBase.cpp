@@ -47,6 +47,7 @@ void UCharacterSelectBase::SynchronizeProperties()
 {
 	Super::SynchronizeProperties();
 	OwningPlayer = Cast<AMonsterControl>(GetOwningPlayer());
+	RefreshCharacterPanel();
 }
 
 void UCharacterSelectBase::RefreshCharacterPanel()
