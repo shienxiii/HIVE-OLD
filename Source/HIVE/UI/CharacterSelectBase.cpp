@@ -6,6 +6,8 @@
 #include "Components/VerticalBox.h"
 #include "Components/HorizontalBox.h"
 #include "CharacterSlotBase.h"
+#include "HIVE/Gameplay/Monster/MonsterBase.h"
+#include "HIVE/Gameplay/Controller/MonsterControl.h"
 
 void UCharacterSelectBase::RecursiveRefreshCharacterPanel(UWidget* InWidget)
 {
@@ -26,7 +28,7 @@ void UCharacterSelectBase::RecursiveRefreshCharacterPanel(UWidget* InWidget)
 
 	if (InWidget->IsA<UCharacterSlotBase>())
 	{
-		Cast<UCharacterSlotBase>(InWidget)->SyncButtonAppearance(NormalMat, HoverMat, ClickMat);
+		Cast<UCharacterSlotBase>(InWidget)->SyncButton(this, NormalMat, HoverMat, ClickMat);
 	}
 }
 
@@ -38,6 +40,13 @@ bool UCharacterSelectBase::IsAcceptablePanel(UWidget* InWidget)
 	}
 
 	return false;
+}
+
+
+void UCharacterSelectBase::SynchronizeProperties()
+{
+	Super::SynchronizeProperties();
+	OwningPlayer = Cast<AMonsterControl>(GetOwningPlayer());
 }
 
 void UCharacterSelectBase::RefreshCharacterPanel()
@@ -53,4 +62,18 @@ void UCharacterSelectBase::RefreshCharacterPanel()
 			RecursiveRefreshCharacterPanel(topPanel[i]);
 		}
 	}
+}
+
+void UCharacterSelectBase::CharacterSelectEvent(TSubclassOf<class AMonsterBase> InSelectedMonster)
+{
+	if (!OwningPlayer)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No Owning Player"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("YES Owning Player"));
+	}
+
+	OwningPlayer->UpdateSelectedMonster(InSelectedMonster);
 }

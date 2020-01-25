@@ -7,7 +7,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Engine.h"
+//#include "Engine.h"
 
 // Sets default values
 AMonsterBase::AMonsterBase(const FObjectInitializer& ObjectInitializer)

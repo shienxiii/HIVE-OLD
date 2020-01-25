@@ -8,7 +8,7 @@
 #include "CharacterSlotBase.generated.h"
 
 class AMonsterBase;
-
+class UCharacterSelectBase;
 /**
  * 
  */
@@ -18,6 +18,8 @@ class HIVE_API UCharacterSlotBase : public UButton
 	GENERATED_BODY()
 
 protected:
+	UCharacterSelectBase* CharacterSelector;
+
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Character, meta = (AllowPrivateAccess = "true", DisplayThumbnail = "true", DisplayName = "PlayerImage", AllowedClasses = "Texture,MaterialInterface,SlateTextureAtlasInterface", DisallowedClasses = "MediaTexture"))
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Character, meta = (AllowPrivateAccess = "true", DisplayThumbnail = "true", DisplayName = "PlayerImage", DisallowedClasses = "MediaTexture"))
 		UTexture* PlayerImage;
@@ -29,7 +31,10 @@ public:
 	UCharacterSlotBase(const FObjectInitializer& ObjectInitializer);
 
 	UFUNCTION(BlueprintCallable)
-		void SyncButtonAppearance(UMaterialInterface* NormalMat, UMaterialInterface* HoverMat, UMaterialInterface* ClickMat);
+		void SyncButton(UCharacterSelectBase* InCharacterSelector, UMaterialInterface* NormalMat, UMaterialInterface* HoverMat, UMaterialInterface* ClickMat);
+
+	UFUNCTION()
+	void CharacterSelectedEvent();
 
 	//UObject* GetPlayerImage() { return PlayerImage; }
 	TSubclassOf<AMonsterBase> GetMonsterClass() { return Monster; }

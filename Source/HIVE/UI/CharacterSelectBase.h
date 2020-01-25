@@ -9,6 +9,7 @@
 class UPanelWidget;
 class UMaterialInterface;
 class UMaterialInstanceDynamic;
+class AMonsterControl;
 
 /**
  * Base class for a character selection system.
@@ -34,6 +35,8 @@ private:
 	bool IsAcceptablePanel(UWidget* InWidget);
 
 protected:
+	AMonsterControl* OwningPlayer = nullptr;
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Select", meta = (AllowPrivateAccess = "true", DisplayThumbnail = "true"))
 		UMaterialInterface* NormalMat;
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Character Select")
@@ -46,9 +49,13 @@ protected:
 		UPanelWidget* CharacterOptions;
 	
 public:
+	virtual void SynchronizeProperties() override;
+
 	/**
 	 * Refreshes all the UCharacterPanelBase under CharacterOptions
 	 */
 	UFUNCTION(BlueprintCallable)
 		void RefreshCharacterPanel();
+
+	void CharacterSelectEvent(TSubclassOf<class AMonsterBase> InSelectedMonster);
 };

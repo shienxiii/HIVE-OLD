@@ -6,26 +6,19 @@
 #include "Materials/Material.h"
 #include "Materials/MaterialInstance.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "CharacterSelectBase.h"
 
 UCharacterSlotBase::UCharacterSlotBase(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 
 {
-	/*WidgetStyle.Normal.SetResourceObject(PlayerImage);
-	WidgetStyle.Normal.SetImageSize(FVector2D(150.0f, 150.0f));
-	WidgetStyle.Normal.DrawAs = ESlateBrushDrawType::Image;
-
-	WidgetStyle.Hovered.SetResourceObject(PlayerImage);
-	WidgetStyle.Hovered.SetImageSize(FVector2D(150.0f, 150.0f));
-	WidgetStyle.Hovered.DrawAs = ESlateBrushDrawType::Image;
-
-	WidgetStyle.Pressed.SetResourceObject(PlayerImage);
-	WidgetStyle.Pressed.SetImageSize(FVector2D(150.0f, 150.0f));
-	WidgetStyle.Pressed.DrawAs = ESlateBrushDrawType::Image;*/
+	this->OnClicked.AddDynamic(this, &UCharacterSlotBase::CharacterSelectedEvent);
 }
 
-void UCharacterSlotBase::SyncButtonAppearance(UMaterialInterface* NormalMat, UMaterialInterface* HoverMat, UMaterialInterface* ClickMat)
+void UCharacterSlotBase::SyncButton(UCharacterSelectBase* InCharacterSelector, UMaterialInterface* NormalMat, UMaterialInterface* HoverMat, UMaterialInterface* ClickMat)
 {
+	CharacterSelector = InCharacterSelector;
+
 	UMaterialInstanceDynamic* normal = UMaterialInstanceDynamic::Create(NormalMat, this);
 	normal->SetTextureParameterValue("UI_Image", PlayerImage);
 
@@ -46,4 +39,15 @@ void UCharacterSlotBase::SyncButtonAppearance(UMaterialInterface* NormalMat, UMa
 	WidgetStyle.Pressed.SetResourceObject(click);
 	WidgetStyle.Pressed.SetImageSize(FVector2D(150.0f, 150.0f));
 	WidgetStyle.Pressed.DrawAs = ESlateBrushDrawType::Image;
+}
+
+void UCharacterSlotBase::CharacterSelectedEvent()
+{
+	if (!CharacterSelector)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Cannot find CharacterSelector"));
+		return;
+	}
+
+	CharacterSelector->CharacterSelectEvent(Monster);
 }
