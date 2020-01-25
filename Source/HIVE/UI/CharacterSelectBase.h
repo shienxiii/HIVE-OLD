@@ -49,6 +49,9 @@ protected:
 		UPanelWidget* CharacterOptions;
 	
 public:
+	/**
+	 * Synchronise the property of this UUserWidget on both editor and game
+	 */
 	virtual void SynchronizeProperties() override;
 
 	/**

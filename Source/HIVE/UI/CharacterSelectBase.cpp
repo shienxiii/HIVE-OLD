@@ -48,6 +48,7 @@ void UCharacterSelectBase::SynchronizeProperties()
 	Super::SynchronizeProperties();
 	OwningPlayer = Cast<AMonsterControl>(GetOwningPlayer());
 	RefreshCharacterPanel();
+	UE_LOG(LogTemp, Warning, TEXT("Synchronised"));
 }
 
 void UCharacterSelectBase::RefreshCharacterPanel()
