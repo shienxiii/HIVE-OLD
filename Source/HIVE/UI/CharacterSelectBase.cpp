@@ -48,7 +48,6 @@ void UCharacterSelectBase::SynchronizeProperties()
 	Super::SynchronizeProperties();
 	OwningPlayer = Cast<AMonsterControl>(GetOwningPlayer());
 	RefreshCharacterPanel();
-	UE_LOG(LogTemp, Warning, TEXT("Synchronised"));
 }
 
 void UCharacterSelectBase::RefreshCharacterPanel()
@@ -71,10 +70,7 @@ void UCharacterSelectBase::CharacterSelectEvent(TSubclassOf<class AMonsterBase> 
 	if (!OwningPlayer)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("No Owning Player"));
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("YES Owning Player"));
+		return;
 	}
 
 	OwningPlayer->UpdateSelectedMonster(InSelectedMonster);

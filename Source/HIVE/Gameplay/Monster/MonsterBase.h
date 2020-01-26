@@ -67,6 +67,7 @@ public:
 	AActor* GetCurrentLockOnTarget() { return CurrentTarget; };
 
 	void ToggleLockOn();
+
 	/**
 	 * Called when there is a change in the currentTarget variable in this AMonsterBase instance so the server can update it
 	 *
@@ -74,10 +75,12 @@ public:
 	 */
 	UFUNCTION(Server, Reliable, WithValidation)
 		void Server_SetLockOnTarget(AActor* Target = nullptr);
+
 	/**
 	 * Get the closest target this monster can lock on to
 	 */
 	UFUNCTION(BlueprintPure) AActor* GetLockOnTarget();
+
 	/**
 	 * Find all possible lock on target in the level, filtering self and any within the same time
 	 *
@@ -85,6 +88,10 @@ public:
 	 */
 	TArray<AActor*> GetPotentialLockOnTargets();
 
+
+	/**
+	 * Turns the control rotation to face the lock on target
+	 */
 	void TurnToLockOnTarget(float DeltaTime);
 #pragma endregion
 

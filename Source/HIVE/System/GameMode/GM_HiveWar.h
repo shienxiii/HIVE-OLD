@@ -6,6 +6,8 @@
 #include "GameFramework/GameMode.h"
 #include "GM_HiveWar.generated.h"
 
+class AMonsterControl;
+
 /**
  * 
  */
@@ -17,4 +19,5 @@ class HIVE_API AGM_HiveWar : public AGameMode
 public:
 	AGM_HiveWar();
 
+	void SpawnMonsterForController(AMonsterControl* InPlayerControl);
 };
