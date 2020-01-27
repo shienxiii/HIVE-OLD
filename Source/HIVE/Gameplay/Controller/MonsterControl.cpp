@@ -2,14 +2,40 @@
 
 
 #include "MonsterControl.h"
-#include "Net/UnrealNetwork.h"
 #include "HIVE/System/GameMode/GM_HiveWar.h"
+#include "HIVE/UI/CharacterSelectBase.h"
+#include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
+#include "Net/UnrealNetwork.h"
+#include "UObject/ConstructorHelpers.h"
 
 void AMonsterControl::BeginPlay()
 {
 	Super::BeginPlay();
+
+	check(CharacterSelectBP != NULL && CharacterSelectBP != UCharacterSelectBase::StaticClass());
+	CharacterSelect = CreateWidget<UCharacterSelectBase>(this, CharacterSelectBP);
+
+	CharSelInputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockInFullscreen);
+	CharSelInputMode.SetWidgetToFocus(CharacterSelect->TakeWidget());
+
+	ToggleCharacterSelectScreen(true);
+}
+
+AMonsterControl::AMonsterControl(const FObjectInitializer& ObjectInitializer)
+{
+	if (CharacterSelectBP != NULL && CharacterSelectBP != UCharacterSelectBase::StaticClass())
+	{
+		return;
+	}
+
+	static ConstructorHelpers::FClassFinder<UUserWidget> charSelect(TEXT("/Game/Blueprint/UI/Gameplay/CharacterSelect.CharacterSelect_C"));
+
+	if (charSelect.Class != nullptr)
+	{
+		CharacterSelectBP = charSelect.Class;
+	}
 }
 
 bool AMonsterControl::UpdateSelectedMonster_Validate(TSubclassOf<AMonsterBase> InNewMonster)
@@ -36,23 +62,40 @@ void AMonsterControl::SpawnSelectedMonster_Implementation()
 		return;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("Spawning"));
+	// Get the GameMode and cast it to a compatible class
 	AGM_HiveWar* gameMode = Cast<AGM_HiveWar>(UGameplayStatics::GetGameMode(GetWorld()));
 
+	// Make sure the current GameMode is compatible
 	if (!gameMode)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("No suitable game mode found"));
 		return;
 	}
 
+	// Request game mode to spawn the monster for this controller
 	gameMode->SpawnMonsterForController(this);
-	UE_LOG(LogTemp, Warning, TEXT("Spawn Complete"));
 }
 
 void AMonsterControl::SpawnCompleteTest()
 {
-	FInputModeGameOnly gameInput;
-	SetInputMode(gameInput);
+	ToggleCharacterSelectScreen(false);
+}
+
+void AMonsterControl::ToggleCharacterSelectScreen(bool ToggleOn)
+{
+	if (!CharacterSelect) { return; }
+
+	if (ToggleOn)
+	{
+		SetInputMode(CharSelInputMode);
+		bShowMouseCursor = true;
+		CharacterSelect->AddToViewport();
+	}
+	else
+	{
+		SetInputMode(GameInputMode);
+		bShowMouseCursor = false;
+		CharacterSelect->RemoveFromViewport();
+	}
 }
 
 void AMonsterControl::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

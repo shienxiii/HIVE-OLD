@@ -7,7 +7,7 @@
 #include "MonsterControl.generated.h"
 
 class AMonsterBase;
-
+class UCharacterSelectBase;
 
 /**
  * This is the APlayerController class to be used by all player during gameplay
@@ -18,19 +18,36 @@ class HIVE_API AMonsterControl : public APlayerController
 	GENERATED_BODY()
 
 protected:
+#pragma region CharacterSelect
+	FInputModeGameOnly	GameInputMode;
+	FInputModeUIOnly	CharSelInputMode;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		TSubclassOf<UCharacterSelectBase> CharacterSelectBP = NULL;
+
+	UCharacterSelectBase* CharacterSelect = nullptr;
+
 	/**
 	 * The selected monster class that will be spawned when game begins or when respawn countdown is finished
 	 */
 	UPROPERTY(Replicated, BlueprintReadOnly)
 		TSubclassOf<AMonsterBase> SelectedMonster = NULL;
+#pragma endregion
+
+	// This index is used to keep track of which team this PlayerController is currently in
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		uint8 TeamIndex = 0;
 
 	bool SpawnCountdown = false;
 	float SpawnTimer = 0.0f;
+
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:
+	AMonsterControl(const FObjectInitializer& ObjectInitializer);
+
 #pragma region CharacterSelect
 	/**
 	 * Update the selected monster to the server version of this player controller
@@ -44,6 +61,8 @@ public:
 	//UFUNCTION(Reliable, Server, WithValidation)
 		void SpawnCompleteTest();
 
+		void ToggleCharacterSelectScreen(bool ToggleOn);
+
 	TSubclassOf<AMonsterBase> GetSelectedMonster() { return SelectedMonster; }
 #pragma endregion
 
@@ -54,4 +73,6 @@ public:
 	 */
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 #pragma endregion
+
+	uint8 GetTeamIndex() { return TeamIndex; }
 };
