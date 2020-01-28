@@ -54,4 +54,6 @@ public:
 	AGM_HiveWar();
 
 	void SpawnMonsterForController(AMonsterControl* InPlayerControl);
+
+	//virtual void PostLogin(APlayerController* InPlayerController) override;
 };

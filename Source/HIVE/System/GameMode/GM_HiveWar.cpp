@@ -55,7 +55,7 @@ void AGM_HiveWar::BeginPlay()
 			FString name = FString("Team Index ");
 			name.Append(FString::FromInt((*spwn)[j]->GetTeamIndex()));
 			name.Append(" Label ");
-			name.Append((*spwn)[j]->GetActorLabel());
+			name.Append((*spwn)[j]->GetName());
 			GEngine->AddOnScreenDebugMessage(-1, 120.0f, FColor::Cyan, name);
 		}
 	}

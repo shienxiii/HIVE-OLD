@@ -14,13 +14,13 @@ void AMonsterControl::BeginPlay()
 {
 	Super::BeginPlay();
 
-	check(CharacterSelectBP != NULL && CharacterSelectBP != UCharacterSelectBase::StaticClass());
+	/*check(CharacterSelectBP != NULL && CharacterSelectBP != UCharacterSelectBase::StaticClass());
 	CharacterSelect = CreateWidget<UCharacterSelectBase>(this, CharacterSelectBP);
 
 	CharSelInputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockInFullscreen);
 	CharSelInputMode.SetWidgetToFocus(CharacterSelect->TakeWidget());
 
-	ToggleCharacterSelectScreen(true);
+	ToggleCharacterSelectScreen(true);*/
 }
 
 AMonsterControl::AMonsterControl(const FObjectInitializer& ObjectInitializer)
