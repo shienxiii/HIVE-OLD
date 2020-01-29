@@ -7,7 +7,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
-//#include "Engine.h"
+#include "HIVE/Gameplay/Controller/MonsterControl.h"
 
 // Sets default values
 AMonsterBase::AMonsterBase(const FObjectInitializer& ObjectInitializer)
@@ -51,9 +51,6 @@ void AMonsterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	InputComponent->BindAxis("Forward", this, &AMonsterBase::MoveForward);
 	InputComponent->BindAxis("Right", this, &AMonsterBase::MoveRight);
 	InputComponent->BindAxis("Turn", this, &AMonsterBase::Turn);
-
-	//InputComponent->BindAction("Block", EInputEvent::IE_Pressed, this, &AMonsterBase::StartBlock);
-	//InputComponent->BindAction("Block", EInputEvent::IE_Released, this, &AMonsterBase::EndBlock);
 
 	InputComponent->BindAction("Jump", EInputEvent::IE_Pressed, this, &AMonsterBase::Jump);
 	InputComponent->BindAction("Jump", EInputEvent::IE_Released, this, &AMonsterBase::StopJumping);
@@ -237,4 +234,20 @@ void AMonsterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(AMonsterBase, Health);
 	DOREPLIFETIME(AMonsterBase, CurrentTarget);
 }
+
+#include "Engine/Engine.h"
+void AMonsterBase::Restart()
+{
+	Super::Restart();
+
+	if (GetLocalRole() == ENetRole::ROLE_AutonomousProxy && GetMonsterController())
+	{
+		GetMonsterController()->ToggleCharacterSelectScreen(false);
+	}
+}
 #pragma endregion
+
+AMonsterControl* AMonsterBase::GetMonsterController()
+{
+	return Cast<AMonsterControl>(GetController());
+}

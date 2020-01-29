@@ -14,13 +14,17 @@ void AMonsterControl::BeginPlay()
 {
 	Super::BeginPlay();
 
-	/*check(CharacterSelectBP != NULL && CharacterSelectBP != UCharacterSelectBase::StaticClass());
+	if (GetLocalRole() != ENetRole::ROLE_AutonomousProxy)
+	{
+		return;
+	}
+
 	CharacterSelect = CreateWidget<UCharacterSelectBase>(this, CharacterSelectBP);
 
 	CharSelInputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockInFullscreen);
 	CharSelInputMode.SetWidgetToFocus(CharacterSelect->TakeWidget());
 
-	ToggleCharacterSelectScreen(true);*/
+	ToggleCharacterSelectScreen(true);
 }
 
 AMonsterControl::AMonsterControl(const FObjectInitializer& ObjectInitializer)
@@ -75,26 +79,22 @@ void AMonsterControl::SpawnSelectedMonster_Implementation()
 	gameMode->SpawnMonsterForController(this);
 }
 
-void AMonsterControl::SpawnCompleteTest()
-{
-	ToggleCharacterSelectScreen(false);
-}
-
 void AMonsterControl::ToggleCharacterSelectScreen(bool ToggleOn)
 {
-	if (!CharacterSelect) { return; }
-
-	if (ToggleOn)
+	if (GetLocalRole() == ENetRole::ROLE_AutonomousProxy)
 	{
-		SetInputMode(CharSelInputMode);
-		bShowMouseCursor = true;
-		CharacterSelect->AddToViewport();
-	}
-	else
-	{
-		SetInputMode(GameInputMode);
-		bShowMouseCursor = false;
-		CharacterSelect->RemoveFromViewport();
+		if (ToggleOn)
+		{
+			SetInputMode(CharSelInputMode);
+			bShowMouseCursor = true;
+			CharacterSelect->AddToViewport();
+		}
+		else
+		{
+			SetInputMode(GameInputMode);
+			bShowMouseCursor = false;
+			CharacterSelect->RemoveFromViewport();
+		}
 	}
 }
 

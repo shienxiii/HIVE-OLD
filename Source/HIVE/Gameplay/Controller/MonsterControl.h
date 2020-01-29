@@ -44,7 +44,6 @@ protected:
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
 public:
 	AMonsterControl(const FObjectInitializer& ObjectInitializer);
 
@@ -57,9 +56,6 @@ public:
 
 	UFUNCTION(Reliable, Server, WithValidation)
 		void SpawnSelectedMonster();
-
-	//UFUNCTION(Reliable, Server, WithValidation)
-		void SpawnCompleteTest();
 
 		void ToggleCharacterSelectScreen(bool ToggleOn);
 

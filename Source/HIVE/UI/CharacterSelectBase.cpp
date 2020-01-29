@@ -42,6 +42,15 @@ bool UCharacterSelectBase::IsAcceptablePanel(UWidget* InWidget)
 	return false;
 }
 
+bool UCharacterSelectBase::Initialize()
+{
+	Super::Initialize();
+
+	bIsFocusable = true;
+
+	return true;
+}
+
 
 void UCharacterSelectBase::SynchronizeProperties()
 {

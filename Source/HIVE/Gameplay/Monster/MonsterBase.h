@@ -7,6 +7,8 @@
 #include "GameFramework/Character.h"
 #include "MonsterBase.generated.h"
 
+class AMonsterControl;
+
 UCLASS()
 class HIVE_API AMonsterBase : public ACharacter
 {
@@ -60,7 +62,7 @@ public:
 #pragma endregion
 
 	// Returns the character movement component type defined to a UMonsterMovementComponent
-	UFUNCTION(BlueprintPure) UMonsterMovementComponent* GetMonsterMovement() { return (UMonsterMovementComponent*)GetCharacterMovement(); }
+	UFUNCTION(BlueprintPure) UMonsterMovementComponent* GetMonsterMovement() { return Cast<UMonsterMovementComponent>(GetCharacterMovement()); };
 
 
 #pragma region LockOn
@@ -109,6 +111,11 @@ public:
 	 * Needs to be implemented to initialize replicated properties
 	 */
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
+
+	// Override to perform tasks when pawn is restarted, usually possessed
+	virtual void Restart() override;
 #pragma endregion
+
+	AMonsterControl* GetMonsterController();
 
 };

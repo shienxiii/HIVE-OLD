@@ -62,6 +62,8 @@ protected:
 		UPanelWidget* CharacterOptions;
 	
 public:
+	virtual bool Initialize() override;
+
 	/**
 	 * Override synchronise the property of this UUserWidget on both editor and game
 	 */

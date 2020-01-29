@@ -84,6 +84,4 @@ void AGM_HiveWar::SpawnMonsterForController(AMonsterControl* InPlayerControl)
 	
 	AMonsterBase* myMonster = GetWorld()->SpawnActor<AMonsterBase>((InPlayerControl->GetSelectedMonster()), start[0]->GetActorLocation() , FRotator(), spawnParam);
 	InPlayerControl->Possess(myMonster);
-
-	InPlayerControl->SpawnCompleteTest();
 }
