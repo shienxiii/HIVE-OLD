@@ -7,7 +7,7 @@
 #include "Components/HorizontalBox.h"
 #include "CharacterSlotBase.h"
 #include "HIVE/Gameplay/Monster/MonsterBase.h"
-#include "HIVE/Gameplay/Controller/MonsterControl.h"
+#include "HIVE/Gameplay/Controller/MonsterController.h"
 
 void UCharacterSelectBase::RecursiveRefreshCharacterPanel(UWidget* InWidget)
 {
@@ -55,7 +55,7 @@ bool UCharacterSelectBase::Initialize()
 void UCharacterSelectBase::SynchronizeProperties()
 {
 	Super::SynchronizeProperties();
-	OwningPlayer = Cast<AMonsterControl>(GetOwningPlayer());
+	OwningPlayer = Cast<AMonsterController>(GetOwningPlayer());
 	RefreshCharacterPanel();
 }
 

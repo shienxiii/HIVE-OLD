@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "MonsterControl.generated.h"
+#include "MonsterController.generated.h"
 
 class AMonsterBase;
 class UCharacterSelectBase;
@@ -13,7 +13,7 @@ class UCharacterSelectBase;
  * This is the APlayerController class to be used by all player during gameplay
  */
 UCLASS()
-class HIVE_API AMonsterControl : public APlayerController
+class HIVE_API AMonsterController : public APlayerController
 {
 	GENERATED_BODY()
 
@@ -45,7 +45,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 public:
-	AMonsterControl(const FObjectInitializer& ObjectInitializer);
+	AMonsterController(const FObjectInitializer& ObjectInitializer);
 
 #pragma region CharacterSelect
 	/**

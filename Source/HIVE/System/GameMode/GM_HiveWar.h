@@ -6,7 +6,7 @@
 #include "GameFramework/GameMode.h"
 #include "GM_HiveWar.generated.h"
 
-class AMonsterControl;
+class AMonsterController;
 class AMonsterSpawnPoint;
 
 //USTRUCT(BlueprintType)
@@ -53,7 +53,7 @@ protected:
 public:
 	AGM_HiveWar();
 
-	void SpawnMonsterForController(AMonsterControl* InPlayerControl);
+	void SpawnMonsterForController(AMonsterController* InPlayerControl);
 
 	virtual void PostLogin(APlayerController* InPlayerController) override;
 };

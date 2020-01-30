@@ -7,7 +7,7 @@
 #include "GameFramework/Character.h"
 #include "MonsterBase.generated.h"
 
-class AMonsterControl;
+class AMonsterController;
 
 UCLASS()
 class HIVE_API AMonsterBase : public ACharacter
@@ -116,6 +116,6 @@ public:
 	virtual void Restart() override;
 #pragma endregion
 
-	AMonsterControl* GetMonsterController();
+	AMonsterController* GetMonsterController();
 
 };

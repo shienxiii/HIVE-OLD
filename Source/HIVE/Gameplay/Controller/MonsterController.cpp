@@ -1,7 +1,7 @@
 // Copyright of Honeycomb Studio
 
 
-#include "MonsterControl.h"
+#include "MonsterController.h"
 #include "HIVE/System/GameMode/GM_HiveWar.h"
 #include "HIVE/UI/CharacterSelect/CharacterSelectBase.h"
 #include "Blueprint/UserWidget.h"
@@ -10,7 +10,7 @@
 #include "Net/UnrealNetwork.h"
 #include "UObject/ConstructorHelpers.h"
 
-void AMonsterControl::BeginPlay()
+void AMonsterController::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -27,7 +27,7 @@ void AMonsterControl::BeginPlay()
 	ToggleCharacterSelectScreen(true);
 }
 
-AMonsterControl::AMonsterControl(const FObjectInitializer& ObjectInitializer)
+AMonsterController::AMonsterController(const FObjectInitializer& ObjectInitializer)
 {
 	if (CharacterSelectBP != NULL && CharacterSelectBP != UCharacterSelectBase::StaticClass())
 	{
@@ -42,23 +42,23 @@ AMonsterControl::AMonsterControl(const FObjectInitializer& ObjectInitializer)
 	}
 }
 
-bool AMonsterControl::UpdateSelectedMonster_Validate(TSubclassOf<AMonsterBase> InNewMonster)
+bool AMonsterController::UpdateSelectedMonster_Validate(TSubclassOf<AMonsterBase> InNewMonster)
 {
 	return true;
 }
 
-void AMonsterControl::UpdateSelectedMonster_Implementation(TSubclassOf<AMonsterBase> InNewMonster)
+void AMonsterController::UpdateSelectedMonster_Implementation(TSubclassOf<AMonsterBase> InNewMonster)
 {
 	SelectedMonster = InNewMonster;
 	SpawnSelectedMonster();
 }
 
-bool AMonsterControl::SpawnSelectedMonster_Validate()
+bool AMonsterController::SpawnSelectedMonster_Validate()
 {
 	return true;
 }
 
-void AMonsterControl::SpawnSelectedMonster_Implementation()
+void AMonsterController::SpawnSelectedMonster_Implementation()
 {
 	// This function should only be run on the server
 	if (GetLocalRole() < ENetRole::ROLE_Authority)
@@ -79,7 +79,7 @@ void AMonsterControl::SpawnSelectedMonster_Implementation()
 	gameMode->SpawnMonsterForController(this);
 }
 
-void AMonsterControl::ToggleCharacterSelectScreen(bool ToggleOn)
+void AMonsterController::ToggleCharacterSelectScreen(bool ToggleOn)
 {
 	if (GetLocalRole() == ENetRole::ROLE_AutonomousProxy)
 	{
@@ -98,11 +98,11 @@ void AMonsterControl::ToggleCharacterSelectScreen(bool ToggleOn)
 	}
 }
 
-void AMonsterControl::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+void AMonsterController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AMonsterControl, TeamIndex);
-	DOREPLIFETIME(AMonsterControl, SelectedMonster);
+	DOREPLIFETIME(AMonsterController, TeamIndex);
+	DOREPLIFETIME(AMonsterController, SelectedMonster);
 
 }

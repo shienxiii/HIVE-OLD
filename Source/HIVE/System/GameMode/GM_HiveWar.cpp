@@ -4,7 +4,7 @@
 #include "GM_HiveWar.h"
 #include "HIVE/Gameplay/Monster/MonsterBase.h"
 #include "HIVE/Gameplay/Monster/MonsterSpawnPoint.h"
-#include "HIVE/Gameplay/Controller/MonsterControl.h"
+#include "HIVE/Gameplay/Controller/MonsterController.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
@@ -72,7 +72,7 @@ AGM_HiveWar::AGM_HiveWar()
 	}
 }
 
-void AGM_HiveWar::SpawnMonsterForController(AMonsterControl* InPlayerControl)
+void AGM_HiveWar::SpawnMonsterForController(AMonsterController* InPlayerControl)
 {
 
 
@@ -90,7 +90,7 @@ void AGM_HiveWar::PostLogin(APlayerController* InPlayerController)
 {
 	Super::PostLogin(InPlayerController);
 
-	AMonsterControl* inControl = Cast<AMonsterControl>(InPlayerController);
+	AMonsterController* inControl = Cast<AMonsterController>(InPlayerController);
 
 	if (!inControl) { return; }
 

@@ -7,7 +7,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "HIVE/Gameplay/Controller/MonsterControl.h"
+#include "HIVE/Gameplay/Controller/MonsterController.h"
 
 // Sets default values
 AMonsterBase::AMonsterBase(const FObjectInitializer& ObjectInitializer)
@@ -246,7 +246,7 @@ void AMonsterBase::Restart()
 }
 #pragma endregion
 
-AMonsterControl* AMonsterBase::GetMonsterController()
+AMonsterController* AMonsterBase::GetMonsterController()
 {
-	return Cast<AMonsterControl>(GetController());
+	return Cast<AMonsterController>(GetController());
 }

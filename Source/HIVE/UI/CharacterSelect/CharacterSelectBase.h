@@ -9,7 +9,7 @@
 class UPanelWidget;
 class UMaterialInterface;
 class UMaterialInstanceDynamic;
-class AMonsterControl;
+class AMonsterController;
 
 /**
  * Base class for a character selection system.
@@ -35,7 +35,7 @@ private:
 	bool IsAcceptablePanel(UWidget* InWidget);
 
 protected:
-	AMonsterControl* OwningPlayer = nullptr;
+	AMonsterController* OwningPlayer = nullptr;
 
 	/**
 	 * The base material for all the slot
