@@ -35,7 +35,7 @@ protected:
 #pragma endregion
 
 	// This index is used to keep track of which team this PlayerController is currently in
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(Replicated, BlueprintReadOnly, EditAnywhere)
 		uint8 TeamIndex = 0;
 
 	bool SpawnCountdown = false;
@@ -71,4 +71,6 @@ public:
 #pragma endregion
 
 	uint8 GetTeamIndex() { return TeamIndex; }
+
+	void AssignTeam(uint8 InTeamIndex) { TeamIndex = InTeamIndex; }
 };

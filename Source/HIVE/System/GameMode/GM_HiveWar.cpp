@@ -85,3 +85,14 @@ void AGM_HiveWar::SpawnMonsterForController(AMonsterControl* InPlayerControl)
 	AMonsterBase* myMonster = GetWorld()->SpawnActor<AMonsterBase>((InPlayerControl->GetSelectedMonster()), start[0]->GetActorLocation() , FRotator(), spawnParam);
 	InPlayerControl->Possess(myMonster);
 }
+
+void AGM_HiveWar::PostLogin(APlayerController* InPlayerController)
+{
+	Super::PostLogin(InPlayerController);
+
+	AMonsterControl* inControl = Cast<AMonsterControl>(InPlayerController);
+
+	if (!inControl) { return; }
+
+	inControl->AssignTeam(0);
+}

@@ -235,7 +235,6 @@ void AMonsterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(AMonsterBase, CurrentTarget);
 }
 
-#include "Engine/Engine.h"
 void AMonsterBase::Restart()
 {
 	Super::Restart();

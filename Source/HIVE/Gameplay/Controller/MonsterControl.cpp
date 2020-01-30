@@ -3,7 +3,7 @@
 
 #include "MonsterControl.h"
 #include "HIVE/System/GameMode/GM_HiveWar.h"
-#include "HIVE/UI/CharacterSelectBase.h"
+#include "HIVE/UI/CharacterSelect/CharacterSelectBase.h"
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
@@ -102,5 +102,7 @@ void AMonsterControl::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	DOREPLIFETIME(AMonsterControl, TeamIndex);
 	DOREPLIFETIME(AMonsterControl, SelectedMonster);
+
 }

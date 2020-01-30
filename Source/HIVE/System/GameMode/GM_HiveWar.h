@@ -55,5 +55,5 @@ public:
 
 	void SpawnMonsterForController(AMonsterControl* InPlayerControl);
 
-	//virtual void PostLogin(APlayerController* InPlayerController) override;
+	virtual void PostLogin(APlayerController* InPlayerController) override;
 };
