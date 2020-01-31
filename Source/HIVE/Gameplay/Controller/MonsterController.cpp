@@ -4,6 +4,7 @@
 #include "MonsterController.h"
 #include "HIVE/System/GameMode/GM_HiveWar.h"
 #include "HIVE/UI/CharacterSelect/CharacterSelectBase.h"
+#include "HIVE/Gameplay/PlayerState/MonsterPlayerState.h"
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
@@ -104,7 +105,40 @@ void AMonsterController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AMonsterController, TeamIndex);
 	DOREPLIFETIME(AMonsterController, SelectedMonster);
 
+}
+
+
+#include "Engine/Engine.h"
+void AMonsterController::AssignTeam(uint8 InTeam)
+{
+	ITeamInterface* teamInterface = Cast<ITeamInterface>(GetPlayerState<APlayerState>());
+
+	if (teamInterface)
+	{
+		teamInterface->AssignTeam(InTeam);
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 120.0f, FColor::Cyan, TEXT("Current player state does not implement TeamInterface"));
+	}
+	//teamInterface->Execute_AssignTeam(GetPlayerState<APlayerState>());
+	//// Check if is using the compatible PlayerState class and is called on the server
+	//if (GetPlayerState<AMonsterPlayerState>() && GetLocalRole() == ENetRole::ROLE_Authority)
+	//{
+	//	GetPlayerState<AMonsterPlayerState>()->AssignTeam(InTeam);
+	//}
+}
+
+uint8 AMonsterController::GetTeam()
+{
+	ITeamInterface* teamInterface = Cast<ITeamInterface>(GetPlayerState<APlayerState>());
+
+	if (teamInterface)
+	{
+		return teamInterface->GetTeam();
+	}
+	
+	return 13;
 }

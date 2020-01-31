@@ -94,5 +94,5 @@ void AGM_HiveWar::PostLogin(APlayerController* InPlayerController)
 
 	if (!inControl) { return; }
 
-	inControl->AssignTeam(0);
+	inControl->AssignTeam(3);
 }

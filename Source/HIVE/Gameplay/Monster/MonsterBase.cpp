@@ -115,7 +115,6 @@ void AMonsterBase::ExecuteDodge()
 	dodgeDirection.Normalize();
 
 	GetMonsterMovement()->Client_LaunchMonster(dodgeDirection, DodgeStrength);
-	//GetMonsterMovementComponent()->Dodge();
 }
 
 #pragma endregion

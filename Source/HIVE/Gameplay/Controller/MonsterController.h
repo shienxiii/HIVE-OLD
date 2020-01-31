@@ -3,17 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "HIVE/Interfaces/TeamInterface.h"
 #include "GameFramework/PlayerController.h"
 #include "MonsterController.generated.h"
 
 class AMonsterBase;
+class AMonsterPlayerState;
 class UCharacterSelectBase;
 
 /**
  * This is the APlayerController class to be used by all player during gameplay
  */
 UCLASS()
-class HIVE_API AMonsterController : public APlayerController
+class HIVE_API AMonsterController : public APlayerController, public ITeamInterface
 {
 	GENERATED_BODY()
 
@@ -33,10 +35,6 @@ protected:
 	UPROPERTY(Replicated, BlueprintReadOnly)
 		TSubclassOf<AMonsterBase> SelectedMonster = NULL;
 #pragma endregion
-
-	// This index is used to keep track of which team this PlayerController is currently in
-	UPROPERTY(Replicated, BlueprintReadOnly, EditAnywhere)
-		uint8 TeamIndex = 0;
 
 	bool SpawnCountdown = false;
 	float SpawnTimer = 0.0f;
@@ -70,7 +68,16 @@ public:
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 #pragma endregion
 
-	uint8 GetTeamIndex() { return TeamIndex; }
+#pragma region TeamInterface
+	/**
+	 * Assign the team on the relevant PlayerState
+	 */
+	virtual void AssignTeam(uint8 InTeam);
 
-	void AssignTeam(uint8 InTeamIndex) { TeamIndex = InTeamIndex; }
+	/**
+	 * Search the relevant PlayerState and determine the team this MonsterController belongs to
+	 */
+	UFUNCTION(BlueprintPure)
+		virtual uint8 GetTeam() override;
+#pragma endregion
 };
