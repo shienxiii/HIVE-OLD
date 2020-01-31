@@ -14,7 +14,7 @@ void AMonsterController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (GetLocalRole() != ENetRole::ROLE_AutonomousProxy)
+	if (!IsLocalPlayerController())
 	{
 		return;
 	}
@@ -81,20 +81,22 @@ void AMonsterController::SpawnSelectedMonster_Implementation()
 
 void AMonsterController::ToggleCharacterSelectScreen(bool ToggleOn)
 {
-	if (GetLocalRole() == ENetRole::ROLE_AutonomousProxy)
+	if (!IsLocalPlayerController())
 	{
-		if (ToggleOn)
-		{
-			SetInputMode(CharSelInputMode);
-			bShowMouseCursor = true;
-			CharacterSelect->AddToViewport();
-		}
-		else
-		{
-			SetInputMode(GameInputMode);
-			bShowMouseCursor = false;
-			CharacterSelect->RemoveFromViewport();
-		}
+		return;
+	}
+
+	if (ToggleOn)
+	{
+		SetInputMode(CharSelInputMode);
+		bShowMouseCursor = true;
+		CharacterSelect->AddToViewport();
+	}
+	else
+	{
+		SetInputMode(GameInputMode);
+		bShowMouseCursor = false;
+		CharacterSelect->RemoveFromViewport();
 	}
 }
 

@@ -239,7 +239,7 @@ void AMonsterBase::Restart()
 {
 	Super::Restart();
 
-	if (GetLocalRole() == ENetRole::ROLE_AutonomousProxy && GetMonsterController())
+	if (GetMonsterController() && IsLocallyControlled())
 	{
 		GetMonsterController()->ToggleCharacterSelectScreen(false);
 	}
