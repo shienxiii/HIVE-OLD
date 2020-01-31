@@ -110,7 +110,7 @@ void AMonsterController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 }
 
 
-#include "Engine/Engine.h"
+#pragma region TeamInterface
 void AMonsterController::AssignTeam(uint8 InTeam)
 {
 	ITeamInterface* teamInterface = Cast<ITeamInterface>(GetPlayerState<APlayerState>());
@@ -119,16 +119,6 @@ void AMonsterController::AssignTeam(uint8 InTeam)
 	{
 		teamInterface->AssignTeam(InTeam);
 	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 120.0f, FColor::Cyan, TEXT("Current player state does not implement TeamInterface"));
-	}
-	//teamInterface->Execute_AssignTeam(GetPlayerState<APlayerState>());
-	//// Check if is using the compatible PlayerState class and is called on the server
-	//if (GetPlayerState<AMonsterPlayerState>() && GetLocalRole() == ENetRole::ROLE_Authority)
-	//{
-	//	GetPlayerState<AMonsterPlayerState>()->AssignTeam(InTeam);
-	//}
 }
 
 uint8 AMonsterController::GetTeam()
@@ -142,3 +132,4 @@ uint8 AMonsterController::GetTeam()
 	
 	return 13;
 }
+#pragma endregion

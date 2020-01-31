@@ -23,5 +23,6 @@ class HIVE_API ITeamInterface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	virtual void AssignTeam(uint8 InTeam) {};
+
 	virtual uint8 GetTeam() { return 0; };
 };
