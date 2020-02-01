@@ -7,6 +7,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "GameFramework/PlayerState.h"
 #include "HIVE/Gameplay/Controller/MonsterController.h"
 
 // Sets default values
@@ -242,6 +243,20 @@ void AMonsterBase::Restart()
 	{
 		GetMonsterController()->ToggleCharacterSelectScreen(false);
 	}
+}
+#pragma endregion
+
+#pragma region TeamInterface
+uint8 AMonsterBase::GetTeam()
+{
+	ITeamInterface* teamInterface = Cast<ITeamInterface>(GetPlayerState());
+	
+	if (teamInterface)
+	{
+		return teamInterface->GetTeam();
+	}
+
+	return ITeamInterface::GetTeam();
 }
 #pragma endregion
 

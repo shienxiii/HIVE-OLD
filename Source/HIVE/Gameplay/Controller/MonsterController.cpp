@@ -130,6 +130,6 @@ uint8 AMonsterController::GetTeam()
 		return teamInterface->GetTeam();
 	}
 	
-	return 13;
+	return ITeamInterface::GetTeam();
 }
 #pragma endregion

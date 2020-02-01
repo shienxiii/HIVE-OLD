@@ -4,13 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "MonsterMovementComponent.h"
+#include "HIVE/Interfaces/TeamInterface.h"
 #include "GameFramework/Character.h"
 #include "MonsterBase.generated.h"
 
 class AMonsterController;
 
 UCLASS()
-class HIVE_API AMonsterBase : public ACharacter
+class HIVE_API AMonsterBase : public ACharacter, public ITeamInterface
 {
 	GENERATED_BODY()
 
@@ -114,6 +115,10 @@ public:
 
 	// Override to perform tasks when pawn is restarted, usually possessed
 	virtual void Restart() override;
+#pragma endregion
+
+#pragma region TeamInterface
+	virtual uint8 GetTeam() override;
 #pragma endregion
 
 	AMonsterController* GetMonsterController();
