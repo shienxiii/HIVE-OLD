@@ -6,6 +6,15 @@
 #include "UObject/Interface.h"
 #include "TeamInterface.generated.h"
 
+UENUM(BlueprintType)		//"BlueprintType" is essential to include
+enum class ETeamEnum : uint8
+{
+	TE_NEUTRAL	UMETA(DisplayName="NEUTRAL"),
+	TE_RED		UMETA(DisplayName = "RED"),
+	TE_GREEN	UMETA(DisplayName = "GREEN")
+};
+
+
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
 class UTeamInterface : public UInterface
@@ -22,7 +31,7 @@ class HIVE_API ITeamInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual void AssignTeam(uint8 InTeam) {};
+	virtual bool AssignTeam(ETeamEnum InTeam) { return false; };
 
-	virtual uint8 GetTeam() { return 0; };
+	virtual ETeamEnum GetTeam() { return ETeamEnum::TE_NEUTRAL; };
 };

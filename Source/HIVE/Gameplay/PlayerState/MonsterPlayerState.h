@@ -17,7 +17,7 @@ class HIVE_API AMonsterPlayerState : public APlayerState, public ITeamInterface
 
 protected:
 	UPROPERTY(Replicated, BlueprintReadOnly)
-		uint8 TeamIndex = -1;
+		ETeamEnum TeamID = ETeamEnum::TE_NEUTRAL;
 
 public:
 	
@@ -29,9 +29,9 @@ public:
 #pragma endregion
 
 #pragma region TeamInterface
-	virtual void AssignTeam(uint8 InTeamIndex) override { TeamIndex = InTeamIndex; }
+	virtual bool AssignTeam(ETeamEnum InTeamID) override;
 
-	virtual uint8 GetTeam() override { return TeamIndex; }
+	virtual ETeamEnum GetTeam() override { return TeamID; }
 #pragma endregion
 
 };

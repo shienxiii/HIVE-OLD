@@ -111,17 +111,20 @@ void AMonsterController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 
 
 #pragma region TeamInterface
-void AMonsterController::AssignTeam(uint8 InTeam)
+bool AMonsterController::AssignTeam(ETeamEnum InTeam)
 {
 	ITeamInterface* teamInterface = Cast<ITeamInterface>(GetPlayerState<APlayerState>());
 
-	if (teamInterface)
+	// return false if this is called on client or the PlayerState does not implement ITeamInterface
+	if (GetLocalRole() != ENetRole::ROLE_Authority || !teamInterface)
 	{
-		teamInterface->AssignTeam(InTeam);
+		return false;
 	}
+
+	return teamInterface->AssignTeam(InTeam);
 }
 
-uint8 AMonsterController::GetTeam()
+ETeamEnum AMonsterController::GetTeam()
 {
 	ITeamInterface* teamInterface = Cast<ITeamInterface>(GetPlayerState<APlayerState>());
 

@@ -118,7 +118,7 @@ public:
 #pragma endregion
 
 #pragma region TeamInterface
-	virtual uint8 GetTeam() override;
+	virtual ETeamEnum GetTeam() override;
 #pragma endregion
 
 	AMonsterController* GetMonsterController();

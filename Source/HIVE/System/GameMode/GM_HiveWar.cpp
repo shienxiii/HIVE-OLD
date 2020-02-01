@@ -5,6 +5,7 @@
 #include "HIVE/Gameplay/Monster/MonsterBase.h"
 #include "HIVE/Gameplay/Monster/MonsterSpawnPoint.h"
 #include "HIVE/Gameplay/Controller/MonsterController.h"
+#include "HIVE/Interfaces/TeamInterface.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
@@ -15,7 +16,7 @@ void AGM_HiveWar::BeginPlay()
 {
 	Super::BeginPlay();
 
-	TeamSpawnPoints = TMap<uint8, TArray<AMonsterSpawnPoint*>>();
+	TeamSpawnPoints = TMap<ETeamEnum, TArray<AMonsterSpawnPoint*>>();
 
 	// Find all spawn points
 	TArray<AActor*> spawnPoints;
@@ -28,7 +29,7 @@ void AGM_HiveWar::BeginPlay()
 		check(spawn);
 
 		// Get a reference to the Map that contains the team index
-		TArray<AMonsterSpawnPoint*>* teamFound = TeamSpawnPoints.Find(spawn->GetTeamIndex());
+		TArray<AMonsterSpawnPoint*>* teamFound = TeamSpawnPoints.Find(spawn->GetTeam());
 
 		if (teamFound)
 		{
@@ -36,27 +37,10 @@ void AGM_HiveWar::BeginPlay()
 		}
 		else
 		{
-			TeamSpawnPoints.Add(spawn->GetTeamIndex(), TArray<AMonsterSpawnPoint*>());
+			TeamSpawnPoints.Add(spawn->GetTeam(), TArray<AMonsterSpawnPoint*>());
 
-			TeamSpawnPoints.Find(spawn->GetTeamIndex())
+			TeamSpawnPoints.Find(spawn->GetTeam())
 				->Add(spawn);
-		}
-	}
-
-	// Test Run
-	TArray<uint8> keys;
-	TeamSpawnPoints.GetKeys(keys);
-	for (int i = 0; i < keys.Num(); i++)
-	{
-		TArray<AMonsterSpawnPoint*>* spwn = TeamSpawnPoints.Find(keys[i]);
-
-		for (int j = 0; j < spwn->Num(); j++)
-		{
-			FString name = FString("Team Index ");
-			name.Append(FString::FromInt((*spwn)[j]->GetTeamIndex()));
-			name.Append(" Label ");
-			name.Append((*spwn)[j]->GetName());
-			GEngine->AddOnScreenDebugMessage(-1, 120.0f, FColor::Cyan, name);
 		}
 	}
 
@@ -90,9 +74,10 @@ void AGM_HiveWar::PostLogin(APlayerController* InPlayerController)
 {
 	Super::PostLogin(InPlayerController);
 
+	// Separate player to team
 	AMonsterController* inControl = Cast<AMonsterController>(InPlayerController);
 
 	if (!inControl) { return; }
 
-	inControl->AssignTeam(3);
+	//inControl->AssignTeam(3);
 }

@@ -247,7 +247,7 @@ void AMonsterBase::Restart()
 #pragma endregion
 
 #pragma region TeamInterface
-uint8 AMonsterBase::GetTeam()
+ETeamEnum AMonsterBase::GetTeam()
 {
 	ITeamInterface* teamInterface = Cast<ITeamInterface>(GetPlayerState());
 	

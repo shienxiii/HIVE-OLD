@@ -70,14 +70,14 @@ public:
 
 #pragma region TeamInterface
 	/**
-	 * Assign the team on the relevant PlayerState
+	 * Assign the team on the relevant PlayerState and return a bool indicating whether the assignment is successful or not
 	 */
-	virtual void AssignTeam(uint8 InTeam);
+	virtual bool AssignTeam(ETeamEnum InTeam) override;
 
 	/**
 	 * Search the relevant PlayerState and determine the team this MonsterController belongs to
 	 */
 	UFUNCTION(BlueprintPure)
-		virtual uint8 GetTeam() override;
+		virtual ETeamEnum GetTeam() override;
 #pragma endregion
 };
