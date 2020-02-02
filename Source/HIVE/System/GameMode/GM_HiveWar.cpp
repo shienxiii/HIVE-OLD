@@ -85,7 +85,10 @@ void AGM_HiveWar::SpawnMonsterForController(AMonsterController* InPlayerControl)
 
 void AGM_HiveWar::PostLogin(APlayerController* InPlayerController)
 {
+	// This code runs on SERVER ONLY when a new player joins, will not run on the player controller of the server
+
 	// NOTE: When this code runs, player is not yet controlling a monster but just recently joined the game
+
 	Super::PostLogin(InPlayerController);
 
 	// Make sure the player controller being passed implemented ITeamInterface
