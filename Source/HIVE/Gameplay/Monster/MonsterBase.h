@@ -121,6 +121,11 @@ public:
 	virtual ETeamEnum GetTeam() override;
 #pragma endregion
 
+	/**
+	 * Get the player controller casted into AMonsterController player controller
+	 *
+	 * Returns null if this monster is controlled by AI or non-child of AMonsterController
+	 */
 	AMonsterController* GetMonsterController();
 
 };

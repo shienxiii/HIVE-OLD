@@ -3,7 +3,6 @@
 
 #include "GM_HiveWar.h"
 #include "HIVE/Gameplay/Monster/MonsterBase.h"
-#include "HIVE/Gameplay/Monster/MonsterSpawnPoint.h"
 #include "HIVE/Gameplay/Controller/MonsterController.h"
 #include "HIVE/Interfaces/TeamInterface.h"
 #include "UObject/ConstructorHelpers.h"
@@ -11,37 +10,50 @@
 #include "Engine/World.h"
 #include "GameFramework/PlayerStart.h"
 #include "Engine/Engine.h"
+#include "Kismet/KismetStringLibrary.h"
 
 void AGM_HiveWar::BeginPlay()
 {
 	Super::BeginPlay();
 
-	TeamSpawnPoints = TMap<ETeamEnum, TArray<AMonsterSpawnPoint*>>();
+	TeamSpawnPoints = TMap<ETeamEnum, FTeamSpawnArea>();
 
 	// Find all spawn points
 	TArray<AActor*> spawnPoints;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMonsterSpawnPoint::StaticClass(), spawnPoints);
 
-	// Allocate all spawn points to team
 	for (int i = 0; i < spawnPoints.Num(); i++)
 	{
 		AMonsterSpawnPoint* spawn = Cast<AMonsterSpawnPoint>(spawnPoints[i]);
-		check(spawn);
 
-		// Get a reference to the Map that contains the team index
-		TArray<AMonsterSpawnPoint*>* teamFound = TeamSpawnPoints.Find(spawn->GetTeam());
+		// Find the team in the TMap
+		FTeamSpawnArea* team = TeamSpawnPoints.Find(spawn->GetTeam());
 
-		if (teamFound)
+		if (!team)
 		{
-			teamFound->Add(spawn);
+			// If the team is not found, create it and assign the newly created team to the team pointer
+			TeamSpawnPoints.Add(spawn->GetTeam(), FTeamSpawnArea(spawn->GetTeam()));
+			team = TeamSpawnPoints.Find(spawn->GetTeam());
 		}
-		else
-		{
-			TeamSpawnPoints.Add(spawn->GetTeam(), TArray<AMonsterSpawnPoint*>());
 
-			TeamSpawnPoints.Find(spawn->GetTeam())
-				->Add(spawn);
-		}
+		// Add the spawn point to the relevant team
+		team->AddSpawnPoint(spawn);
+	}
+
+	// Get all the keys
+	TArray<ETeamEnum> allKeys;
+	TeamSpawnPoints.GetKeys(allKeys);
+
+	for (int i = 0; i < allKeys.Num(); i++)
+	{
+		FTeamSpawnArea* area = TeamSpawnPoints.Find(allKeys[i]);
+
+		FString keyName = UEnum::GetValueAsString(allKeys[i]);
+		FString printMessage = keyName;
+		printMessage.Append(" have ");
+		printMessage.Append(FString::FromInt(area->GetSpawnPoints().Num()));
+		printMessage.Append(" spawn points");
+		GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Green, printMessage);
 	}
 
 }
@@ -81,3 +93,28 @@ void AGM_HiveWar::PostLogin(APlayerController* InPlayerController)
 
 	//inControl->AssignTeam(3);
 }
+
+
+#pragma region TeamSpawnPoint
+int8 FTeamSpawnArea::GetFreeSpawnPoint(AController* InController)
+{
+	return int8();
+}
+
+bool FTeamSpawnArea::AddSpawnPoint(AMonsterSpawnPoint* InNewSpawnPoint)
+{
+	if (SpawnPoints.Find(InNewSpawnPoint) != INDEX_NONE)
+	{
+		// if trying to add existing spawn point, do nothing and return false
+		return false;
+	}
+
+	SpawnPoints.Add(InNewSpawnPoint);
+
+	return true;
+}
+
+void FTeamSpawnArea::AssignSpawnPointToPlayer(int8 InSpawnPointIndex, AController* InController)
+{
+}
+#pragma endregion
