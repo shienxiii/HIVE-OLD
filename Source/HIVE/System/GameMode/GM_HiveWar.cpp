@@ -65,6 +65,7 @@ AGM_HiveWar::AGM_HiveWar()
 	if (tempMonsterBP.Class != NULL)
 	{
 		DefaultPawnClass = tempMonsterBP.Class;
+		PlayerControllerClass = AMonsterController::StaticClass();
 	}
 }
 
@@ -84,14 +85,44 @@ void AGM_HiveWar::SpawnMonsterForController(AMonsterController* InPlayerControl)
 
 void AGM_HiveWar::PostLogin(APlayerController* InPlayerController)
 {
+	// NOTE: When this code runs, player is not yet controlling a monster but just recently joined the game
 	Super::PostLogin(InPlayerController);
 
-	// Separate player to team
-	AMonsterController* inControl = Cast<AMonsterController>(InPlayerController);
+	// Make sure the player controller being passed implemented ITeamInterface
+	ITeamInterface* controller = Cast<ITeamInterface>(InPlayerController);
+	check(controller);
 
-	if (!inControl) { return; }
+	// Go through the spawn points that are not TE_NEUTRAL to decide which team to assign player to
+	TArray<ETeamEnum> validKeys;
+	TeamSpawnPoints.GetKeys(validKeys);
+	validKeys.Remove(ETeamEnum::TE_NEUTRAL);
+	validKeys.Sort();
 
-	//inControl->AssignTeam(3);
+	ETeamEnum teamID = ETeamEnum::TE_NEUTRAL;
+
+	for (int i = 0; i < validKeys.Num(); i++)
+	{
+		FString keyName = UEnum::GetValueAsString(validKeys[i]);
+		FString printMessage = "Checking ";
+		printMessage.Append(keyName);
+		GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, printMessage);
+
+		if (teamID == ETeamEnum::TE_NEUTRAL)
+		{
+			teamID = validKeys[i];
+		}
+		else
+		{
+			bool changeToCurrentKey = (TeamSpawnPoints.Find(validKeys[i])->GetMembersList().Num()) < (TeamSpawnPoints.Find(teamID)->GetMembersList().Num());
+
+			teamID = changeToCurrentKey ? validKeys[i] : teamID;
+		}
+	}
+
+	// teamID is now the ETeamEnum to assign to current controller
+	controller->AssignTeam(teamID);
+
+	// might as will assign the default spawn point as well
 }
 
 

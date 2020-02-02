@@ -15,30 +15,41 @@ struct FTeamSpawnArea
 {
 	GENERATED_BODY()
 
+private:
+
 	UPROPERTY()
 		ETeamEnum TeamID;
 
 	UPROPERTY()
 		TArray<AMonsterSpawnPoint*> SpawnPoints;
 
+	UPROPERTY()
+		TArray<AController*> Members;
+
+public:
 	FTeamSpawnArea()
 	{
-		TeamID = ETeamEnum::TE_NEUTRAL;
-		SpawnPoints = TArray<AMonsterSpawnPoint*>();
+		TeamID		= ETeamEnum::TE_NEUTRAL;
+		SpawnPoints	= TArray<AMonsterSpawnPoint*>();
+		Members		= TArray<AController*>();
 	}
 
 	FTeamSpawnArea(ETeamEnum InTeamID)
 	{
-		TeamID = InTeamID;
-		SpawnPoints = TArray<AMonsterSpawnPoint*>();
+		TeamID		= InTeamID;
+		SpawnPoints	= TArray<AMonsterSpawnPoint*>();
+		Members		= TArray<AController*>();
 	}
 
 	// Return the index of the next free spawn point
 	int8 GetFreeSpawnPoint(AController* InController);
 	TArray<AMonsterSpawnPoint*> GetSpawnPoints() { return SpawnPoints; }
+	TArray<AController*> GetMembersList() { return Members; }
 
 	bool AddSpawnPoint(AMonsterSpawnPoint* InNewSpawnPoint);
+	bool AddToTeam(AController* InController) { Members.Add(InController); }
 	void AssignSpawnPointToPlayer(int8 InSpawnPointIndex, AController* InController);
+
 };
 
 /**

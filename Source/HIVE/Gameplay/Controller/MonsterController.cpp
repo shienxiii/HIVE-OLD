@@ -111,6 +111,7 @@ void AMonsterController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 
 
 #pragma region TeamInterface
+#include "Engine/Engine.h"
 bool AMonsterController::AssignTeam(ETeamEnum InTeam)
 {
 	ITeamInterface* teamInterface = Cast<ITeamInterface>(GetPlayerState<APlayerState>());
@@ -118,6 +119,7 @@ bool AMonsterController::AssignTeam(ETeamEnum InTeam)
 	// return false if this is called on client or the PlayerState does not implement ITeamInterface
 	if (GetLocalRole() != ENetRole::ROLE_Authority || !teamInterface)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Red, TEXT("Fail assign team"));
 		return false;
 	}
 

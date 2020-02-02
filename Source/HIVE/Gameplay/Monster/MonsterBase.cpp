@@ -235,6 +235,7 @@ void AMonsterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(AMonsterBase, CurrentTarget);
 }
 
+#include "Engine/Engine.h"
 void AMonsterBase::Restart()
 {
 	Super::Restart();
@@ -242,6 +243,9 @@ void AMonsterBase::Restart()
 	if (GetMonsterController() && IsLocallyControlled())
 	{
 		GetMonsterController()->ToggleCharacterSelectScreen(false);
+
+		FString keyName = UEnum::GetValueAsString(GetTeam());
+		GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Red, keyName);
 	}
 }
 #pragma endregion
