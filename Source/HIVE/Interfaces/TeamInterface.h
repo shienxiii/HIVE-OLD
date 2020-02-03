@@ -11,7 +11,8 @@ enum class ETeamEnum : uint8
 {
 	TE_NEUTRAL	UMETA(DisplayName="NEUTRAL"),
 	TE_RED		UMETA(DisplayName = "RED"),
-	TE_GREEN	UMETA(DisplayName = "GREEN")
+	TE_GREEN	UMETA(DisplayName = "GREEN"),
+	TE_INVALID	UMETA(DisplayName="INVALID")
 };
 
 

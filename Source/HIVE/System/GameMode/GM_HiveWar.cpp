@@ -91,48 +91,85 @@ void AGM_HiveWar::PostLogin(APlayerController* InPlayerController)
 
 	Super::PostLogin(InPlayerController);
 
+	ETeamEnum allocatedTo = AllocateToTeam(InPlayerController);
+
+	/*FString printMessage = InPlayerController->GetActorLabel();
+	printMessage.Append(" is allocated to ");
+	printMessage.Append(UEnum::GetValueAsString(allocatedTo));
+	GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, printMessage);*/
+}
+
+ETeamEnum AGM_HiveWar::AllocateToTeam(AController* InController)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, TEXT("Checking"));
 	// Make sure the player controller being passed implemented ITeamInterface
-	ITeamInterface* controller = Cast<ITeamInterface>(InPlayerController);
+	ITeamInterface* controller = Cast<ITeamInterface>(InController);
 	check(controller);
 
-	// Go through the spawn points that are not TE_NEUTRAL to decide which team to assign player to
+	// Go through the spawn points that are not TE_NEUTRAL or TE_INVALID to decide which team to assign player to
 	TArray<ETeamEnum> validKeys;
 	TeamSpawnPoints.GetKeys(validKeys);
 	validKeys.Remove(ETeamEnum::TE_NEUTRAL);
+	validKeys.Remove(ETeamEnum::TE_INVALID);
 	validKeys.Sort();
 
-	ETeamEnum teamID = ETeamEnum::TE_NEUTRAL;
+	// This local variable value will change to reflect which team the InController will be allocated to
+	ETeamEnum teamID = ETeamEnum::TE_INVALID;
 
+	// Go through all key that are not TE_NEUTRAL or TE_INVALID
 	for (int i = 0; i < validKeys.Num(); i++)
 	{
-		FString keyName = UEnum::GetValueAsString(validKeys[i]);
-		FString printMessage = "Checking ";
-		printMessage.Append(keyName);
-		GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, printMessage);
+		// Check if there are space available for the controller to join the team
+		bool spaceAvailable = (TeamSpawnPoints.Find(validKeys[i])->AvailableSpawnPoints()) > 0;
+		if (spaceAvailable)
+		{
+			FString printMessage = "Space available on ";
+			printMessage.Append(UEnum::GetValueAsString(validKeys[i]));
+			GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, printMessage);
+		}
 
-		if (teamID == ETeamEnum::TE_NEUTRAL)
+		// Make sure spaceAvailable is the condition of all checks that changes the teamID local variable to the current key
+		if (spaceAvailable && teamID == ETeamEnum::TE_INVALID)
 		{
 			teamID = validKeys[i];
 		}
-		else
+		else if(spaceAvailable)
 		{
 			bool changeToCurrentKey = (TeamSpawnPoints.Find(validKeys[i])->GetMembersList().Num()) < (TeamSpawnPoints.Find(teamID)->GetMembersList().Num());
+			
 
 			teamID = changeToCurrentKey ? validKeys[i] : teamID;
 		}
 	}
 
-	// teamID is now the ETeamEnum to assign to current controller
-	controller->AssignTeam(teamID);
+	FTeamSpawnArea* area = TeamSpawnPoints.Find(teamID);
+	FString printMessage = "I got ";
+	printMessage.Append(UEnum::GetValueAsString(teamID));
+	GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, printMessage);
+	/*controller->AssignTeam(teamID);
+	if (area->AddToTeam(InController))
+	{
+	}*/
 
-	// might as will assign the default spawn point as well
+	return teamID;
+	// otherwise this the assignment is invalid
+	return ETeamEnum::TE_INVALID;
 }
 
 
 #pragma region TeamSpawnPoint
-int8 FTeamSpawnArea::GetFreeSpawnPoint(AController* InController)
+int32 FTeamSpawnArea::GetFreeSpawnPoint(AController* InController)
 {
-	return int8();
+	return int32();
+}
+
+int32 FTeamSpawnArea::AvailableSpawnPoints()
+{
+	FString printMessage = UEnum::GetValueAsString(TeamID);
+	printMessage.Append(" has ");
+	printMessage.Append(FString::FromInt(SpawnPoints.Num() - Members.Num()));
+	GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, printMessage);
+	return SpawnPoints.Num() - Members.Num();
 }
 
 bool FTeamSpawnArea::AddSpawnPoint(AMonsterSpawnPoint* InNewSpawnPoint)
@@ -145,6 +182,20 @@ bool FTeamSpawnArea::AddSpawnPoint(AMonsterSpawnPoint* InNewSpawnPoint)
 
 	SpawnPoints.Add(InNewSpawnPoint);
 
+	return true;
+}
+
+bool FTeamSpawnArea::AddToTeam(AController* InController)
+{
+	ITeamInterface* controller = Cast<ITeamInterface>(InController);
+
+	if (!controller || AvailableSpawnPoints() <= 0)
+	{
+		return false;
+	}
+
+	/*controller->AssignTeam(TeamID);
+	Members.Add(InController);*/
 	return true;
 }
 

@@ -42,18 +42,19 @@ public:
 	}
 
 	// Return the index of the next free spawn point
-	int8 GetFreeSpawnPoint(AController* InController);
+	int32 GetFreeSpawnPoint(AController* InController);
+	int32 AvailableSpawnPoints();
 	TArray<AMonsterSpawnPoint*> GetSpawnPoints() { return SpawnPoints; }
 	TArray<AController*> GetMembersList() { return Members; }
 
 	bool AddSpawnPoint(AMonsterSpawnPoint* InNewSpawnPoint);
-	bool AddToTeam(AController* InController) { Members.Add(InController); }
+	bool AddToTeam(AController* InController);
 	void AssignSpawnPointToPlayer(int8 InSpawnPointIndex, AController* InController);
 
 };
 
 /**
- * 
+ * GameMode for any arena stage
  */
 UCLASS()
 class HIVE_API AGM_HiveWar : public AGameMode
@@ -72,4 +73,13 @@ public:
 	void SpawnMonsterForController(AMonsterController* InPlayerControl);
 
 	virtual void PostLogin(APlayerController* InPlayerController) override;
+
+	/**
+	 * Allocate the controller to a team and returns the team it is allocated to
+	 *
+	 * @param	InController The controller to assign a team to
+	 * @ret		The team InController is assigned to
+	 */
+	virtual ETeamEnum AllocateToTeam(AController* InController);
+
 };
