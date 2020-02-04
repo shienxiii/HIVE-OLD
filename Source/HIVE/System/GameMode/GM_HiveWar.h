@@ -8,6 +8,7 @@
 #include "GameFramework/GameMode.h"
 #include "GM_HiveWar.generated.h"
 
+
 class AMonsterController;
 
 USTRUCT()
@@ -24,31 +25,31 @@ private:
 		TArray<AMonsterSpawnPoint*> SpawnPoints;
 
 	UPROPERTY()
-		TArray<AController*> Members;
+		TArray<APlayerState*> Members;
 
 public:
 	FTeamSpawnArea()
 	{
 		TeamID		= ETeamEnum::TE_NEUTRAL;
 		SpawnPoints	= TArray<AMonsterSpawnPoint*>();
-		Members		= TArray<AController*>();
+		Members		= TArray<APlayerState*>();
 	}
 
 	FTeamSpawnArea(ETeamEnum InTeamID)
 	{
 		TeamID		= InTeamID;
 		SpawnPoints	= TArray<AMonsterSpawnPoint*>();
-		Members		= TArray<AController*>();
+		Members		= TArray<APlayerState*>();
 	}
 
 	// Return the index of the next free spawn point
 	int32 GetFreeSpawnPoint(AController* InController);
 	int32 AvailableSpawnPoints();
 	TArray<AMonsterSpawnPoint*> GetSpawnPoints() { return SpawnPoints; }
-	TArray<AController*> GetMembersList() { return Members; }
+	TArray<APlayerState*> GetMembersList() { return Members; }
 
 	bool AddSpawnPoint(AMonsterSpawnPoint* InNewSpawnPoint);
-	bool AddToTeam(AController* InController);
+	bool AddToTeam(APlayerState* InPlayerState);
 	void AssignSpawnPointToPlayer(int8 InSpawnPointIndex, AController* InController);
 
 };
@@ -64,15 +65,22 @@ class HIVE_API AGM_HiveWar : public AGameMode
 protected:
 	TMap<ETeamEnum, FTeamSpawnArea> TeamSpawnPoints;
 
+	// Boolean to decide if the game is in a state where they can spawn the player character
+	bool bCanSpawnPlayerCharacter = false;
+
+	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
 public:
 	AGM_HiveWar();
+	virtual void Tick(float DeltaTime) override;
 
 	void SpawnMonsterForController(AMonsterController* InPlayerControl);
 
 	virtual void PostLogin(APlayerController* InPlayerController) override;
+
+	virtual void BeginTeamAllocation();
 
 	/**
 	 * Allocate the controller to a team and returns the team it is allocated to
@@ -80,6 +88,6 @@ public:
 	 * @param	InController The controller to assign a team to
 	 * @ret		The team InController is assigned to
 	 */
-	virtual ETeamEnum AllocateToTeam(AController* InController);
+	virtual ETeamEnum AllocateToTeam(APlayerState* InPlayerState);
 
 };

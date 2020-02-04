@@ -4,6 +4,8 @@
 #include "GM_HiveWar.h"
 #include "HIVE/Gameplay/Monster/MonsterBase.h"
 #include "HIVE/Gameplay/Controller/MonsterController.h"
+#include "HIVE/Gameplay/PlayerState/MonsterPlayerState.h"
+#include "HIVE/Gameplay/GameState/HiveWarGameState.h"
 #include "HIVE/Interfaces/TeamInterface.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
@@ -11,6 +13,7 @@
 #include "GameFramework/PlayerStart.h"
 #include "Engine/Engine.h"
 #include "Kismet/KismetStringLibrary.h"
+
 
 void AGM_HiveWar::BeginPlay()
 {
@@ -61,12 +64,18 @@ void AGM_HiveWar::BeginPlay()
 AGM_HiveWar::AGM_HiveWar()
 {
 	static ConstructorHelpers::FClassFinder<APawn> tempMonsterBP(TEXT("/Game/Blueprint/TestCharacter/RedGuy.RedGuy_C"));
-
 	if (tempMonsterBP.Class != NULL)
 	{
 		DefaultPawnClass = tempMonsterBP.Class;
 		PlayerControllerClass = AMonsterController::StaticClass();
+		PlayerStateClass = AMonsterPlayerState::StaticClass();
+		GameStateClass = AHiveWarGameState::StaticClass();
 	}
+}
+
+void AGM_HiveWar::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
 }
 
 void AGM_HiveWar::SpawnMonsterForController(AMonsterController* InPlayerControl)
@@ -91,7 +100,7 @@ void AGM_HiveWar::PostLogin(APlayerController* InPlayerController)
 
 	Super::PostLogin(InPlayerController);
 
-	ETeamEnum allocatedTo = AllocateToTeam(InPlayerController);
+	//ETeamEnum allocatedTo = AllocateToTeam(InPlayerController);
 
 	/*FString printMessage = InPlayerController->GetActorLabel();
 	printMessage.Append(" is allocated to ");
@@ -99,12 +108,30 @@ void AGM_HiveWar::PostLogin(APlayerController* InPlayerController)
 	GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, printMessage);*/
 }
 
-ETeamEnum AGM_HiveWar::AllocateToTeam(AController* InController)
+void AGM_HiveWar::BeginTeamAllocation()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, "BeginTeamAllocation");
+	bCanSpawnPlayerCharacter = true;
+	TArray<APlayerState*> currentPlayers = GetGameState<AHiveWarGameState>()->PlayerArray;
+	for (int i = 0; i < currentPlayers.Num(); i++)
+	{
+		if (AllocateToTeam(currentPlayers[i]) != ETeamEnum::TE_INVALID)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Green, "Successful allocation");
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Green, "Invalid allocation");
+		}
+	}
+}
+
+ETeamEnum AGM_HiveWar::AllocateToTeam(APlayerState* InPlayerState)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, TEXT("Checking"));
 	// Make sure the player controller being passed implemented ITeamInterface
-	ITeamInterface* controller = Cast<ITeamInterface>(InController);
-	check(controller);
+	ITeamInterface* player = Cast<ITeamInterface>(InPlayerState);
+	check(player);
 
 	// Go through the spawn points that are not TE_NEUTRAL or TE_INVALID to decide which team to assign player to
 	TArray<ETeamEnum> validKeys;
@@ -142,17 +169,22 @@ ETeamEnum AGM_HiveWar::AllocateToTeam(AController* InController)
 		}
 	}
 
+
+	if (teamID == ETeamEnum::TE_INVALID)
+	{
+		// no point continuing
+		return teamID;
+	}
+
 	FTeamSpawnArea* area = TeamSpawnPoints.Find(teamID);
 	FString printMessage = "I got ";
 	printMessage.Append(UEnum::GetValueAsString(teamID));
 	GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, printMessage);
-	/*controller->AssignTeam(teamID);
-	if (area->AddToTeam(InController))
+	
+	if (area->AddToTeam(InPlayerState))
 	{
-	}*/
-
-	return teamID;
-	// otherwise this the assignment is invalid
+		return teamID;
+	}
 	return ETeamEnum::TE_INVALID;
 }
 
@@ -185,17 +217,17 @@ bool FTeamSpawnArea::AddSpawnPoint(AMonsterSpawnPoint* InNewSpawnPoint)
 	return true;
 }
 
-bool FTeamSpawnArea::AddToTeam(AController* InController)
+bool FTeamSpawnArea::AddToTeam(APlayerState* InPlayerState)
 {
-	ITeamInterface* controller = Cast<ITeamInterface>(InController);
+	ITeamInterface* controller = Cast<ITeamInterface>(InPlayerState);
 
 	if (!controller || AvailableSpawnPoints() <= 0)
 	{
 		return false;
 	}
 
-	/*controller->AssignTeam(TeamID);
-	Members.Add(InController);*/
+	controller->AssignTeam(TeamID);
+	Members.Add(InPlayerState);
 	return true;
 }
 

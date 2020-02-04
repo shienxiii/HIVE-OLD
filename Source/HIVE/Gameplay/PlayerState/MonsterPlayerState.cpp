@@ -14,6 +14,5 @@ void AMonsterPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 bool AMonsterPlayerState::AssignTeam(ETeamEnum InTeamID)
 {
 	TeamID = InTeamID;
-
 	return true;
 }
