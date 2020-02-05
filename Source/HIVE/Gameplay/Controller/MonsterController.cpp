@@ -110,7 +110,10 @@ void AMonsterController::ToggleCharacterSelectScreen(bool ToggleOn)
 void AMonsterController::UpdateCountdownTimer(float InTime)
 {
 	CountdownTimer = InTime;
-	CharacterSelect->UpdateSpawnTimer(CountdownTimer);
+	if (CharacterSelect)
+	{
+		CharacterSelect->UpdateSpawnTimer(CountdownTimer);
+	}
 }
 
 void AMonsterController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
