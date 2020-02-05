@@ -101,9 +101,16 @@ void AMonsterController::ToggleCharacterSelectScreen(bool ToggleOn)
 		SetInputMode(GameInputMode);
 		bShowMouseCursor = false;
 		CharacterSelect->RemoveFromViewport();
-		HUD->AddToViewport();
-		// TEMPORARY
-		HUD->SetTeamName(UEnum::GetValueAsString(GetTeam()));
+		if (HUD)
+		{
+			HUD->AddToViewport();
+			//// TEMPORARY
+			HUD->SetTeamName(UEnum::GetValueAsString(GetTeam()));
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Mamma Mia"));
+		}
 	}
 }
 
