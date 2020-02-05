@@ -64,7 +64,7 @@ bool AMonsterController::SpawnSelectedMonster_Validate()
 void AMonsterController::SpawnSelectedMonster_Implementation()
 {
 	// This function should only be run on the server
-	if (GetLocalRole() < ENetRole::ROLE_Authority)
+	if (GetLocalRole() < ENetRole::ROLE_Authority || GetTeam() == ETeamEnum::TE_INVALID || GetTeam() == ETeamEnum::TE_NEUTRAL)
 	{
 		return;
 	}

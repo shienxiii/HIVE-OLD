@@ -9,6 +9,7 @@ void AMonsterPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AMonsterPlayerState, TeamID);
+	DOREPLIFETIME(AMonsterPlayerState, AssignedSpawnPoint);
 }
 
 bool AMonsterPlayerState::AssignTeam(ETeamEnum InTeamID)

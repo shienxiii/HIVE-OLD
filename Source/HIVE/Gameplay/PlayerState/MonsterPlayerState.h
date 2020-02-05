@@ -7,6 +7,8 @@
 #include "GameFramework/PlayerState.h"
 #include "MonsterPlayerState.generated.h"
 
+class APlayerStart;
+
 /**
  * NOTE: A PlayerState contains information about a player that is replicated and visible to all players
  */
@@ -18,6 +20,9 @@ class HIVE_API AMonsterPlayerState : public APlayerState, public ITeamInterface
 protected:
 	UPROPERTY(Replicated, BlueprintReadOnly)
 		ETeamEnum TeamID = ETeamEnum::TE_NEUTRAL;
+
+	UPROPERTY(Replicated, BlueprintReadOnly)
+		APlayerStart* AssignedSpawnPoint;
 
 public:
 	

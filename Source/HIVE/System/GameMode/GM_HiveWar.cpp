@@ -3,6 +3,7 @@
 
 #include "GM_HiveWar.h"
 #include "HIVE/Gameplay/Monster/MonsterBase.h"
+#include "HIVE/Gameplay/Monster/MonsterSpawnPoint.h"
 #include "HIVE/Gameplay/Controller/MonsterController.h"
 #include "HIVE/Gameplay/PlayerState/MonsterPlayerState.h"
 #include "HIVE/Gameplay/GameState/HiveWarGameState.h"
