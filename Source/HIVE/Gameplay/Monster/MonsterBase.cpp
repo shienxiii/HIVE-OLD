@@ -235,7 +235,7 @@ void AMonsterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(AMonsterBase, CurrentTarget);
 }
 
-#include "Engine/Engine.h"
+//#include "Engine/Engine.h"
 void AMonsterBase::Restart()
 {
 	Super::Restart();
@@ -244,8 +244,8 @@ void AMonsterBase::Restart()
 	{
 		GetMonsterController()->ToggleCharacterSelectScreen(false);
 
-		FString keyName = UEnum::GetValueAsString(GetTeam());
-		GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Red, keyName);
+		/*FString keyName = UEnum::GetValueAsString(GetTeam());
+		GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Red, keyName);*/
 	}
 }
 #pragma endregion
@@ -260,7 +260,7 @@ ETeamEnum AMonsterBase::GetTeam()
 		return teamInterface->GetTeam();
 	}
 
-	return ITeamInterface::GetTeam();
+	return ETeamEnum::TE_INVALID;
 }
 #pragma endregion
 
