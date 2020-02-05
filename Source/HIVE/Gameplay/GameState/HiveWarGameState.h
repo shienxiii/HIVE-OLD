@@ -18,13 +18,14 @@ class HIVE_API AHiveWarGameState : public AGameState
 	GENERATED_BODY()
 	
 protected:
-	float GameStartTime;
+	UPROPERTY(Replicated)
+		float SpawnCountdown;
 
 public:
 	AHiveWarGameState();
 
-	void UpdateGameStartTime(float InUpdatedTime) { GameStartTime = InUpdatedTime; }
-	float GetGameStartTime() { return GameStartTime; }
+	void UpdateGameStartTime(float InUpdatedTime) { SpawnCountdown = InUpdatedTime; }
+	float GetSpawnCountdown() { return SpawnCountdown; }
 
 #pragma region Networking
 	/**

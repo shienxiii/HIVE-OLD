@@ -107,11 +107,18 @@ void AMonsterController::ToggleCharacterSelectScreen(bool ToggleOn)
 	}
 }
 
+void AMonsterController::UpdateCountdownTimer(float InTime)
+{
+	CountdownTimer = InTime;
+	CharacterSelect->UpdateSpawnTimer(CountdownTimer);
+}
+
 void AMonsterController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AMonsterController, SelectedMonster);
+	DOREPLIFETIME(AMonsterController, CountdownTimer);
 
 }
 

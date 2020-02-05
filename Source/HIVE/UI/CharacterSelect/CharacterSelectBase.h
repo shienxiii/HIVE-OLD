@@ -9,6 +9,7 @@
 class UPanelWidget;
 class UMaterialInterface;
 class UMaterialInstanceDynamic;
+class UTextBlock;
 class AMonsterController;
 
 /**
@@ -60,6 +61,13 @@ protected:
 	 */
 	UPROPERTY(meta = (BindWidget))
 		UPanelWidget* CharacterOptions;
+
+	// COUNTDOWN USE
+	UPROPERTY(meta = (BindWidget))
+		UTextBlock* SpawnTimer;
+
+	uint32 CurrentDisplayTime = 10;
+
 	
 public:
 	virtual bool Initialize() override;
@@ -79,4 +87,7 @@ public:
 	 * The event to be called when a character is selected to pass the selected character to the player controller
 	 */
 	void CharacterSelectEvent(TSubclassOf<class AMonsterBase> InSelectedMonster);
+
+	// TEMPORARY
+	void UpdateSpawnTimer(float InSpawnTimer);
 };

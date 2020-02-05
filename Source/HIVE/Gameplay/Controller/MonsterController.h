@@ -14,6 +14,7 @@ class UMonsterHUD;
 class AHiveWarGameState;
 
 /**
+ * NOTE: APlayerController only exist in the server the owning client
  * This is the APlayerController class to be used by all player during gameplay
  */
 UCLASS()
@@ -33,7 +34,6 @@ protected:
 		TSubclassOf<UMonsterHUD> HUD_BP = NULL;
 
 	UCharacterSelectBase* CharacterSelect = nullptr;
-	UMonsterHUD* HUD = nullptr;
 
 	/**
 	 * The selected monster class that will be spawned when game begins or when respawn countdown is finished
@@ -41,14 +41,15 @@ protected:
 	UPROPERTY(Replicated, BlueprintReadOnly)
 		TSubclassOf<AMonsterBase> SelectedMonster = NULL;
 #pragma endregion
-
-	bool SpawnCountdown = false;
-	float SpawnTimer = 0.0f;
+	UPROPERTY(Replicated)
+		float CountdownTimer;
+	UMonsterHUD* HUD = nullptr;
 
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 public:
+	//virtual void Tick(float DeltaTime) override;
 	AMonsterController(const FObjectInitializer& ObjectInitializer);
 
 #pragma region CharacterSelect
@@ -65,6 +66,9 @@ public:
 
 	TSubclassOf<AMonsterBase> GetSelectedMonster() { return SelectedMonster; }
 #pragma endregion
+
+	// TEMPORARY
+	void UpdateCountdownTimer(float InTime);
 
 
 #pragma region Networking

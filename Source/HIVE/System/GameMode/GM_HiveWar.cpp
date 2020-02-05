@@ -44,7 +44,7 @@ void AGM_HiveWar::BeginPlay()
 	}
 
 	// Get all the keys
-	TArray<ETeamEnum> allKeys;
+	/*TArray<ETeamEnum> allKeys;
 	TeamSpawnPoints.GetKeys(allKeys);
 
 	for (int i = 0; i < allKeys.Num(); i++)
@@ -57,21 +57,13 @@ void AGM_HiveWar::BeginPlay()
 		printMessage.Append(FString::FromInt(area->GetSpawnPoints().Num()));
 		printMessage.Append(" spawn points");
 		GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Green, printMessage);
-	}
+	}*/
 
 }
 
 AGM_HiveWar::AGM_HiveWar()
 {
-	/*static ConstructorHelpers::FClassFinder<APawn> tempMonsterBP(TEXT("/Game/Blueprint/TestCharacter/RedGuy.RedGuy_C"));
-	if (tempMonsterBP.Class != NULL)
-	{
-		DefaultPawnClass = tempMonsterBP.Class;
-		PlayerControllerClass = AMonsterController::StaticClass();
-		PlayerStateClass = AMonsterPlayerState::StaticClass();
-		GameStateClass = AHiveWarGameState::StaticClass();
-	}*/
-
+	// Set all default default classes to the class that is required for this game mode to run all its tasks
 	DefaultPawnClass = NULL;
 	PlayerControllerClass = AMonsterController::StaticClass();
 	PlayerStateClass = AMonsterPlayerState::StaticClass();
@@ -108,6 +100,17 @@ void AGM_HiveWar::PreGameTick(float DeltaTime)
 
 	PreGameWaitTime -= DeltaTime;
 
+	// DELETE ON FINAL GAME
+	TArray<AActor*> Players;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMonsterController::StaticClass(), Players);
+	for (int i = 0; i < Players.Num(); i++)
+	{
+		Cast<AMonsterController>(Players[i])->UpdateCountdownTimer(PreGameWaitTime);
+	}
+
+
+
+	// Begin allocating once pre-game phase ended
 	if (PreGameWaitTime <= 0.0f)
 	{
 		BeginTeamAllocation();
@@ -117,11 +120,8 @@ void AGM_HiveWar::PreGameTick(float DeltaTime)
 
 void AGM_HiveWar::SpawnMonsterForController(AMonsterController* InPlayerControl)
 {
-
-
 	FActorSpawnParameters spawnParam = FActorSpawnParameters();
 	spawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-	//spawnParam.IsRemoteOwned = true;
 	TArray<AActor*> start;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), start);
 	
@@ -155,8 +155,7 @@ void AGM_HiveWar::BeginTeamAllocation()
 
 ETeamEnum AGM_HiveWar::AllocateToTeam(APlayerState* InPlayerState)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, TEXT("Checking"));
-	// Make sure the player controller being passed implemented ITeamInterface
+	// Make sure the PlayerState being passed implemented ITeamInterface
 	ITeamInterface* player = Cast<ITeamInterface>(InPlayerState);
 	check(player);
 
@@ -175,12 +174,12 @@ ETeamEnum AGM_HiveWar::AllocateToTeam(APlayerState* InPlayerState)
 	{
 		// Check if there are space available for the controller to join the team
 		bool spaceAvailable = (TeamSpawnPoints.Find(validKeys[i])->AvailableSpawnPoints()) > 0;
-		if (spaceAvailable)
+		/*if (spaceAvailable)
 		{
 			FString printMessage = "Space available on ";
 			printMessage.Append(UEnum::GetValueAsString(validKeys[i]));
 			GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, printMessage);
-		}
+		}*/
 
 		// Make sure spaceAvailable is the condition of all checks that changes the teamID local variable to the current key
 		if (spaceAvailable && teamID == ETeamEnum::TE_INVALID)
@@ -204,10 +203,6 @@ ETeamEnum AGM_HiveWar::AllocateToTeam(APlayerState* InPlayerState)
 	}
 
 	FTeamSpawnArea* area = TeamSpawnPoints.Find(teamID);
-
-	/*FString printMessage = "I got ";
-	printMessage.Append(UEnum::GetValueAsString(teamID));
-	GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, printMessage);*/
 	
 	if (area->AddToTeam(InPlayerState))
 	{
@@ -225,10 +220,10 @@ int32 FTeamSpawnArea::GetFreeSpawnPoint(AController* InController)
 
 int32 FTeamSpawnArea::AvailableSpawnPoints()
 {
-	FString printMessage = UEnum::GetValueAsString(TeamID);
+	/*FString printMessage = UEnum::GetValueAsString(TeamID);
 	printMessage.Append(" has ");
 	printMessage.Append(FString::FromInt(SpawnPoints.Num() - Members.Num()));
-	GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, printMessage);
+	GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, printMessage);*/
 	return SpawnPoints.Num() - Members.Num();
 }
 

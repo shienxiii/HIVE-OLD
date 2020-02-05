@@ -8,7 +8,7 @@
 #include "MonsterPlayerState.generated.h"
 
 /**
- * 
+ * NOTE: A PlayerState contains information about a player that is replicated and visible to all players
  */
 UCLASS()
 class HIVE_API AMonsterPlayerState : public APlayerState, public ITeamInterface

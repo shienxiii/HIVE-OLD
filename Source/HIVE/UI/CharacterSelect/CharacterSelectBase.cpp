@@ -5,6 +5,7 @@
 #include "Components/PanelWidget.h"
 #include "Components/VerticalBox.h"
 #include "Components/HorizontalBox.h"
+#include "Components/TextBlock.h"
 #include "CharacterSlotBase.h"
 #include "HIVE/Gameplay/Monster/MonsterBase.h"
 #include "HIVE/Gameplay/Controller/MonsterController.h"
@@ -83,4 +84,14 @@ void UCharacterSelectBase::CharacterSelectEvent(TSubclassOf<class AMonsterBase> 
 	}
 
 	OwningPlayer->UpdateSelectedMonster(InSelectedMonster);
+}
+
+void UCharacterSelectBase::UpdateSpawnTimer(float InSpawnTimer)
+{
+	CurrentDisplayTime = 1 + (InSpawnTimer / 1);
+	SpawnTimer->SetText(FText::FromString(FString::FromInt(CurrentDisplayTime)));
+	if (CurrentDisplayTime == 0)
+	{
+		SpawnTimer->SetVisibility(ESlateVisibility::Collapsed);
+	}
 }
