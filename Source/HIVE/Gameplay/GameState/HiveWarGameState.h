@@ -7,13 +7,7 @@
 #include "HiveWarGameState.generated.h"
 
 
-UENUM()
-enum class EGamePhase : uint8
-{
-	GP_PREGAME,
-	GP_MIDGAME,
-	GP_ENDGAME
-};
+
 
 /**
  * Provide the game state for Hive War mode
@@ -24,18 +18,13 @@ class HIVE_API AHiveWarGameState : public AGameState
 	GENERATED_BODY()
 	
 protected:
-	UPROPERTY(Replicated)
-		EGamePhase Phase = EGamePhase::GP_PREGAME;
-
-
-	UPROPERTY(Replicated)
-		float PreGameWaitTime = 3.0f;
+	float GameStartTime;
 
 public:
 	AHiveWarGameState();
-	virtual void Tick(float DeltaTime) override;
-	virtual void PreGameTick(float DeltaTime);
 
+	void UpdateGameStartTime(float InUpdatedTime) { GameStartTime = InUpdatedTime; }
+	float GetGameStartTime() { return GameStartTime; }
 
 #pragma region Networking
 	/**

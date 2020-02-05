@@ -4,6 +4,7 @@
 #include "MonsterController.h"
 #include "HIVE/System/GameMode/GM_HiveWar.h"
 #include "HIVE/UI/CharacterSelect/CharacterSelectBase.h"
+#include "HIVE/UI/HUD/MonsterHUD.h"
 #include "HIVE/Gameplay/PlayerState/MonsterPlayerState.h"
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
@@ -21,6 +22,7 @@ void AMonsterController::BeginPlay()
 	}
 
 	CharacterSelect = CreateWidget<UCharacterSelectBase>(this, CharacterSelectBP);
+	HUD = CreateWidget<UMonsterHUD>(this, HUD_BP);
 
 	CharSelInputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockInFullscreen);
 	CharSelInputMode.SetWidgetToFocus(CharacterSelect->TakeWidget());
@@ -92,12 +94,16 @@ void AMonsterController::ToggleCharacterSelectScreen(bool ToggleOn)
 		SetInputMode(CharSelInputMode);
 		bShowMouseCursor = true;
 		CharacterSelect->AddToViewport();
+		HUD->RemoveFromViewport();
 	}
 	else
 	{
 		SetInputMode(GameInputMode);
 		bShowMouseCursor = false;
 		CharacterSelect->RemoveFromViewport();
+		HUD->AddToViewport();
+		// TEMPORARY
+		HUD->SetTeamName(UEnum::GetValueAsString(GetTeam()));
 	}
 }
 

@@ -10,6 +10,8 @@
 class AMonsterBase;
 class AMonsterPlayerState;
 class UCharacterSelectBase;
+class UMonsterHUD;
+class AHiveWarGameState;
 
 /**
  * This is the APlayerController class to be used by all player during gameplay
@@ -27,7 +29,11 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 		TSubclassOf<UCharacterSelectBase> CharacterSelectBP = NULL;
 
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		TSubclassOf<UMonsterHUD> HUD_BP = NULL;
+
 	UCharacterSelectBase* CharacterSelect = nullptr;
+	UMonsterHUD* HUD = nullptr;
 
 	/**
 	 * The selected monster class that will be spawned when game begins or when respawn countdown is finished

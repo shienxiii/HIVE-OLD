@@ -50,7 +50,7 @@ void AGM_HiveWar::BeginPlay()
 	for (int i = 0; i < allKeys.Num(); i++)
 	{
 		FTeamSpawnArea* area = TeamSpawnPoints.Find(allKeys[i]);
-
+		area->SortSpawnPoints();
 		FString keyName = UEnum::GetValueAsString(allKeys[i]);
 		FString printMessage = keyName;
 		printMessage.Append(" have ");
@@ -63,19 +63,56 @@ void AGM_HiveWar::BeginPlay()
 
 AGM_HiveWar::AGM_HiveWar()
 {
-	static ConstructorHelpers::FClassFinder<APawn> tempMonsterBP(TEXT("/Game/Blueprint/TestCharacter/RedGuy.RedGuy_C"));
+	/*static ConstructorHelpers::FClassFinder<APawn> tempMonsterBP(TEXT("/Game/Blueprint/TestCharacter/RedGuy.RedGuy_C"));
 	if (tempMonsterBP.Class != NULL)
 	{
 		DefaultPawnClass = tempMonsterBP.Class;
 		PlayerControllerClass = AMonsterController::StaticClass();
 		PlayerStateClass = AMonsterPlayerState::StaticClass();
 		GameStateClass = AHiveWarGameState::StaticClass();
-	}
+	}*/
+
+	DefaultPawnClass = NULL;
+	PlayerControllerClass = AMonsterController::StaticClass();
+	PlayerStateClass = AMonsterPlayerState::StaticClass();
+	GameStateClass = AHiveWarGameState::StaticClass();
 }
 
 void AGM_HiveWar::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	switch (Phase)
+	{
+	case EGamePhase::GP_PREGAME:
+		PreGameTick(DeltaTime);
+		break;
+	case EGamePhase::GP_MIDGAME:
+		/*GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, "GM MidGameTick");
+		SetActorTickEnabled(false);*/
+		break;
+	case EGamePhase::GP_ENDGAME:
+		break;
+	default:
+		break;
+	}
+}
+
+void AGM_HiveWar::PreGameTick(float DeltaTime)
+{
+	/*GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, "GM PreGameTick");*/
+	if (GetLocalRole() != ENetRole::ROLE_Authority)
+	{
+		return;
+	}
+
+	PreGameWaitTime -= DeltaTime;
+
+	if (PreGameWaitTime <= 0.0f)
+	{
+		BeginTeamAllocation();
+		Phase = EGamePhase::GP_MIDGAME;
+	}
 }
 
 void AGM_HiveWar::SpawnMonsterForController(AMonsterController* InPlayerControl)
@@ -88,31 +125,21 @@ void AGM_HiveWar::SpawnMonsterForController(AMonsterController* InPlayerControl)
 	TArray<AActor*> start;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), start);
 	
-	AMonsterBase* myMonster = GetWorld()->SpawnActor<AMonsterBase>((InPlayerControl->GetSelectedMonster()), start[0]->GetActorLocation() , FRotator(), spawnParam);
+	AMonsterBase* myMonster = GetWorld()->SpawnActor<AMonsterBase>((InPlayerControl->GetSelectedMonster()), start[0]->GetActorLocation() , start[0]->GetActorRotation(), spawnParam);
 	InPlayerControl->Possess(myMonster);
 }
 
 void AGM_HiveWar::PostLogin(APlayerController* InPlayerController)
 {
-	// This code runs on SERVER ONLY when a new player joins, will not run on the player controller of the server
-
-	// NOTE: When this code runs, player is not yet controlling a monster but just recently joined the game
-
 	Super::PostLogin(InPlayerController);
-
-	//ETeamEnum allocatedTo = AllocateToTeam(InPlayerController);
-
-	/*FString printMessage = InPlayerController->GetActorLabel();
-	printMessage.Append(" is allocated to ");
-	printMessage.Append(UEnum::GetValueAsString(allocatedTo));
-	GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, printMessage);*/
 }
 
 void AGM_HiveWar::BeginTeamAllocation()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, "BeginTeamAllocation");
+	//GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, "BeginTeamAllocation");
 	bCanSpawnPlayerCharacter = true;
 	TArray<APlayerState*> currentPlayers = GetGameState<AHiveWarGameState>()->PlayerArray;
+
 	for (int i = 0; i < currentPlayers.Num(); i++)
 	{
 		if (AllocateToTeam(currentPlayers[i]) != ETeamEnum::TE_INVALID)
@@ -177,9 +204,10 @@ ETeamEnum AGM_HiveWar::AllocateToTeam(APlayerState* InPlayerState)
 	}
 
 	FTeamSpawnArea* area = TeamSpawnPoints.Find(teamID);
-	FString printMessage = "I got ";
+
+	/*FString printMessage = "I got ";
 	printMessage.Append(UEnum::GetValueAsString(teamID));
-	GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, printMessage);
+	GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, printMessage);*/
 	
 	if (area->AddToTeam(InPlayerState))
 	{

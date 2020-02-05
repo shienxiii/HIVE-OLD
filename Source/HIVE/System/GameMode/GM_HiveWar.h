@@ -11,6 +11,15 @@
 
 class AMonsterController;
 
+
+UENUM()
+enum class EGamePhase : uint8
+{
+	GP_PREGAME,
+	GP_MIDGAME,
+	GP_ENDGAME
+};
+
 USTRUCT()
 struct FTeamSpawnArea
 {
@@ -52,7 +61,10 @@ public:
 	bool AddToTeam(APlayerState* InPlayerState);
 	void AssignSpawnPointToPlayer(int8 InSpawnPointIndex, AController* InController);
 
+	void SortSpawnPoints() { SpawnPoints.Sort(); }
+
 };
+
 
 /**
  * GameMode for any arena stage
@@ -63,6 +75,9 @@ class HIVE_API AGM_HiveWar : public AGameMode
 	GENERATED_BODY()
 
 protected:
+	EGamePhase Phase = EGamePhase::GP_PREGAME;
+	float PreGameWaitTime = 10.0f;
+
 	TMap<ETeamEnum, FTeamSpawnArea> TeamSpawnPoints;
 
 	// Boolean to decide if the game is in a state where they can spawn the player character
@@ -75,6 +90,7 @@ protected:
 public:
 	AGM_HiveWar();
 	virtual void Tick(float DeltaTime) override;
+	virtual void PreGameTick(float DeltaTime);
 
 	void SpawnMonsterForController(AMonsterController* InPlayerControl);
 
