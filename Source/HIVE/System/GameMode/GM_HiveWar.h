@@ -106,4 +106,6 @@ public:
 	 */
 	virtual ETeamEnum AllocateToTeam(APlayerState* InPlayerState);
 
+	UFUNCTION(Exec)
+		void StartGame();
 };

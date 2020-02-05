@@ -75,20 +75,20 @@ void AGM_HiveWar::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	switch (Phase)
-	{
-	case EGamePhase::GP_PREGAME:
-		PreGameTick(DeltaTime);
-		break;
-	case EGamePhase::GP_MIDGAME:
-		/*GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, "GM MidGameTick");
-		SetActorTickEnabled(false);*/
-		break;
-	case EGamePhase::GP_ENDGAME:
-		break;
-	default:
-		break;
-	}
+	//switch (Phase)
+	//{
+	//case EGamePhase::GP_PREGAME:
+	//	PreGameTick(DeltaTime);
+	//	break;
+	//case EGamePhase::GP_MIDGAME:
+	//	/*GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, "GM MidGameTick");
+	//	SetActorTickEnabled(false);*/
+	//	break;
+	//case EGamePhase::GP_ENDGAME:
+	//	break;
+	//default:
+	//	break;
+	//}
 }
 
 void AGM_HiveWar::PreGameTick(float DeltaTime)
@@ -210,6 +210,19 @@ ETeamEnum AGM_HiveWar::AllocateToTeam(APlayerState* InPlayerState)
 		return teamID;
 	}
 	return ETeamEnum::TE_INVALID;
+}
+
+void AGM_HiveWar::StartGame()
+{
+	if (GetLocalRole() == ENetRole::ROLE_Authority)
+	{
+		BeginTeamAllocation();
+		Phase = EGamePhase::GP_MIDGAME;
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, TEXT("Not Server"));
+	}
 }
 
 
