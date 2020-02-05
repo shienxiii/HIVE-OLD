@@ -101,16 +101,14 @@ void AMonsterController::ToggleCharacterSelectScreen(bool ToggleOn)
 		SetInputMode(GameInputMode);
 		bShowMouseCursor = false;
 		CharacterSelect->RemoveFromViewport();
-		if (HUD)
-		{
-			HUD->AddToViewport();
-			//// TEMPORARY
-			HUD->SetTeamName(UEnum::GetValueAsString(GetTeam()));
-		}
-		else
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Mamma Mia"));
-		}
+		
+		// This part of the code is identified as causing random crash when a character is selected
+		//if (HUD)
+		//{
+		//	HUD->AddToViewport();
+		//	//// TEMPORARY
+		//	HUD->SetTeamName(UEnum::GetValueAsString(GetTeam()));
+		//}
 	}
 }
 
