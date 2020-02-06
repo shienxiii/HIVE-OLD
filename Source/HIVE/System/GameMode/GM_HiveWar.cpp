@@ -66,14 +66,23 @@ void AGM_HiveWar::SpawnMonsterForController(AMonsterController* InPlayerControl)
 	// Needs update the most
 	FActorSpawnParameters spawnParam = FActorSpawnParameters();
 	spawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-	TArray<AActor*> start;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), start);
-	
-	AMonsterBase* myMonster = GetWorld()->SpawnActor<AMonsterBase>((InPlayerControl->GetSelectedMonster()), start[0]->GetActorLocation() , start[0]->GetActorRotation(), spawnParam);
 
-	/*AMonsterSpawnPoint* defaultSpawn = InPlayerControl->GetPlayerState<AMonsterSpawnPoint>();
+	AMonsterPlayerState* state = InPlayerControl->GetPlayerState<AMonsterPlayerState>();
 
-	AMonsterBase* myMonster = GetWorld()->SpawnActor<AMonsterBase>((InPlayerControl->GetSelectedMonster()), defaultSpawn->GetActorLocation(), defaultSpawn->GetActorRotation(), spawnParam);*/
+	if (!state)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Failed to get state"));
+		return;
+	}
+
+	if (!state->GetDefaultSpawnPoint())
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Failed to get spawn point"));
+		return;
+	}
+
+
+	AMonsterBase* myMonster = GetWorld()->SpawnActor<AMonsterBase>((InPlayerControl->GetSelectedMonster()), state->GetDefaultSpawnPoint()->GetActorLocation(), state->GetDefaultSpawnPoint()->GetActorRotation(), spawnParam);
 	InPlayerControl->Possess(myMonster);
 }
 
@@ -207,6 +216,7 @@ bool FTeamSpawnArea::AssignSpawnPointToPlayer(APlayerState* InPlayerState)
 		if (!(SpawnPoints[i]->GetLinkedPlayer()))
 		{
 			SpawnPoints[i]->LinkPlayer(InPlayerState);
+			state->SetDefaultSpawnPoint(SpawnPoints[i]);
 			return true;
 		}
 	}
