@@ -20,9 +20,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 		ETeamEnum TeamID			= ETeamEnum::TE_NEUTRAL;
 	
-	AController* LinkedPlayer	= nullptr;
+	APlayerState* LinkedPlayer	= nullptr;
 
 public:
 	ETeamEnum GetTeam() { return TeamID; }
-	void LinkPlayer(AController* InController) { LinkedPlayer = InController; }
+	void LinkPlayer(APlayerState* InPlayer) { LinkedPlayer = InPlayer; }
+	APlayerState* GetLinkedPlayer() { return LinkedPlayer; }
 };

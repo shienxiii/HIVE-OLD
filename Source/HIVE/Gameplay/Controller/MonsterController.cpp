@@ -2,6 +2,7 @@
 
 
 #include "MonsterController.h"
+#include "HIVE/Gameplay/Monster/MonsterBase.h"
 #include "HIVE/System/GameMode/GM_HiveWar.h"
 #include "HIVE/UI/CharacterSelect/CharacterSelectBase.h"
 #include "HIVE/UI/HUD/MonsterHUD.h"
@@ -22,18 +23,9 @@ void AMonsterController::BeginPlay()
 		return;
 	}
 
-
 	HUD = CreateWidget<UHiveWarHUD_Base>(this, HUD_BP);
 	HUD->AddToViewport();
 	HUD->SwitchActivePanel(EHUDActiveWidget::HAW_CHARACTERSELECT);
-
-	/*CharacterSelect = CreateWidget<UCharacterSelectBase>(this, CharacterSelectBP);
-	HUD = CreateWidget<UMonsterHUD>(this, HUD_BP);
-
-	CharSelInputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockInFullscreen);
-	CharSelInputMode.SetWidgetToFocus(CharacterSelect->TakeWidget());
-
-	ToggleCharacterSelectScreen(true);*/
 }
 
 AMonsterController::AMonsterController(const FObjectInitializer& ObjectInitializer)
@@ -70,7 +62,7 @@ bool AMonsterController::SpawnSelectedMonster_Validate()
 void AMonsterController::SpawnSelectedMonster_Implementation()
 {
 	// This function should only be run on the server
-	if (GetLocalRole() < ENetRole::ROLE_Authority || GetTeam() == ETeamEnum::TE_INVALID || GetTeam() == ETeamEnum::TE_NEUTRAL)
+	if (GetLocalRole() < ENetRole::ROLE_Authority || GetTeam() == ETeamEnum::TE_INVALID || GetTeam() == ETeamEnum::TE_NEUTRAL || !SelectedMonster)
 	{
 		return;
 	}
@@ -97,26 +89,11 @@ void AMonsterController::ToggleCharacterSelectScreen(bool ToggleOn)
 
 	if (ToggleOn)
 	{
-		/*SetInputMode(CharSelInputMode);
-		bShowMouseCursor = true;
-		CharacterSelect->AddToViewport();
-		HUD->RemoveFromViewport();*/
 		HUD->SwitchActivePanel(EHUDActiveWidget::HAW_CHARACTERSELECT);
 	}
 	else
 	{
 		HUD->SwitchActivePanel(EHUDActiveWidget::HAW_STAT);
-		/*SetInputMode(GameInputMode);
-		bShowMouseCursor = false;
-		CharacterSelect->RemoveFromViewport();*/
-		
-		// This part of the code is identified as causing random crash when a character is selected
-		//if (HUD)
-		//{
-		//	HUD->AddToViewport();
-		//	//// TEMPORARY
-		//	HUD->SetTeamName(UEnum::GetValueAsString(GetTeam()));
-		//}
 	}
 }
 

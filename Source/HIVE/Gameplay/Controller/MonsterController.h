@@ -30,9 +30,6 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 		TSubclassOf<UHiveWarHUD_Base> HUD_BP = NULL;
 
-
-	FInputModeGameOnly	GameInputMode;
-	FInputModeUIOnly	CharSelInputMode;
 #pragma region CharacterSelect
 
 	/**

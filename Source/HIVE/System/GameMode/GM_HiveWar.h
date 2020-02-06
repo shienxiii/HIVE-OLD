@@ -51,15 +51,14 @@ public:
 		Members		= TArray<APlayerState*>();
 	}
 
-	// Return the index of the next free spawn point
-	int32 GetFreeSpawnPoint(AController* InController);
+
 	int32 AvailableSpawnPoints();
 	TArray<AMonsterSpawnPoint*> GetSpawnPoints() { return SpawnPoints; }
 	TArray<APlayerState*> GetMembersList() { return Members; }
 
 	bool AddSpawnPoint(AMonsterSpawnPoint* InNewSpawnPoint);
 	bool AddToTeam(APlayerState* InPlayerState);
-	void AssignSpawnPointToPlayer(int8 InSpawnPointIndex, AController* InController);
+	bool AssignSpawnPointToPlayer(APlayerState* InPlayerState);
 
 	void SortSpawnPoints() { SpawnPoints.Sort(); }
 
@@ -90,7 +89,6 @@ protected:
 public:
 	AGM_HiveWar();
 	virtual void Tick(float DeltaTime) override;
-	virtual void PreGameTick(float DeltaTime);
 
 	void SpawnMonsterForController(AMonsterController* InPlayerControl);
 

@@ -6,6 +6,8 @@
 #include "UObject/Interface.h"
 #include "TeamInterface.generated.h"
 
+class APlayerStart;
+
 UENUM(BlueprintType)		//"BlueprintType" is essential to include
 enum class ETeamEnum : uint8
 {
@@ -32,7 +34,8 @@ class HIVE_API ITeamInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual bool AssignTeam(ETeamEnum InTeam) { return false; };
-
-	virtual ETeamEnum GetTeam() { return ETeamEnum::TE_NEUTRAL; };
+	virtual bool AssignTeam(ETeamEnum InTeam) { return false; }
+	virtual ETeamEnum GetTeam() { return ETeamEnum::TE_NEUTRAL; }
+	virtual APlayerStart* GetDefaultSpawnPoint() { return nullptr; }
+	virtual bool SetDefaultSpawnPoint(APlayerStart* InSpawnPoint) { return false; }
 };

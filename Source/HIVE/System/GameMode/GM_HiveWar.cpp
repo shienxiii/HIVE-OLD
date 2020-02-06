@@ -26,6 +26,8 @@ void AGM_HiveWar::BeginPlay()
 	TArray<AActor*> spawnPoints;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMonsterSpawnPoint::StaticClass(), spawnPoints);
 
+
+	// Go through all the spawn points found and allocate them to their respective team in the TMap TeamSpawnPoint
 	for (int i = 0; i < spawnPoints.Num(); i++)
 	{
 		AMonsterSpawnPoint* spawn = Cast<AMonsterSpawnPoint>(spawnPoints[i]);
@@ -43,23 +45,6 @@ void AGM_HiveWar::BeginPlay()
 		// Add the spawn point to the relevant team
 		team->AddSpawnPoint(spawn);
 	}
-
-	// Get all the keys
-	/*TArray<ETeamEnum> allKeys;
-	TeamSpawnPoints.GetKeys(allKeys);
-
-	for (int i = 0; i < allKeys.Num(); i++)
-	{
-		FTeamSpawnArea* area = TeamSpawnPoints.Find(allKeys[i]);
-		area->SortSpawnPoints();
-		FString keyName = UEnum::GetValueAsString(allKeys[i]);
-		FString printMessage = keyName;
-		printMessage.Append(" have ");
-		printMessage.Append(FString::FromInt(area->GetSpawnPoints().Num()));
-		printMessage.Append(" spawn points");
-		GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Green, printMessage);
-	}*/
-
 }
 
 AGM_HiveWar::AGM_HiveWar()
@@ -74,40 +59,21 @@ AGM_HiveWar::AGM_HiveWar()
 void AGM_HiveWar::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	//switch (Phase)
-	//{
-	//case EGamePhase::GP_PREGAME:
-	//	PreGameTick(DeltaTime);
-	//	break;
-	//case EGamePhase::GP_MIDGAME:
-	//	/*GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, "GM MidGameTick");
-	//	SetActorTickEnabled(false);*/
-	//	break;
-	//case EGamePhase::GP_ENDGAME:
-	//	break;
-	//default:
-	//	break;
-	//}
-}
-
-void AGM_HiveWar::PreGameTick(float DeltaTime)
-{
-	/*GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, "GM PreGameTick");*/
-	if (GetLocalRole() != ENetRole::ROLE_Authority)
-	{
-		return;
-	}
 }
 
 void AGM_HiveWar::SpawnMonsterForController(AMonsterController* InPlayerControl)
 {
+	// Needs update the most
 	FActorSpawnParameters spawnParam = FActorSpawnParameters();
 	spawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	TArray<AActor*> start;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), start);
 	
 	AMonsterBase* myMonster = GetWorld()->SpawnActor<AMonsterBase>((InPlayerControl->GetSelectedMonster()), start[0]->GetActorLocation() , start[0]->GetActorRotation(), spawnParam);
+
+	/*AMonsterSpawnPoint* defaultSpawn = InPlayerControl->GetPlayerState<AMonsterSpawnPoint>();
+
+	AMonsterBase* myMonster = GetWorld()->SpawnActor<AMonsterBase>((InPlayerControl->GetSelectedMonster()), defaultSpawn->GetActorLocation(), defaultSpawn->GetActorRotation(), spawnParam);*/
 	InPlayerControl->Possess(myMonster);
 }
 
@@ -118,7 +84,6 @@ void AGM_HiveWar::PostLogin(APlayerController* InPlayerController)
 
 void AGM_HiveWar::BeginTeamAllocation()
 {
-	//GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, "BeginTeamAllocation");
 	bCanSpawnPlayerCharacter = true;
 	TArray<APlayerState*> currentPlayers = GetGameState<AHiveWarGameState>()->PlayerArray;
 
@@ -156,12 +121,6 @@ ETeamEnum AGM_HiveWar::AllocateToTeam(APlayerState* InPlayerState)
 	{
 		// Check if there are space available for the controller to join the team
 		bool spaceAvailable = (TeamSpawnPoints.Find(validKeys[i])->AvailableSpawnPoints()) > 0;
-		/*if (spaceAvailable)
-		{
-			FString printMessage = "Space available on ";
-			printMessage.Append(UEnum::GetValueAsString(validKeys[i]));
-			GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, printMessage);
-		}*/
 
 		// Make sure spaceAvailable is the condition of all checks that changes the teamID local variable to the current key
 		if (spaceAvailable && teamID == ETeamEnum::TE_INVALID)
@@ -190,6 +149,7 @@ ETeamEnum AGM_HiveWar::AllocateToTeam(APlayerState* InPlayerState)
 	{
 		return teamID;
 	}
+
 	return ETeamEnum::TE_INVALID;
 }
 
@@ -200,25 +160,12 @@ void AGM_HiveWar::StartGame()
 		BeginTeamAllocation();
 		Phase = EGamePhase::GP_MIDGAME;
 	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, TEXT("Not Server"));
-	}
 }
 
 
-#pragma region TeamSpawnPoint
-int32 FTeamSpawnArea::GetFreeSpawnPoint(AController* InController)
-{
-	return int32();
-}
-
+#pragma region TeamSpawnArea
 int32 FTeamSpawnArea::AvailableSpawnPoints()
 {
-	/*FString printMessage = UEnum::GetValueAsString(TeamID);
-	printMessage.Append(" has ");
-	printMessage.Append(FString::FromInt(SpawnPoints.Num() - Members.Num()));
-	GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, printMessage);*/
 	return SpawnPoints.Num() - Members.Num();
 }
 
@@ -237,19 +184,33 @@ bool FTeamSpawnArea::AddSpawnPoint(AMonsterSpawnPoint* InNewSpawnPoint)
 
 bool FTeamSpawnArea::AddToTeam(APlayerState* InPlayerState)
 {
-	ITeamInterface* controller = Cast<ITeamInterface>(InPlayerState);
+	ITeamInterface* state = Cast<ITeamInterface>(InPlayerState);
 
-	if (!controller || AvailableSpawnPoints() <= 0)
+	if (!state || AvailableSpawnPoints() <= 0)
 	{
 		return false;
 	}
 
-	controller->AssignTeam(TeamID);
+	state->AssignTeam(TeamID);
 	Members.Add(InPlayerState);
-	return true;
+	
+	return AssignSpawnPointToPlayer(InPlayerState);
 }
 
-void FTeamSpawnArea::AssignSpawnPointToPlayer(int8 InSpawnPointIndex, AController* InController)
+bool FTeamSpawnArea::AssignSpawnPointToPlayer(APlayerState* InPlayerState)
 {
+	ITeamInterface* state = Cast<ITeamInterface>(InPlayerState);
+
+	// Find free spawn point
+	for (int i = 0; i < SpawnPoints.Num(); i++)
+	{
+		if (!(SpawnPoints[i]->GetLinkedPlayer()))
+		{
+			SpawnPoints[i]->LinkPlayer(InPlayerState);
+			return true;
+		}
+	}
+
+	return false;
 }
 #pragma endregion

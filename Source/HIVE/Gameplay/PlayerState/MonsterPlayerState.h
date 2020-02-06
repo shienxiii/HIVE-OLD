@@ -22,7 +22,7 @@ protected:
 		ETeamEnum TeamID = ETeamEnum::TE_NEUTRAL;
 
 	UPROPERTY(Replicated, BlueprintReadOnly)
-		APlayerStart* AssignedSpawnPoint;
+		APlayerStart* DefaultSpawnPoint = nullptr;
 
 public:
 	
@@ -35,8 +35,9 @@ public:
 
 #pragma region TeamInterface
 	virtual bool AssignTeam(ETeamEnum InTeamID) override;
-
 	virtual ETeamEnum GetTeam() override { return TeamID; }
+	virtual APlayerStart* GetDefaultSpawnPoint() override { return DefaultSpawnPoint; }
+	virtual bool SetDefaultSpawnPoint(APlayerStart* InSpawnPoint) override;
 #pragma endregion
 
 };
