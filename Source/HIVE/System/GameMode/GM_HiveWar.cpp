@@ -98,25 +98,6 @@ void AGM_HiveWar::PreGameTick(float DeltaTime)
 	{
 		return;
 	}
-
-	PreGameWaitTime -= DeltaTime;
-
-	// DELETE ON FINAL GAME
-	TArray<AActor*> Players;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMonsterController::StaticClass(), Players);
-	for (int i = 0; i < Players.Num(); i++)
-	{
-		Cast<AMonsterController>(Players[i])->UpdateCountdownTimer(PreGameWaitTime);
-	}
-
-
-
-	// Begin allocating once pre-game phase ended
-	if (PreGameWaitTime <= 0.0f)
-	{
-		BeginTeamAllocation();
-		Phase = EGamePhase::GP_MIDGAME;
-	}
 }
 
 void AGM_HiveWar::SpawnMonsterForController(AMonsterController* InPlayerControl)

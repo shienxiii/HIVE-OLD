@@ -9,9 +9,11 @@
 
 class AMonsterBase;
 class AMonsterPlayerState;
+class UHiveWarHUD_Base;
 class UCharacterSelectBase;
 class UMonsterHUD;
 class AHiveWarGameState;
+
 
 /**
  * NOTE: APlayerController only exist in the server the owning client
@@ -23,17 +25,15 @@ class HIVE_API AMonsterController : public APlayerController, public ITeamInterf
 	GENERATED_BODY()
 
 protected:
-#pragma region CharacterSelect
+	UHiveWarHUD_Base* HUD;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		TSubclassOf<UHiveWarHUD_Base> HUD_BP = NULL;
+
+
 	FInputModeGameOnly	GameInputMode;
 	FInputModeUIOnly	CharSelInputMode;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-		TSubclassOf<UCharacterSelectBase> CharacterSelectBP = NULL;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-		TSubclassOf<UMonsterHUD> HUD_BP = NULL;
-
-	UCharacterSelectBase* CharacterSelect = nullptr;
+#pragma region CharacterSelect
 
 	/**
 	 * The selected monster class that will be spawned when game begins or when respawn countdown is finished
@@ -41,11 +41,8 @@ protected:
 	UPROPERTY(Replicated, BlueprintReadOnly)
 		TSubclassOf<AMonsterBase> SelectedMonster = NULL;
 #pragma endregion
-	UPROPERTY(Replicated)
-		float CountdownTimer;
-	UMonsterHUD* HUD = nullptr;
 
-
+	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 public:
@@ -66,9 +63,6 @@ public:
 
 	TSubclassOf<AMonsterBase> GetSelectedMonster() { return SelectedMonster; }
 #pragma endregion
-
-	// TEMPORARY
-	void UpdateCountdownTimer(float InTime);
 
 
 #pragma region Networking

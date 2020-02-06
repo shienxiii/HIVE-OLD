@@ -5,6 +5,7 @@
 #include "HIVE/System/GameMode/GM_HiveWar.h"
 #include "HIVE/UI/CharacterSelect/CharacterSelectBase.h"
 #include "HIVE/UI/HUD/MonsterHUD.h"
+#include "HIVE/UI/HUD/HiveWarHUD_Base.h"
 #include "HIVE/Gameplay/PlayerState/MonsterPlayerState.h"
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
@@ -21,18 +22,23 @@ void AMonsterController::BeginPlay()
 		return;
 	}
 
-	CharacterSelect = CreateWidget<UCharacterSelectBase>(this, CharacterSelectBP);
+
+	HUD = CreateWidget<UHiveWarHUD_Base>(this, HUD_BP);
+	HUD->AddToViewport();
+	HUD->SwitchActivePanel(EHUDActiveWidget::HAW_CHARACTERSELECT);
+
+	/*CharacterSelect = CreateWidget<UCharacterSelectBase>(this, CharacterSelectBP);
 	HUD = CreateWidget<UMonsterHUD>(this, HUD_BP);
 
 	CharSelInputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockInFullscreen);
 	CharSelInputMode.SetWidgetToFocus(CharacterSelect->TakeWidget());
 
-	ToggleCharacterSelectScreen(true);
+	ToggleCharacterSelectScreen(true);*/
 }
 
 AMonsterController::AMonsterController(const FObjectInitializer& ObjectInitializer)
 {
-	if (CharacterSelectBP != NULL && CharacterSelectBP != UCharacterSelectBase::StaticClass())
+	/*if (CharacterSelectBP != NULL && CharacterSelectBP != UCharacterSelectBase::StaticClass())
 	{
 		return;
 	}
@@ -42,7 +48,7 @@ AMonsterController::AMonsterController(const FObjectInitializer& ObjectInitializ
 	if (charSelect.Class != nullptr)
 	{
 		CharacterSelectBP = charSelect.Class;
-	}
+	}*/
 }
 
 bool AMonsterController::UpdateSelectedMonster_Validate(TSubclassOf<AMonsterBase> InNewMonster)
@@ -91,16 +97,18 @@ void AMonsterController::ToggleCharacterSelectScreen(bool ToggleOn)
 
 	if (ToggleOn)
 	{
-		SetInputMode(CharSelInputMode);
+		/*SetInputMode(CharSelInputMode);
 		bShowMouseCursor = true;
 		CharacterSelect->AddToViewport();
-		HUD->RemoveFromViewport();
+		HUD->RemoveFromViewport();*/
+		HUD->SwitchActivePanel(EHUDActiveWidget::HAW_CHARACTERSELECT);
 	}
 	else
 	{
-		SetInputMode(GameInputMode);
+		HUD->SwitchActivePanel(EHUDActiveWidget::HAW_STAT);
+		/*SetInputMode(GameInputMode);
 		bShowMouseCursor = false;
-		CharacterSelect->RemoveFromViewport();
+		CharacterSelect->RemoveFromViewport();*/
 		
 		// This part of the code is identified as causing random crash when a character is selected
 		//if (HUD)
@@ -112,27 +120,16 @@ void AMonsterController::ToggleCharacterSelectScreen(bool ToggleOn)
 	}
 }
 
-void AMonsterController::UpdateCountdownTimer(float InTime)
-{
-	CountdownTimer = InTime;
-	if (CharacterSelect)
-	{
-		CharacterSelect->UpdateSpawnTimer(CountdownTimer);
-	}
-}
-
 void AMonsterController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AMonsterController, SelectedMonster);
-	DOREPLIFETIME(AMonsterController, CountdownTimer);
 
 }
 
 
 #pragma region TeamInterface
-#include "Engine/Engine.h"
 bool AMonsterController::AssignTeam(ETeamEnum InTeam)
 {
 	if (InTeam == ETeamEnum::TE_NEUTRAL || InTeam == ETeamEnum::TE_INVALID) { return false; }
