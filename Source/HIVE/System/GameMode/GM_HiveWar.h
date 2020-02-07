@@ -58,7 +58,6 @@ public:
 
 	bool AddSpawnPoint(AMonsterSpawnPoint* InNewSpawnPoint);
 	bool AddToTeam(APlayerState* InPlayerState);
-	bool AssignSpawnPointToPlayer(APlayerState* InPlayerState);
 
 	void SortSpawnPoints() { SpawnPoints.Sort(); }
 

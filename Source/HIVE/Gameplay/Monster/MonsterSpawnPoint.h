@@ -19,11 +19,7 @@ class HIVE_API AMonsterSpawnPoint : public APlayerStart, public ITeamInterface
 protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 		ETeamEnum TeamID			= ETeamEnum::TE_NEUTRAL;
-	
-	APlayerState* LinkedPlayer	= nullptr;
 
 public:
 	ETeamEnum GetTeam() { return TeamID; }
-	void LinkPlayer(APlayerState* InPlayer) { LinkedPlayer = InPlayer; }
-	APlayerState* GetLinkedPlayer() { return LinkedPlayer; }
 };

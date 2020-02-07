@@ -201,26 +201,12 @@ bool FTeamSpawnArea::AddToTeam(APlayerState* InPlayerState)
 	}
 
 	state->AssignTeam(TeamID);
+
+	//SpawnPoints[Members.Num()]->LinkPlayer(InPlayerState);
+	state->SetDefaultSpawnPoint(SpawnPoints[Members.Num()]);
+
 	Members.Add(InPlayerState);
 	
-	return AssignSpawnPointToPlayer(InPlayerState);
-}
-
-bool FTeamSpawnArea::AssignSpawnPointToPlayer(APlayerState* InPlayerState)
-{
-	ITeamInterface* state = Cast<ITeamInterface>(InPlayerState);
-
-	// Find free spawn point
-	for (int i = 0; i < SpawnPoints.Num(); i++)
-	{
-		if (!(SpawnPoints[i]->GetLinkedPlayer()))
-		{
-			SpawnPoints[i]->LinkPlayer(InPlayerState);
-			state->SetDefaultSpawnPoint(SpawnPoints[i]);
-			return true;
-		}
-	}
-
-	return false;
+	return true;
 }
 #pragma endregion
