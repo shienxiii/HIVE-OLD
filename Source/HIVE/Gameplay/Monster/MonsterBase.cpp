@@ -93,7 +93,8 @@ void AMonsterBase::LightAttack()
 	{
 		return;
 	}
-	Server_AttackHit(10.0f, FDamageEvent(), GetController(), this);
+	TakeDamage(10.0f, FDamageEvent(), GetController(), this);
+	//Server_AttackHit(10.0f, FDamageEvent(), GetController(), this);
 }
 
 void AMonsterBase::HeavyAttack()
@@ -103,7 +104,7 @@ void AMonsterBase::HeavyAttack()
 		return;
 	}
 
-	Server_AttackHit(100.0f, FDamageEvent(), GetController(), this);
+	TakeDamage(10.0f, FDamageEvent(), GetController(), this);
 }
 
 void AMonsterBase::ExecuteDodge()
@@ -217,8 +218,8 @@ void AMonsterBase::Server_AttackHit_Implementation(float DamageAmount, FDamageEv
 
 float AMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	//Health = FMath::Clamp(Health - DamageAmount, 0.0f, 100.0f);
-	Server_AttackHit(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	Health = FMath::Clamp(Health - DamageAmount, 0.0f, 100.0f);
+	//Server_AttackHit(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
 	return DamageAmount;
 }
@@ -235,17 +236,15 @@ void AMonsterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(AMonsterBase, CurrentTarget);
 }
 
-//#include "Engine/Engine.h"
+
 void AMonsterBase::Restart()
 {
 	Super::Restart();
 
 	if (GetMonsterController() && IsLocallyControlled())
 	{
-		GetMonsterController()->ToggleCharacterSelectScreen(false);
-
-		/*FString keyName = UEnum::GetValueAsString(GetTeam());
-		GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Red, keyName);*/
+		// Currently written under the assumption that this function runs only when possessed
+		GetMonsterController()->PawnRestarted(this);
 	}
 }
 #pragma endregion

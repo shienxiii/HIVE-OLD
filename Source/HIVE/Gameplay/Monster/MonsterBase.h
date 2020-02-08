@@ -22,6 +22,7 @@ protected:
 	// Lock On
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "LockOn")
 		float LockOnRange = 5000.0f;
+
 	UPROPERTY(Replicated, BlueprintReadOnly, VisibleAnywhere, Category = "LockOn")
 		AActor* CurrentTarget = nullptr;
 
@@ -30,6 +31,7 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Stats", meta = (DisplayName = "Dodge Strength", ClampMin = "0", UIMin = "0"))
 		float DodgeStrength = 1500.0f;
+
 public:
 	// Sets default values for this character's properties
 	AMonsterBase(const FObjectInitializer& ObjectInitializer);

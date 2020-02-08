@@ -11,12 +11,11 @@ class AMonsterBase;
 class AMonsterPlayerState;
 class UHiveWarHUD_Base;
 class UCharacterSelectBase;
-class UMonsterHUD;
 class AHiveWarGameState;
 
 
 /**
- * NOTE: APlayerController only exist in the server the owning client
+ * NOTE: APlayerController only exist in server and the owning client
  * This is the APlayerController class to be used by all player during gameplay
  */
 UCLASS()
@@ -30,21 +29,24 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 		TSubclassOf<UHiveWarHUD_Base> HUD_BP = NULL;
 
-#pragma region CharacterSelect
-
 	/**
 	 * The selected monster class that will be spawned when game begins or when respawn countdown is finished
 	 */
 	UPROPERTY(Replicated, BlueprintReadOnly)
 		TSubclassOf<AMonsterBase> SelectedMonster = NULL;
-#pragma endregion
 
 	
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	// Runs on server side when possessing a pawn
+	virtual void OnPossess(APawn* InPawn) override;
 public:
 	//virtual void Tick(float DeltaTime) override;
 	AMonsterController(const FObjectInitializer& ObjectInitializer);
+	void PawnRestarted(AMonsterBase* InMonster);
+
 
 #pragma region CharacterSelect
 	/**
@@ -55,8 +57,6 @@ public:
 
 	UFUNCTION(Reliable, Server, WithValidation)
 		void SpawnSelectedMonster();
-
-		void ToggleCharacterSelectScreen(bool ToggleOn);
 
 	TSubclassOf<AMonsterBase> GetSelectedMonster() { return SelectedMonster; }
 #pragma endregion

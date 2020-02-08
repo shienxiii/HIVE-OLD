@@ -17,8 +17,9 @@ enum class EHUDActiveWidget : uint8
 
 class UWidgetSwitcher;
 class UCharacterSelectBase;
-class UMonsterHUD;
+class UMonsterStatHUD;
 class AMonsterController;
+class AMonsterBase;
 
 /**
  * This class is used as the center HUD for the players during HiveWar to switch between active HUD
@@ -30,6 +31,7 @@ class HIVE_API UHiveWarHUD_Base : public UUserWidget
 
 protected:
 	AMonsterController* OwningPlayer = nullptr;
+	AMonsterBase* ObservedMonster = nullptr;
 	FInputModeGameOnly GameInput;
 	FInputModeUIOnly UIInput;
 	FInputModeGameAndUI GameAndUIInput;
@@ -54,4 +56,6 @@ public:
 	virtual void SynchronizeProperties() override;
 
 	bool SwitchActivePanel(EHUDActiveWidget InNewActiveWidget);
+
+	void UpdateObservedMonster(AMonsterBase* InMonster);
 };

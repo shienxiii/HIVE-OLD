@@ -68,19 +68,7 @@ void AGM_HiveWar::SpawnMonsterForController(AMonsterController* InPlayerControl)
 	spawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
 	AMonsterPlayerState* state = InPlayerControl->GetPlayerState<AMonsterPlayerState>();
-
-	if (!state)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Failed to get state"));
-		return;
-	}
-
-	if (!state->GetDefaultSpawnPoint())
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Failed to get spawn point"));
-		return;
-	}
-
+	check(state);
 
 	AMonsterBase* myMonster = GetWorld()->SpawnActor<AMonsterBase>((InPlayerControl->GetSelectedMonster()), state->GetDefaultSpawnPoint()->GetActorLocation(), state->GetDefaultSpawnPoint()->GetActorRotation(), spawnParam);
 	InPlayerControl->Possess(myMonster);
@@ -104,7 +92,7 @@ void AGM_HiveWar::BeginTeamAllocation()
 		}
 		else
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Green, "Invalid allocation");
+			GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Red, "Invalid allocation");
 		}
 	}
 }

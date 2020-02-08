@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "MonsterHUD.generated.h"
+#include "MonsterStatHUD.generated.h"
 
 class UTextBlock;
 
@@ -12,7 +12,7 @@ class UTextBlock;
  * 
  */
 UCLASS()
-class HIVE_API UMonsterHUD : public UUserWidget
+class HIVE_API UMonsterStatHUD : public UUserWidget
 {
 	GENERATED_BODY()
 	

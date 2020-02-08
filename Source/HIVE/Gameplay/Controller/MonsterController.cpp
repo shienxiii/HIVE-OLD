@@ -5,7 +5,7 @@
 #include "HIVE/Gameplay/Monster/MonsterBase.h"
 #include "HIVE/System/GameMode/GM_HiveWar.h"
 #include "HIVE/UI/CharacterSelect/CharacterSelectBase.h"
-#include "HIVE/UI/HUD/MonsterHUD.h"
+#include "HIVE/UI/HUD/MonsterStatHUD.h"
 #include "HIVE/UI/HUD/HiveWarHUD_Base.h"
 #include "HIVE/Gameplay/PlayerState/MonsterPlayerState.h"
 #include "Blueprint/UserWidget.h"
@@ -13,6 +13,7 @@
 #include "Engine/World.h"
 #include "Net/UnrealNetwork.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Engine/Engine.h"
 
 void AMonsterController::BeginPlay()
 {
@@ -26,6 +27,12 @@ void AMonsterController::BeginPlay()
 	HUD = CreateWidget<UHiveWarHUD_Base>(this, HUD_BP);
 	HUD->AddToViewport();
 	HUD->SwitchActivePanel(EHUDActiveWidget::HAW_CHARACTERSELECT);
+}
+
+
+void AMonsterController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
 }
 
 AMonsterController::AMonsterController(const FObjectInitializer& ObjectInitializer)
@@ -43,6 +50,18 @@ AMonsterController::AMonsterController(const FObjectInitializer& ObjectInitializ
 	}*/
 }
 
+void AMonsterController::PawnRestarted(AMonsterBase* InMonster)
+{
+	if (!IsLocalPlayerController())
+	{
+		return;
+	}
+
+	HUD->SwitchActivePanel(EHUDActiveWidget::HAW_STAT);
+}
+
+
+#pragma region CharacterSelect
 bool AMonsterController::UpdateSelectedMonster_Validate(TSubclassOf<AMonsterBase> InNewMonster)
 {
 	return true;
@@ -79,23 +98,8 @@ void AMonsterController::SpawnSelectedMonster_Implementation()
 	// Request game mode to spawn the monster for this controller
 	gameMode->SpawnMonsterForController(this);
 }
+#pragma endregion
 
-void AMonsterController::ToggleCharacterSelectScreen(bool ToggleOn)
-{
-	if (!IsLocalPlayerController())
-	{
-		return;
-	}
-
-	if (ToggleOn)
-	{
-		HUD->SwitchActivePanel(EHUDActiveWidget::HAW_CHARACTERSELECT);
-	}
-	else
-	{
-		HUD->SwitchActivePanel(EHUDActiveWidget::HAW_STAT);
-	}
-}
 
 void AMonsterController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
