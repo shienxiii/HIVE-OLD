@@ -23,11 +23,14 @@ void UMonsterStatHUD::BindMonster(AMonsterBase* InMonster)
 void UMonsterStatHUD::UnbindMonster()
 {
 	Monster = nullptr;
-	/*HP->PercentDelegate.Unbind();*/
 }
 
 float UMonsterStatHUD::HP_Ratio()
 {
-	//GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Green, "Running HP Ratio");
-	return 1.0f;
+	if (!Monster)
+	{
+		return 0.0f;
+	}
+
+	return Monster->GetHealthPercentRatio();
 }
