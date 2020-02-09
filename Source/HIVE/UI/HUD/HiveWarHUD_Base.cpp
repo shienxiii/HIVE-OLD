@@ -6,6 +6,7 @@
 #include "HIVE/UI/CharacterSelect/CharacterSelectBase.h"
 #include "HIVE/UI/HUD/MonsterStatHUD.h"
 #include "HIVE/Gameplay/Controller/MonsterController.h"
+#include "HIVE/Gameplay/Monster/MonsterBase.h"
 
 void UHiveWarHUD_Base::SynchronizeProperties()
 {
@@ -15,8 +16,6 @@ void UHiveWarHUD_Base::SynchronizeProperties()
 
 bool UHiveWarHUD_Base::SwitchActivePanel(EHUDActiveWidget InNewActiveWidget)
 {
-	/*FString keyName = UEnum::GetValueAsString(GetTeam());
-		GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Red, keyName);*/
 	switch (InNewActiveWidget)
 	{
 		case EHUDActiveWidget::HAW_STAT:
@@ -38,4 +37,10 @@ bool UHiveWarHUD_Base::SwitchActivePanel(EHUDActiveWidget InNewActiveWidget)
 	}
 
 	return true;
+}
+
+void UHiveWarHUD_Base::BindMonster(AMonsterBase* InMonster)
+{
+	Monster = InMonster;
+	Stat->BindMonster(InMonster);
 }

@@ -58,6 +58,7 @@ void AMonsterController::PawnRestarted(AMonsterBase* InMonster)
 	}
 
 	HUD->SwitchActivePanel(EHUDActiveWidget::HAW_STAT);
+	HUD->BindMonster(InMonster);
 }
 
 

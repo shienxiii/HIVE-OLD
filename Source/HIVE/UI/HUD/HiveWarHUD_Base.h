@@ -31,7 +31,10 @@ class HIVE_API UHiveWarHUD_Base : public UUserWidget
 
 protected:
 	AMonsterController* OwningPlayer = nullptr;
-	AMonsterBase* ObservedMonster = nullptr;
+	AMonsterBase* Monster = nullptr;
+
+	float f = 0.5f;
+
 	FInputModeGameOnly GameInput;
 	FInputModeUIOnly UIInput;
 	FInputModeGameAndUI GameAndUIInput;
@@ -46,7 +49,7 @@ protected:
 		UCharacterSelectBase* CharacterSelector;
 
 	UPROPERTY(meta = (BindWidget))
-		UUserWidget* Stat;
+		UMonsterStatHUD* Stat;
 
 
 public:
@@ -57,5 +60,5 @@ public:
 
 	bool SwitchActivePanel(EHUDActiveWidget InNewActiveWidget);
 
-	void UpdateObservedMonster(AMonsterBase* InMonster);
+	void BindMonster(AMonsterBase* InMonster);
 };

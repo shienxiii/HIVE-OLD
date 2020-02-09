@@ -85,13 +85,3 @@ void UCharacterSelectBase::CharacterSelectEvent(TSubclassOf<class AMonsterBase> 
 
 	OwningPlayer->UpdateSelectedMonster(InSelectedMonster);
 }
-
-void UCharacterSelectBase::UpdateSpawnTimer(float InSpawnTimer)
-{
-	CurrentDisplayTime = 1 + (InSpawnTimer / 1);
-	SpawnTimer->SetText(FText::FromString(FString::FromInt(CurrentDisplayTime)));
-	if (CurrentDisplayTime == 0)
-	{
-		SpawnTimer->SetVisibility(ESlateVisibility::Collapsed);
-	}
-}

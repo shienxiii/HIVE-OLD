@@ -62,12 +62,6 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 		UPanelWidget* CharacterOptions;
 
-	// COUNTDOWN USE
-	UPROPERTY(meta = (BindWidget))
-		UTextBlock* SpawnTimer;
-
-	uint32 CurrentDisplayTime = 10;
-
 	
 public:
 	virtual bool Initialize() override;
@@ -88,6 +82,4 @@ public:
 	 */
 	void CharacterSelectEvent(TSubclassOf<class AMonsterBase> InSelectedMonster);
 
-	// TEMPORARY
-	void UpdateSpawnTimer(float InSpawnTimer);
 };

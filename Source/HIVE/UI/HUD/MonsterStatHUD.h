@@ -6,7 +6,9 @@
 #include "Blueprint/UserWidget.h"
 #include "MonsterStatHUD.generated.h"
 
+class AMonsterBase;
 class UTextBlock;
+class UProgressBar;
 
 /**
  * 
@@ -17,9 +19,17 @@ class HIVE_API UMonsterStatHUD : public UUserWidget
 	GENERATED_BODY()
 	
 protected:
-	UPROPERTY(meta = (BindWidget))
-		UTextBlock* TeamName;
+	UPROPERTY(BlueprintReadOnly)
+		AMonsterBase* Monster;
 
+	UPROPERTY(meta = (BindWidget))
+		UProgressBar* HP;
 public:
-	void SetTeamName(FString InTeamName);
+	virtual bool Initialize() override;
+
+	void BindMonster(AMonsterBase* InMonster);
+	void UnbindMonster();
+
+	UFUNCTION(BlueprintPure)
+		float HP_Ratio();
 };

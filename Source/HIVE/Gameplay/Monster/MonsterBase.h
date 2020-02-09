@@ -29,6 +29,9 @@ protected:
 	UPROPERTY(Replicated, BlueprintReadOnly, VisibleAnywhere, Category = "Stats", meta = (DisplayName = "Health", ClampMin = "0", UIMin = "0"))
 		float Health = 100.0f;
 
+	UPROPERTY(Replicated, BlueprintReadOnly, VisibleAnywhere, Category = "Stats", meta = (DisplayName = "Max Health", ClampMin = "0", UIMin = "0"))
+		float MaxHealth = 100.0f;
+
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Stats", meta = (DisplayName = "Dodge Strength", ClampMin = "0", UIMin = "0"))
 		float DodgeStrength = 1500.0f;
 
@@ -129,5 +132,8 @@ public:
 	 * Returns null if this monster is controlled by AI or non-child of AMonsterController
 	 */
 	AMonsterController* GetMonsterController();
+
+	UFUNCTION(BlueprintPure)
+		float GetHealthPercentRatio() { return 1.0f; }
 
 };
