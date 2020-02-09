@@ -7,7 +7,6 @@
 #include "Components/ProgressBar.h"
 
 
-#include "Engine/Engine.h"
 bool UMonsterStatHUD::Initialize()
 {
 	Super::Initialize();

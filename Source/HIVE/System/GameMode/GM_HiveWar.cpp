@@ -86,11 +86,7 @@ void AGM_HiveWar::BeginTeamAllocation()
 
 	for (int i = 0; i < currentPlayers.Num(); i++)
 	{
-		if (AllocateToTeam(currentPlayers[i]) != ETeamEnum::TE_INVALID)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Green, "Successful allocation");
-		}
-		else
+		if (AllocateToTeam(currentPlayers[i]) == ETeamEnum::TE_INVALID)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Red, "Invalid allocation");
 		}

@@ -134,6 +134,6 @@ public:
 	AMonsterController* GetMonsterController();
 
 	UFUNCTION(BlueprintPure)
-		float GetHealthPercentRatio() { return 1.0f; }
+		float GetHealthPercentRatio() { return Health / MaxHealth; }
 
 };

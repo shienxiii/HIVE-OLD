@@ -87,14 +87,16 @@ FRotator AMonsterBase::GetViewRotator()
 	return controlRotation;
 }
 
+
 void AMonsterBase::LightAttack()
 {
 	if (!CurrentTarget)
 	{
 		return;
 	}
-	TakeDamage(10.0f, FDamageEvent(), GetController(), this);
-	//Server_AttackHit(10.0f, FDamageEvent(), GetController(), this);
+
+	//TakeDamage(10.0f, FDamageEvent(), GetController(), this);
+	Server_AttackHit(10.0f, FDamageEvent(), GetController(), this);
 }
 
 void AMonsterBase::HeavyAttack()
@@ -104,7 +106,9 @@ void AMonsterBase::HeavyAttack()
 		return;
 	}
 
-	TakeDamage(10.0f, FDamageEvent(), GetController(), this);
+
+	Server_AttackHit(20.0f, FDamageEvent(), GetController(), this);
+	//TakeDamage(10.0f, FDamageEvent(), GetController(), this);
 }
 
 void AMonsterBase::ExecuteDodge()
