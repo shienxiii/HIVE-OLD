@@ -5,7 +5,7 @@
 #include "HIVE/Gameplay/Monster/MonsterBase.h"
 #include "HIVE/System/GameMode/GM_HiveWar.h"
 #include "HIVE/UI/CharacterSelect/CharacterSelectBase.h"
-#include "HIVE/UI/HUD/MonsterStatHUD.h"
+#include "HIVE/UI/HUD/PlayerStatHUD.h"
 #include "HIVE/UI/HUD/HiveWarHUD_Base.h"
 #include "HIVE/Gameplay/PlayerState/MonsterPlayerState.h"
 #include "Blueprint/UserWidget.h"

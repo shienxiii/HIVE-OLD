@@ -17,7 +17,7 @@ enum class EHUDActiveWidget : uint8
 
 class UWidgetSwitcher;
 class UCharacterSelectBase;
-class UMonsterStatHUD;
+class UPlayerStatHUD;
 class AMonsterController;
 class AMonsterBase;
 
@@ -49,7 +49,7 @@ protected:
 		UCharacterSelectBase* CharacterSelector;
 
 	UPROPERTY(meta = (BindWidget))
-		UMonsterStatHUD* Stat;
+		UPlayerStatHUD* Stat;
 
 
 public:

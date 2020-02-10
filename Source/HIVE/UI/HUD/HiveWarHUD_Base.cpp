@@ -4,7 +4,7 @@
 #include "HiveWarHUD_Base.h"
 #include "Components/WidgetSwitcher.h"
 #include "HIVE/UI/CharacterSelect/CharacterSelectBase.h"
-#include "HIVE/UI/HUD/MonsterStatHUD.h"
+#include "HIVE/UI/HUD/PlayerStatHUD.h"
 #include "HIVE/Gameplay/Controller/MonsterController.h"
 #include "HIVE/Gameplay/Monster/MonsterBase.h"
 
