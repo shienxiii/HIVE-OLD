@@ -31,7 +31,9 @@ class HIVE_API UHiveWarHUD_Base : public UUserWidget
 
 protected:
 	AMonsterController* OwningPlayer = nullptr;
-	AMonsterBase* Monster = nullptr;
+
+	UPROPERTY(BlueprintReadOnly)
+		AMonsterBase* Monster = nullptr;
 
 	float f = 0.5f;
 
@@ -50,6 +52,9 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 		UPlayerStatHUD* Stat;
+
+	UPROPERTY(meta = (BindWidget))
+		UWidget* PlayScreen;
 
 
 public:

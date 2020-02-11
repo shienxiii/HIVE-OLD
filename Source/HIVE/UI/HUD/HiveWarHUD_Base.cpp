@@ -19,7 +19,7 @@ bool UHiveWarHUD_Base::SwitchActivePanel(EHUDActiveWidget InNewActiveWidget)
 	switch (InNewActiveWidget)
 	{
 		case EHUDActiveWidget::HAW_STAT:
-			Switcher->SetActiveWidget(Stat);
+			Switcher->SetActiveWidget(PlayScreen);
 			OwningPlayer->SetInputMode(GameInput);
 			OwningPlayer->bShowMouseCursor = false;
 			break;
