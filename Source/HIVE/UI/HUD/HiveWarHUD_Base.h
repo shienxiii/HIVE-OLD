@@ -67,6 +67,13 @@ public:
 
 	void BindMonster(AMonsterBase* InMonster);
 
+	/**
+	 * Calculates the location of the actor in UMG canvas space
+	 *
+	 * @param InActor The actor in which to calculate the UMG position of
+	 *
+	 * @return FVector2D position on UMG space
+	 */
 	UFUNCTION(BlueprintPure)
 		FVector2D GetWorldPositionToScreenPositionScaled(AActor* InActor);
 };

@@ -61,5 +61,5 @@ FVector2D UHiveWarHUD_Base::GetWorldPositionToScreenPositionScaled(AActor* InAct
 	
 	dpi = 1 / dpi;
 	
-	return FVector2D(viewX * dpi, viewY * dpi);
+	return screenPosition * dpi;
 }
