@@ -7,6 +7,8 @@
 #include "HIVE/UI/HUD/MonsterStat_Base.h"
 #include "HIVE/Gameplay/Controller/MonsterController.h"
 #include "HIVE/Gameplay/Monster/MonsterBase.h"
+#include "Engine/UserInterfaceSettings.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
 
 void UHiveWarHUD_Base::SynchronizeProperties()
 {
@@ -43,4 +45,29 @@ void UHiveWarHUD_Base::BindMonster(AMonsterBase* InMonster)
 {
 	Monster = InMonster;
 	MonsterStat->BindMonster(InMonster);
+}
+
+FVector2D UHiveWarHUD_Base::GetWorldPositionToScreenPositionScaled(AActor* InActor)
+{
+	// Get the current viewport size
+	int32 viewX, viewY;
+	GetOwningPlayer()->GetViewportSize(viewX, viewY);
+
+	float dpi = GetDefault<UUserInterfaceSettings>(UUserInterfaceSettings::StaticClass())->GetDPIScaleBasedOnSize(FIntPoint(viewX, viewY));
+
+	FVector2D screenPosition;
+	GetOwningPlayer()->ProjectWorldLocationToScreen(InActor->GetActorLocation(), screenPosition, true);
+	
+	dpi = 1 / dpi;
+
+	if (viewY <= viewX)
+	{
+		viewY *= dpi;
+	}
+	else
+	{
+		viewX *= dpi;
+	}
+	
+	return FVector2D(viewX, viewY);
 }

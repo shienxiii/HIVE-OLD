@@ -66,4 +66,7 @@ public:
 	bool SwitchActivePanel(EHUDActiveWidget InNewActiveWidget);
 
 	void BindMonster(AMonsterBase* InMonster);
+
+	UFUNCTION(BlueprintPure)
+		FVector2D GetWorldPositionToScreenPositionScaled(AActor* InActor);
 };
