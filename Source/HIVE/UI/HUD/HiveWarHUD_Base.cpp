@@ -4,7 +4,7 @@
 #include "HiveWarHUD_Base.h"
 #include "Components/WidgetSwitcher.h"
 #include "HIVE/UI/CharacterSelect/CharacterSelectBase.h"
-#include "HIVE/UI/HUD/PlayerStatHUD.h"
+#include "HIVE/UI/HUD/MonsterStat_Base.h"
 #include "HIVE/Gameplay/Controller/MonsterController.h"
 #include "HIVE/Gameplay/Monster/MonsterBase.h"
 
@@ -42,5 +42,5 @@ bool UHiveWarHUD_Base::SwitchActivePanel(EHUDActiveWidget InNewActiveWidget)
 void UHiveWarHUD_Base::BindMonster(AMonsterBase* InMonster)
 {
 	Monster = InMonster;
-	Stat->BindMonster(InMonster);
+	MonsterStat->BindMonster(InMonster);
 }

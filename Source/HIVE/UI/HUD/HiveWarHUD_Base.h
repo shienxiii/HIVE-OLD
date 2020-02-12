@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-
 #include "Blueprint/UserWidget.h"
 #include "HiveWarHUD_Base.generated.h"
 
@@ -17,6 +16,7 @@ enum class EHUDActiveWidget : uint8
 
 class UWidgetSwitcher;
 class UCharacterSelectBase;
+class UMonsterStat_Base;
 class UPlayerStatHUD;
 class AMonsterController;
 class AMonsterBase;
@@ -51,7 +51,7 @@ protected:
 		UCharacterSelectBase* CharacterSelector;
 
 	UPROPERTY(meta = (BindWidget))
-		UPlayerStatHUD* Stat;
+		UMonsterStat_Base* MonsterStat;
 
 	UPROPERTY(meta = (BindWidget))
 		UWidget* PlayScreen;
