@@ -53,21 +53,13 @@ FVector2D UHiveWarHUD_Base::GetWorldPositionToScreenPositionScaled(AActor* InAct
 	int32 viewX, viewY;
 	GetOwningPlayer()->GetViewportSize(viewX, viewY);
 
+	// Calculate DPI of the viewport
 	float dpi = GetDefault<UUserInterfaceSettings>(UUserInterfaceSettings::StaticClass())->GetDPIScaleBasedOnSize(FIntPoint(viewX, viewY));
 
 	FVector2D screenPosition;
 	GetOwningPlayer()->ProjectWorldLocationToScreen(InActor->GetActorLocation(), screenPosition, true);
 	
 	dpi = 1 / dpi;
-
-	if (viewY <= viewX)
-	{
-		viewY *= dpi;
-	}
-	else
-	{
-		viewX *= dpi;
-	}
 	
-	return FVector2D(viewX, viewY);
+	return FVector2D(viewX * dpi, viewY * dpi);
 }
