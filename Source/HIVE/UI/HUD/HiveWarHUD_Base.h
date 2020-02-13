@@ -54,10 +54,14 @@ protected:
 		UMonsterStat_Base* MonsterStat;
 
 	UPROPERTY(meta = (BindWidget))
-		UWidget* PlayScreen;
+		UWidget* PlayerHUD;
 
+	UPROPERTY(meta = (BindWidget))
+		UWidget* LockOnIcon;
 
 public:
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+
 	/**
 	 * Override synchronise the property of this UUserWidget on both editor and game
 	 */
@@ -67,6 +71,8 @@ public:
 
 	void BindMonster(AMonsterBase* InMonster);
 
+
+
 	/**
 	 * Calculates the location of the actor in UMG canvas space
 	 *
@@ -74,6 +80,5 @@ public:
 	 *
 	 * @return FVector2D position on UMG space
 	 */
-	UFUNCTION(BlueprintPure)
-		FVector2D GetWorldPositionToScreenPositionScaled(AActor* InActor);
+	UFUNCTION(BlueprintPure) FVector2D GetWorldPositionToScreenPositionScaled(AActor* InActor);
 };

@@ -10,6 +10,17 @@
 #include "Engine/UserInterfaceSettings.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 
+void UHiveWarHUD_Base::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	LockOnIcon->SetVisibility(Monster && Monster->GetCurrentLockOnTarget() ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+
+	if (!LockOnIcon->IsVisible()) { return; }
+
+	LockOnIcon->SetRenderTranslation(GetWorldPositionToScreenPositionScaled(Monster->GetCurrentLockOnTarget()));
+}
+
 void UHiveWarHUD_Base::SynchronizeProperties()
 {
 	Super::SynchronizeProperties();
@@ -21,7 +32,7 @@ bool UHiveWarHUD_Base::SwitchActivePanel(EHUDActiveWidget InNewActiveWidget)
 	switch (InNewActiveWidget)
 	{
 		case EHUDActiveWidget::HAW_STAT:
-			Switcher->SetActiveWidget(PlayScreen);
+			Switcher->SetActiveWidget(PlayerHUD);
 			OwningPlayer->SetInputMode(GameInput);
 			OwningPlayer->bShowMouseCursor = false;
 			break;
