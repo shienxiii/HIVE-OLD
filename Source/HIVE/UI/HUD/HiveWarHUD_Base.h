@@ -33,9 +33,7 @@ protected:
 	AMonsterController* OwningPlayer = nullptr;
 
 	UPROPERTY(BlueprintReadOnly)
-		AMonsterBase* Monster = nullptr;
-
-	float f = 0.5f;
+		AMonsterBase* OwningMonster = nullptr;
 
 	FInputModeGameOnly GameInput;
 	FInputModeUIOnly UIInput;
@@ -53,6 +51,7 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 		UMonsterStat_Base* MonsterStat;
 
+	// NOTE: This is the overlay for the HUD that displays the monster stat and lock on icon
 	UPROPERTY(meta = (BindWidget))
 		UWidget* PlayerHUD;
 
@@ -80,5 +79,5 @@ public:
 	 *
 	 * @return FVector2D position on UMG space
 	 */
-	UFUNCTION(BlueprintPure) FVector2D GetWorldPositionToScreenPositionScaled(AActor* InActor);
+	UFUNCTION(BlueprintPure) FVector2D GetWorldPositionToScreenPositionUMGScaled(AActor* InActor);
 };

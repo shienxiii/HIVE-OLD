@@ -151,7 +151,6 @@ void AGM_HiveWar::StartGame()
 	if (GetLocalRole() == ENetRole::ROLE_Authority)
 	{
 		BeginTeamAllocation();
-		Phase = EGamePhase::GP_MIDGAME;
 	}
 }
 

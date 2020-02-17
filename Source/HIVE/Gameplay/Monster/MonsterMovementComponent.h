@@ -67,8 +67,8 @@ protected:
 
 	
 	UPROPERTY(EditAnywhere, Category = "Monster Movement(Rotation Setting)")
-		float MaxHeadRotatingAngle = 90.0f;
-	bool FixBodyRotation = false;
+		float MaxHeadRotationAngle = 90.0f;
+
 
 	UPROPERTY(Replicated)
 		ELaunchType LaunchState = ELaunchType::LT_NULL;

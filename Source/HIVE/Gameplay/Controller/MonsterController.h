@@ -41,7 +41,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	// Runs on server side when possessing a pawn
-	virtual void OnPossess(APawn* InPawn) override;
+	//virtual void OnPossess(APawn* InPawn) override;
 public:
 	//virtual void Tick(float DeltaTime) override;
 	AMonsterController(const FObjectInitializer& ObjectInitializer);
@@ -66,7 +66,7 @@ public:
 	/**
 	 * Needs to be implemented to initialize replicated properties
 	 */
-	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 #pragma endregion
 
 #pragma region TeamInterface

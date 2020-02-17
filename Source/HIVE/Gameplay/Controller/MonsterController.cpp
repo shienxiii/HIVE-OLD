@@ -29,12 +29,6 @@ void AMonsterController::BeginPlay()
 	HUD->SwitchActivePanel(EHUDActiveWidget::HAW_CHARACTERSELECT);
 }
 
-
-void AMonsterController::OnPossess(APawn* InPawn)
-{
-	Super::OnPossess(InPawn);
-}
-
 AMonsterController::AMonsterController(const FObjectInitializer& ObjectInitializer)
 {
 	/*if (CharacterSelectBP != NULL && CharacterSelectBP != UCharacterSelectBase::StaticClass())

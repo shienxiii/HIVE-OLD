@@ -2,7 +2,6 @@
 
 
 #include "HiveWarGameState.h"
-#include "HIVE/System/GameMode/GM_HiveWar.h"
 #include "Net/UnrealNetwork.h"
 
 AHiveWarGameState::AHiveWarGameState()

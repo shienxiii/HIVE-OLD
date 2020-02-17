@@ -17,10 +17,10 @@ bool UMonsterStat_Base::Initialize()
 
 float UMonsterStat_Base::HP_Ratio()
 {
-	if (!Monster)
+	if (!OwningMonster)
 	{
 		return 0.0f;
 	}
 
-	return Monster->GetHealthPercentRatio();
+	return OwningMonster->GetHealthPercentRatio();
 }

@@ -19,7 +19,7 @@ class HIVE_API UMonsterStat_Base : public UUserWidget
 
 protected:
 	UPROPERTY(BlueprintReadOnly)
-		AMonsterBase* Monster = nullptr;
+		AMonsterBase* OwningMonster = nullptr;
 
 	UPROPERTY(meta = (BindWidget))
 		UProgressBar* HP;
@@ -27,8 +27,8 @@ protected:
 public:
 	virtual bool Initialize() override;
 
-	void BindMonster(AMonsterBase* InMonster) { Monster = InMonster; }
-	void UnbindMonster() { Monster = nullptr; }
+	void BindMonster(AMonsterBase* InMonster) { OwningMonster = InMonster; }
+	void UnbindMonster() { OwningMonster = nullptr; }
 
 	UFUNCTION(BlueprintPure)
 		float HP_Ratio();

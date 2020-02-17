@@ -31,6 +31,6 @@ public:
 	/**
 	 * Needs to be implemented to initialize replicated properties
 	 */
-	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 #pragma endregion
 };

@@ -14,10 +14,14 @@ bool UMainMenuBase::Initialize()
 	GameInstance = Cast<UHiveGameInstance>(GetGameInstance());
 	if (!GameInstance) { return false; }
 
-	HostBtn->OnClicked.AddDynamic(this, &UMainMenuBase::HostClickEvent);
-	JoinBtn->OnClicked.AddDynamic(this, &UMainMenuBase::JoinClickEvent);
-	JoinServerBtn->OnClicked.AddDynamic(this, &UMainMenuBase::JoinServerClickEvent);
-	BackBtn->OnClicked.AddDynamic(this, &UMainMenuBase::BackClickEvent);
+	if (HostBtn) { HostBtn->OnClicked.AddDynamic(this, &UMainMenuBase::HostClickEvent); }
+
+	if (JoinBtn) { JoinBtn->OnClicked.AddDynamic(this, &UMainMenuBase::JoinClickEvent); }
+
+	if (JoinServerBtn) { JoinServerBtn->OnClicked.AddDynamic(this, &UMainMenuBase::JoinServerClickEvent); }
+
+	if (BackBtn) { BackBtn->OnClicked.AddDynamic(this, &UMainMenuBase::BackClickEvent); }
+
 	Setup();
 
 	return true;

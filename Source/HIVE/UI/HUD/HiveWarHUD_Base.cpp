@@ -14,11 +14,11 @@ void UHiveWarHUD_Base::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
-	LockOnIcon->SetVisibility(Monster && Monster->GetCurrentLockOnTarget() ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+	LockOnIcon->SetVisibility(OwningMonster && OwningMonster->GetCurrentLockOnTarget() ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 
 	if (!LockOnIcon->IsVisible()) { return; }
 
-	LockOnIcon->SetRenderTranslation(GetWorldPositionToScreenPositionScaled(Monster->GetCurrentLockOnTarget()));
+	LockOnIcon->SetRenderTranslation(GetWorldPositionToScreenPositionUMGScaled(OwningMonster->GetCurrentLockOnTarget()));
 }
 
 void UHiveWarHUD_Base::SynchronizeProperties()
@@ -54,11 +54,11 @@ bool UHiveWarHUD_Base::SwitchActivePanel(EHUDActiveWidget InNewActiveWidget)
 
 void UHiveWarHUD_Base::BindMonster(AMonsterBase* InMonster)
 {
-	Monster = InMonster;
+	OwningMonster = InMonster;
 	MonsterStat->BindMonster(InMonster);
 }
 
-FVector2D UHiveWarHUD_Base::GetWorldPositionToScreenPositionScaled(AActor* InActor)
+FVector2D UHiveWarHUD_Base::GetWorldPositionToScreenPositionUMGScaled(AActor* InActor)
 {
 	// Get the current viewport size
 	int32 viewX, viewY;
