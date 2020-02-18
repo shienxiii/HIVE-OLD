@@ -25,7 +25,7 @@ protected:
 
 
 public:
-	virtual bool Initialize() override;
+	virtual void NativeOnInitialized() override;
 
 	UFUNCTION()
 		void CancelPressedEvent();

@@ -64,7 +64,7 @@ protected:
 
 	
 public:
-	virtual bool Initialize() override;
+	virtual void NativeOnInitialized() override;
 
 	/**
 	 * Override synchronise the property of this UUserWidget on both editor and game

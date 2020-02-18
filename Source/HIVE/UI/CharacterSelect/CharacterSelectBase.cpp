@@ -43,13 +43,11 @@ bool UCharacterSelectBase::IsAcceptablePanel(UWidget* InWidget)
 	return false;
 }
 
-bool UCharacterSelectBase::Initialize()
+void UCharacterSelectBase::NativeOnInitialized()
 {
-	Super::Initialize();
+	Super::NativeOnInitialized();
 
 	bIsFocusable = true;
-
-	return true;
 }
 
 

@@ -5,14 +5,14 @@
 #include "HIVE/Gameplay/Monster/MonsterBase.h"
 #include "Components/ProgressBar.h"
 
-bool UMonsterStat_Base::Initialize()
+void UMonsterStat_Base::NativeOnInitialized()
 {
-	Super::Initialize();
+	Super::NativeOnInitialized();
+
 	if (HP)
 	{
 		HP->PercentDelegate.BindDynamic(this, &UMonsterStat_Base::HP_Ratio);
 	}
-	return true;
 }
 
 float UMonsterStat_Base::HP_Ratio()

@@ -11,13 +11,15 @@ UENUM()
 enum class EHUDActiveWidget : uint8
 {
 	HAW_STAT,
-	HAW_CHARACTERSELECT
+	HAW_CHARACTERSELECT,
+	HAW_INGAMEMENU
 };
 
 class UWidgetSwitcher;
 class UCharacterSelectBase;
 class UMonsterStat_Base;
 class UPlayerStatHUD;
+class UInGameMenuBase;
 class AMonsterController;
 class AMonsterBase;
 
@@ -51,6 +53,9 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 		UMonsterStat_Base* MonsterStat;
 
+	UPROPERTY(meta = (BindWidget))
+		UInGameMenuBase* InGameMenu;
+
 	// NOTE: This is the overlay for the HUD that displays the monster stat and lock on icon
 	UPROPERTY(meta = (BindWidget))
 		UWidget* PlayerHUD;
@@ -58,7 +63,11 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 		UWidget* LockOnIcon;
 
+	virtual void InitializeInputComponent() override;
+	virtual void OpenInGameMenu();
+
 public:
+	virtual void NativeOnInitialized() override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 	/**

@@ -25,7 +25,7 @@ protected:
 		UProgressBar* HP;
 
 public:
-	virtual bool Initialize() override;
+	virtual void NativeOnInitialized() override;
 
 	void BindMonster(AMonsterBase* InMonster) { OwningMonster = InMonster; }
 	void UnbindMonster() { OwningMonster = nullptr; }

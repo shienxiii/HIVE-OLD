@@ -43,7 +43,7 @@ protected:
         UButton* BackBtn;
 
 public:
-    virtual bool Initialize() override;
+    virtual void NativeOnInitialized() override;
 
     // Automatically called when the level in which this widget belonged to is removed from the world
     virtual void OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld) override;

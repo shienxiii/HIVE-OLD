@@ -6,15 +6,13 @@
 #include "Engine/Engine.h"
 
 
-bool UInGameMenuBase::Initialize()
+void UInGameMenuBase::NativeOnInitialized()
 {
-	Super::Initialize();
+	Super::NativeOnInitialized();
 
 	if (CancelButton) { CancelButton->OnClicked.AddDynamic(this, &UInGameMenuBase::CancelPressedEvent); }
 
 	if (QuitButton) { QuitButton->OnClicked.AddDynamic(this, &UInGameMenuBase::QuitPressedEvent); }
-
-	return true;
 }
 
 void UInGameMenuBase::CancelPressedEvent()

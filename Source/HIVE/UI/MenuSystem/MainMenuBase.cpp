@@ -5,14 +5,14 @@
 #include "Components/Button.h"
 #include "HIVE/System/Game Instance/HiveGameInstance.h"
 
-bool UMainMenuBase::Initialize()
+void UMainMenuBase::NativeOnInitialized()
 {
-	Super::Initialize();
+	Super::NativeOnInitialized();
 
 	bIsFocusable = true;
 
 	GameInstance = Cast<UHiveGameInstance>(GetGameInstance());
-	if (!GameInstance) { return false; }
+	if (!GameInstance) { return; }
 
 	if (HostBtn) { HostBtn->OnClicked.AddDynamic(this, &UMainMenuBase::HostClickEvent); }
 
@@ -23,8 +23,6 @@ bool UMainMenuBase::Initialize()
 	if (BackBtn) { BackBtn->OnClicked.AddDynamic(this, &UMainMenuBase::BackClickEvent); }
 
 	Setup();
-
-	return true;
 }
 
 void UMainMenuBase::OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld)
