@@ -79,6 +79,8 @@ public:
 
 	void BindMonster(AMonsterBase* InMonster);
 
+	UFUNCTION()
+		void ReturnToGame();
 
 
 	/**

@@ -3,6 +3,7 @@
 
 #include "HiveWarHUD_Base.h"
 #include "Components/WidgetSwitcher.h"
+#include "Components/Button.h"
 #include "HIVE/UI/CharacterSelect/CharacterSelectBase.h"
 #include "HIVE/UI/HUD/MonsterStat_Base.h"
 #include "HIVE/UI/MenuSystem/InGameMenuBase.h"
@@ -18,12 +19,14 @@ void UHiveWarHUD_Base::InitializeInputComponent()
 
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, TEXT("InitializeInputComponent"));
 	InputComponent->BindAction("Start", EInputEvent::IE_Pressed, this, &UHiveWarHUD_Base::OpenInGameMenu);
+
+	InGameMenu->GetReturnButton()->OnClicked.AddDynamic(this, &UHiveWarHUD_Base::ReturnToGame);
 }
 
 void UHiveWarHUD_Base::OpenInGameMenu()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, TEXT("OpenInGame"));
-	SwitchActivePanel(EHUDActiveWidget::HAW_CHARACTERSELECT);
+	SwitchActivePanel(EHUDActiveWidget::HAW_INGAMEMENU);
 }
 void UHiveWarHUD_Base::NativeOnInitialized()
 {
@@ -54,8 +57,10 @@ bool UHiveWarHUD_Base::SwitchActivePanel(EHUDActiveWidget InNewActiveWidget)
 	{
 		case EHUDActiveWidget::HAW_STAT:
 			Switcher->SetActiveWidget(PlayerHUD);
+
 			GameAndUIInput.SetWidgetToFocus(this->TakeWidget());
 			GameAndUIInput.SetLockMouseToViewportBehavior(EMouseLockMode::LockInFullscreen);
+
 			//OwningPlayer->SetInputMode(GameInput);
 			OwningPlayer->SetInputMode(GameAndUIInput);
 			OwningPlayer->bShowMouseCursor = false;
@@ -69,6 +74,14 @@ bool UHiveWarHUD_Base::SwitchActivePanel(EHUDActiveWidget InNewActiveWidget)
 			OwningPlayer->SetInputMode(UIInput);
 			OwningPlayer->bShowMouseCursor = true;
 			break;
+		case EHUDActiveWidget::HAW_INGAMEMENU:
+			Switcher->SetActiveWidget(InGameMenu);
+
+			UIInput.SetLockMouseToViewportBehavior(EMouseLockMode::LockInFullscreen);
+			UIInput.SetWidgetToFocus(InGameMenu->TakeWidget());
+
+			OwningPlayer->SetInputMode(UIInput);
+			OwningPlayer->bShowMouseCursor = true;
 		default:
 			break;
 	}
@@ -80,6 +93,11 @@ void UHiveWarHUD_Base::BindMonster(AMonsterBase* InMonster)
 {
 	OwningMonster = InMonster;
 	MonsterStat->BindMonster(InMonster);
+}
+
+void UHiveWarHUD_Base::ReturnToGame()
+{
+	SwitchActivePanel(EHUDActiveWidget::HAW_STAT);
 }
 
 FVector2D UHiveWarHUD_Base::GetWorldPositionToScreenPositionUMGScaled(AActor* InActor)

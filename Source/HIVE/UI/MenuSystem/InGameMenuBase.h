@@ -15,10 +15,10 @@ UCLASS()
 class HIVE_API UInGameMenuBase : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
 protected:
 	UPROPERTY(meta = (BindWidget))
-		UButton* CancelButton;
+		UButton* ReturnButton;
 
 	UPROPERTY(meta = (BindWidget))
 		UButton* QuitButton;
@@ -28,8 +28,11 @@ public:
 	virtual void NativeOnInitialized() override;
 
 	UFUNCTION()
-		void CancelPressedEvent();
+		void ReturnPressedEvent();
 
 	UFUNCTION()
 		void QuitPressedEvent();
+
+	UButton* GetReturnButton() { return ReturnButton; }
+	UButton* GetQuitButton() { return QuitButton; }
 };
