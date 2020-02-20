@@ -9,6 +9,8 @@
 #include "MonsterBase.generated.h"
 
 class AMonsterController;
+class UHIVE_ThirdPersonCamera;
+class USpringArmComponent;
 
 UCLASS()
 class HIVE_API AMonsterBase : public ACharacter, public ITeamInterface
@@ -16,6 +18,13 @@ class HIVE_API AMonsterBase : public ACharacter, public ITeamInterface
 	GENERATED_BODY()
 
 protected:
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+		USpringArmComponent* CameraBoom;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+		UHIVE_ThirdPersonCamera* Camera;
+
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Movement")
 		float TurnRate = 90.0f;
 

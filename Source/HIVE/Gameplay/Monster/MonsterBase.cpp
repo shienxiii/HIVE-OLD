@@ -9,13 +9,28 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/PlayerState.h"
 #include "HIVE/Gameplay/Controller/MonsterController.h"
+#include "HIVE/Gameplay/Camera/HIVE_ThirdPersonCamera.h"
+#include "GameFramework/SpringArmComponent.h"
 
 // Sets default values
 AMonsterBase::AMonsterBase(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UMonsterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	
 	PrimaryActorTick.bCanEverTick = true;
+
+	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("Camera Boom"));
+	CameraBoom->SetRelativeLocation(FVector(0.0f, 0.0f, 90.0f));
+	CameraBoom->bUsePawnControlRotation = true;
+	CameraBoom->TargetArmLength = 300.0f;
+	CameraBoom->SetupAttachment(RootComponent);
+
+	Camera = CreateDefaultSubobject<UHIVE_ThirdPersonCamera>(TEXT("Camera"));
+	Camera->SetRelativeLocation(FVector(0.0f, 120.0f, 0.0f));
+	Camera->SetOwningPlayer(this);
+	Camera->bWantsInitializeComponent = true;
+	Camera->SetupAttachment(CameraBoom);
 
 
 	// Initialize replication

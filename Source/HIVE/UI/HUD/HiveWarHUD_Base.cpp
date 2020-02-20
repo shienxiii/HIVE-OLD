@@ -17,7 +17,6 @@ void UHiveWarHUD_Base::InitializeInputComponent()
 {
 	Super::InitializeInputComponent();
 
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, TEXT("InitializeInputComponent"));
 	InputComponent->BindAction("Start", EInputEvent::IE_Pressed, this, &UHiveWarHUD_Base::OpenInGameMenu);
 
 	InGameMenu->GetReturnButton()->OnClicked.AddDynamic(this, &UHiveWarHUD_Base::ReturnToGame);
@@ -25,7 +24,6 @@ void UHiveWarHUD_Base::InitializeInputComponent()
 
 void UHiveWarHUD_Base::OpenInGameMenu()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, TEXT("OpenInGame"));
 	SwitchActivePanel(EHUDActiveWidget::HAW_INGAMEMENU);
 }
 void UHiveWarHUD_Base::NativeOnInitialized()
