@@ -3,6 +3,7 @@
 
 #include "HIVE_ThirdPersonCamera.h"
 #include "HIVE/Gameplay/Monster/MonsterBase.h"
+#include "Kismet/GameplayStatics.h"
 #include "Engine/Engine.h"
 
 #define TARGET OwningPlayer->GetCurrentLockOnTarget()
@@ -21,30 +22,28 @@ void UHIVE_ThirdPersonCamera::TickComponent(float DeltaTime, ELevelTick TickType
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (!OwningPlayer)
+	if (!OwningPlayer || !OwningPlayer->IsLocallyControlled())
 	{
 		return;
 	}
 
-	if (!OwningPlayer->IsLocallyControlled())
+	if (GetComponentRotation().Roll != 0.0f)
 	{
-		return;
+		//SetComponentRotation
 	}
-
-	FString message = OwningPlayer->GetActorLabel();
-	message.Append(" : ");
 
 	if (!TARGET)
 	{
-		message.Append("NULL");
+		//message.Append("NULL");
 	}
 	else
 	{
-		message.Append(TARGET->GetActorLabel());
+		//message.Append(TARGET->GetActorLabel());
 	}
-		GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Cyan, message);
+		//GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Cyan, message);
 }
 
 void UHIVE_ThirdPersonCamera::PlayerRotateCameraPitch(float inValue)
 {
+	AddWorldRotation(FRotator(PitchRate, 0.0f, 0.0f) * inValue * UGameplayStatics::GetWorldDeltaSeconds(GetWorld()));
 }

@@ -23,6 +23,9 @@ AMonsterBase::AMonsterBase(const FObjectInitializer& ObjectInitializer)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("Camera Boom"));
 	CameraBoom->SetRelativeLocation(FVector(0.0f, 0.0f, 90.0f));
 	CameraBoom->bUsePawnControlRotation = true;
+	CameraBoom->bEnableCameraLag = true;
+	CameraBoom->bEnableCameraRotationLag = true;
+	CameraBoom->CameraLagMaxDistance = 100.0f;
 	CameraBoom->TargetArmLength = 300.0f;
 	CameraBoom->SetupAttachment(RootComponent);
 
@@ -67,6 +70,7 @@ void AMonsterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	InputComponent->BindAxis("Forward", this, &AMonsterBase::MoveForward);
 	InputComponent->BindAxis("Right", this, &AMonsterBase::MoveRight);
 	InputComponent->BindAxis("Turn", this, &AMonsterBase::Turn);
+	InputComponent->BindAxis("LookUp", this, &AMonsterBase::LookUp);
 
 	InputComponent->BindAction("Jump", EInputEvent::IE_Pressed, this, &AMonsterBase::Jump);
 	InputComponent->BindAction("Jump", EInputEvent::IE_Released, this, &AMonsterBase::StopJumping);
@@ -91,6 +95,14 @@ void AMonsterBase::Turn(float inAxis)
 	if (!CurrentTarget)
 	{
 		AddControllerYawInput(inAxis * TurnRate * UGameplayStatics::GetWorldDeltaSeconds(this));
+	}
+}
+
+void AMonsterBase::LookUp(float inAxis)
+{
+	if (!CurrentTarget)
+	{
+		AddControllerPitchInput(inAxis * TurnRate * UGameplayStatics::GetWorldDeltaSeconds(this));
 	}
 }
 

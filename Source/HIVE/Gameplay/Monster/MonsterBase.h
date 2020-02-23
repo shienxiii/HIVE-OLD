@@ -64,6 +64,7 @@ public:
 	virtual void MoveForward(float inAxis);
 	virtual void MoveRight(float inAxis);
 	virtual void Turn(float inAxis);
+	virtual void LookUp(float inAxis);
 	FRotator GetViewRotator();
 
 	// Action Input
