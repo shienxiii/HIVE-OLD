@@ -61,6 +61,11 @@ void UCharacterSelectBase::SynchronizeProperties()
 void UCharacterSelectBase::RefreshCharacterPanel()
 {
 	// Get the child of CharacterOptions
+	if (!CharacterOptions)
+	{
+		return;
+	}
+
 	TArray<UWidget*> topPanel = CharacterOptions->GetAllChildren();
 
 	for (int i = 0; i < topPanel.Num(); i++)
