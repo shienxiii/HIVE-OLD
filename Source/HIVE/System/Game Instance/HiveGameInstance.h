@@ -31,5 +31,8 @@ public:
 
 	UFUNCTION(Exec)
 		void Join(const FString& InAddress);
+
+	UFUNCTION(Exec)
+		void ExitGame();
 #pragma endregion
 };

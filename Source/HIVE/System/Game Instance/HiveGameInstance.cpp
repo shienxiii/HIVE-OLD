@@ -3,6 +3,7 @@
 
 #include "HiveGameInstance.h"
 #include "Engine/World.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Blueprint/UserWidget.h"
 #include "UObject/ConstructorHelpers.h"
 
@@ -41,4 +42,13 @@ void UHiveGameInstance::Join(const FString& InAddress)
 	if (!ensure(controller != nullptr)) { return; }
 
 	controller->ClientTravel(*InAddress, ETravelType::TRAVEL_Absolute);
+}
+
+void UHiveGameInstance::ExitGame()
+{
+	APlayerController* controller = GetFirstLocalPlayerController();
+	if (!ensure(controller != nullptr)) { return; }
+
+	//FGenericPlatformMisc::RequestExit(false);
+	UKismetSystemLibrary::QuitGame(controller, controller, EQuitPreference::Quit, true);
 }
