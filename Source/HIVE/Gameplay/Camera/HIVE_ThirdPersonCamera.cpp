@@ -32,7 +32,6 @@ void UHIVE_ThirdPersonCamera::TickComponent(float DeltaTime, ELevelTick TickType
 
 	if (OwningPlayer->GetCurrentLockOnTarget())
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, targetRotation.ToString());
 
 		// Find the point between the OwningPlayer and the lock on target
 		FVector lookPosition = (OwningPlayer->GetActorLocation() + TARGET->GetActorLocation()) / 2.0f;
@@ -40,12 +39,11 @@ void UHIVE_ThirdPersonCamera::TickComponent(float DeltaTime, ELevelTick TickType
 
 		FVector cameraLocation = this->GetComponentLocation();
 
-
 		targetRotation = UKismetMathLibrary::FindLookAtRotation(cameraLocation, lookPosition);
 		targetRotation.Roll = 0.0f;
-
-		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Green, targetRotation.ToString());
 	}
+
+	targetRotation = UKismetMathLibrary::RLerp(this->GetComponentRotation(), targetRotation, 0.05f, true);
 
 	this->SetWorldRotation(FQuat(targetRotation));
 	
@@ -56,3 +54,13 @@ void UHIVE_ThirdPersonCamera::PlayerRotateCameraPitch(float inValue)
 {
 	AddWorldRotation(FRotator(PitchRate, 0.0f, 0.0f) * inValue * UGameplayStatics::GetWorldDeltaSeconds(GetWorld()));
 }
+
+//float GetAxisDeltaRotation(float InAxisRotationRate, float DeltaTime)
+//{
+//	return (InAxisRotationRate >= 0.f) ? (InAxisRotationRate * DeltaTime) : 360.f;
+//}
+
+//FRotator UHIVE_ThirdPersonCamera::GetDeltaRotation(float DeltaTime) const
+//{
+//	return FRotator(GetAxisDeltaRotation(RotationRate.Pitch, DeltaTime), GetAxisDeltaRotation(RotationRate.Yaw, DeltaTime), GetAxisDeltaRotation(RotationRate.Roll, DeltaTime));
+//}

@@ -228,7 +228,7 @@ void AMonsterBase::TurnToLockOnTarget(float DeltaTime)
 	finalRotation.Roll = 0.0f;
 
 	// Calculate the rotation delta
-	FRotator deltaRotation = UKismetMathLibrary::RInterpTo_Constant(Controller->GetControlRotation(), finalRotation, DeltaTime, GetCharacterMovement()->RotationRate.Yaw * 2.0f);
+	FRotator deltaRotation = UKismetMathLibrary::RInterpTo_Constant(Controller->GetControlRotation(), finalRotation, DeltaTime, GetCharacterMovement()->RotationRate.Yaw);
 
 	Controller->SetControlRotation(deltaRotation);
 }
