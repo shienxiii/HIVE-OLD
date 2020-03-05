@@ -4,6 +4,7 @@
 #include "HIVE_ThirdPersonCamera.h"
 #include "HIVE/Gameplay/Monster/MonsterBase.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Engine/Engine.h"
 
 #define TARGET OwningPlayer->GetCurrentLockOnTarget()
@@ -27,20 +28,28 @@ void UHIVE_ThirdPersonCamera::TickComponent(float DeltaTime, ELevelTick TickType
 		return;
 	}
 
-	if (GetComponentRotation().Roll != 0.0f)
+	FRotator targetRotation = OwningPlayer->GetControlRotation();
+
+	if (OwningPlayer->GetCurrentLockOnTarget())
 	{
-		//SetComponentRotation
+		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, targetRotation.ToString());
+
+		// Find the point between the OwningPlayer and the lock on target
+		FVector lookPosition = (OwningPlayer->GetActorLocation() + TARGET->GetActorLocation()) / 2.0f;
+
+
+		FVector cameraLocation = this->GetComponentLocation();
+
+
+		targetRotation = UKismetMathLibrary::FindLookAtRotation(cameraLocation, lookPosition);
+		targetRotation.Roll = 0.0f;
+
+		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Green, targetRotation.ToString());
 	}
 
-	if (!TARGET)
-	{
-		//message.Append("NULL");
-	}
-	else
-	{
-		//message.Append(TARGET->GetActorLabel());
-	}
-		//GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Cyan, message);
+	this->SetWorldRotation(FQuat(targetRotation));
+	
+
 }
 
 void UHIVE_ThirdPersonCamera::PlayerRotateCameraPitch(float inValue)

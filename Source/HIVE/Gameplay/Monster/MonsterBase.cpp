@@ -23,8 +23,8 @@ AMonsterBase::AMonsterBase(const FObjectInitializer& ObjectInitializer)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("Camera Boom"));
 	CameraBoom->SetRelativeLocation(FVector(0.0f, 0.0f, 90.0f));
 	CameraBoom->bUsePawnControlRotation = true;
-	CameraBoom->bEnableCameraLag = true;
-	CameraBoom->bEnableCameraRotationLag = true;
+	//CameraBoom->bEnableCameraLag = true;
+	//CameraBoom->bEnableCameraRotationLag = true;
 	CameraBoom->CameraLagMaxDistance = 100.0f;
 	CameraBoom->TargetArmLength = 300.0f;
 	CameraBoom->SetupAttachment(RootComponent);
