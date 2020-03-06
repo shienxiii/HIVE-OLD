@@ -8,6 +8,7 @@
 #include "GameFramework/Character.h"
 #include "MonsterBase.generated.h"
 
+class UBoxComponent;
 class AMonsterController;
 class UHIVE_ThirdPersonCamera;
 class USpringArmComponent;
@@ -18,6 +19,12 @@ class HIVE_API AMonsterBase : public ACharacter, public ITeamInterface
 	GENERATED_BODY()
 
 protected:
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+		UBoxComponent* HitBox;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+		UCapsuleComponent* HurtBox;
+
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 		USpringArmComponent* CameraBoom;
 

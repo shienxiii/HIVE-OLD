@@ -2,6 +2,8 @@
 
 
 #include "MonsterBase.h"
+#include "Components/CapsuleComponent.h"
+#include "Components/BoxComponent.h"
 #include "Components/InputComponent.h"
 #include "Engine/World.h"
 #include "Net/UnrealNetwork.h"
@@ -19,6 +21,20 @@ AMonsterBase::AMonsterBase(const FObjectInitializer& ObjectInitializer)
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	
 	PrimaryActorTick.bCanEverTick = true;
+
+	HurtBox = CreateDefaultSubobject<UCapsuleComponent>(TEXT("HurtBox"));
+	HurtBox->SetCapsuleRadius(GetCapsuleComponent()->GetScaledCapsuleRadius());
+	HurtBox->SetCapsuleHalfHeight(GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+	HurtBox->SetCollisionProfileName(FName("HurtBox"));
+	HurtBox->SetupAttachment(RootComponent);
+	HurtBox->bHiddenInGame = false;
+	
+	HitBox = CreateDefaultSubobject<UBoxComponent>(TEXT("HitBox"));
+	HitBox->SetCollisionProfileName(FName("HitBox"));
+	HitBox->AddRelativeLocation(FVector(50.0f, 0.0f, 0.0f));
+	HitBox->SetupAttachment(RootComponent);
+	HitBox->bHiddenInGame = false;
+	HitBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("Camera Boom"));
 	CameraBoom->SetRelativeLocation(FVector(0.0f, 0.0f, 90.0f));
@@ -117,6 +133,15 @@ FRotator AMonsterBase::GetViewRotator()
 
 void AMonsterBase::LightAttack()
 {
+	if (HitBox->IsCollisionEnabled())
+	{
+		HitBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+	else
+	{
+		HitBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	}
+
 	if (!CurrentTarget)
 	{
 		return;
