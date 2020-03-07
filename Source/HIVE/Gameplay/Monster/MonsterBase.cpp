@@ -134,34 +134,22 @@ FRotator AMonsterBase::GetViewRotator()
 
 void AMonsterBase::LightAttack()
 {
-	if (HitBox->IsCollisionEnabled())
-	{
-		HitBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	}
-	else
-	{
-		HitBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	}
-
-	if (!CurrentTarget)
+	/*if (!CurrentTarget)
 	{
 		return;
-	}
+	}*/
 
-	//TakeDamage(10.0f, FDamageEvent(), GetController(), this);
 	Server_AttackHit(10.0f, FDamageEvent(), GetController(), this);
 }
 
 void AMonsterBase::HeavyAttack()
 {
-	if (!CurrentTarget)
+	/*if (!CurrentTarget)
 	{
 		return;
-	}
-
+	}*/
 
 	Server_AttackHit(20.0f, FDamageEvent(), GetController(), this);
-	//TakeDamage(10.0f, FDamageEvent(), GetController(), this);
 }
 
 void AMonsterBase::ExecuteDodge()
@@ -177,18 +165,6 @@ void AMonsterBase::ExecuteDodge()
 }
 
 #pragma endregion
-
-
-void AMonsterBase::HitBoxOverlapEvent(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if (GetLocalRole() < ENetRole::ROLE_Authority || OtherActor == this)
-	{
-		return;
-	}
-
-	AMonsterBase* hitMonster = Cast<AMonsterBase>(OtherActor);
-	hitMonster->ExecuteDodge();
-}
 
 #pragma region LockOn
 
@@ -280,9 +256,19 @@ bool AMonsterBase::Server_AttackHit_Validate(float DamageAmount, FDamageEvent co
 	return true;
 }
 
+#include "Engine/Engine.h"
 void AMonsterBase::Server_AttackHit_Implementation(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	Health = FMath::Clamp(Health - DamageAmount, 0.0f, 100.0f);
+	if (HitBox->IsCollisionEnabled())
+	{
+		HitBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, TEXT("Disable"));
+	}
+	else
+	{
+		HitBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, TEXT("Enable"));
+	}
 }
 
 float AMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -335,4 +321,19 @@ ETeamEnum AMonsterBase::GetTeam()
 AMonsterController* AMonsterBase::GetMonsterController()
 {
 	return Cast<AMonsterController>(GetController());
+}
+
+
+void AMonsterBase::HitBoxOverlapEvent(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (GetLocalRole() < ENetRole::ROLE_Authority || OtherActor == this)
+	{
+		UEnum* enumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("ENetRole"), true);
+		FString EnumString = enumPtr->GetNameStringByValue(GetLocalRole());
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, EnumString);
+		return;
+	}
+
+	AMonsterBase* hitMonster = Cast<AMonsterBase>(OtherActor);
+	hitMonster->ExecuteDodge();
 }
