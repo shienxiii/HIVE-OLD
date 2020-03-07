@@ -35,6 +35,7 @@ AMonsterBase::AMonsterBase(const FObjectInitializer& ObjectInitializer)
 	HitBox->SetupAttachment(RootComponent);
 	HitBox->bHiddenInGame = false;
 	HitBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	HitBox->OnComponentBeginOverlap.AddDynamic(this, &AMonsterBase::HitBoxOverlapEvent);
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("Camera Boom"));
 	CameraBoom->SetRelativeLocation(FVector(0.0f, 0.0f, 90.0f));
@@ -178,7 +179,19 @@ void AMonsterBase::ExecuteDodge()
 #pragma endregion
 
 
+void AMonsterBase::HitBoxOverlapEvent(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (GetLocalRole() < ENetRole::ROLE_Authority || OtherActor == this)
+	{
+		return;
+	}
+
+	AMonsterBase* hitMonster = Cast<AMonsterBase>(OtherActor);
+	hitMonster->ExecuteDodge();
+}
+
 #pragma region LockOn
+
 
 void AMonsterBase::ToggleLockOn()
 {

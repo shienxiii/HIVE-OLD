@@ -85,8 +85,16 @@ public:
 #pragma endregion
 
 	// Returns the character movement component type defined to a UMonsterMovementComponent
-	UFUNCTION(BlueprintPure) UMonsterMovementComponent* GetMonsterMovement() { return Cast<UMonsterMovementComponent>(GetCharacterMovement()); };
+	UFUNCTION(BlueprintPure)
+		UMonsterMovementComponent* GetMonsterMovement() { return Cast<UMonsterMovementComponent>(GetCharacterMovement()); };
 
+	UFUNCTION()
+		void HitBoxOverlapEvent(
+			UPrimitiveComponent* OverlappedComponent, 
+			AActor* OtherActor, 
+			UPrimitiveComponent* OtherComp, 
+			int32 OtherBodyIndex, bool bFromSweep, 
+			const FHitResult& SweepResult);
 
 #pragma region LockOn
 	AActor* GetCurrentLockOnTarget() { return CurrentTarget; };
