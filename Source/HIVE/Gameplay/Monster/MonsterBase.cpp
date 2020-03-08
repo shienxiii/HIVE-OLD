@@ -28,6 +28,7 @@ AMonsterBase::AMonsterBase(const FObjectInitializer& ObjectInitializer)
 	HurtBox->SetCollisionProfileName(FName("HurtBox"));
 	HurtBox->SetupAttachment(RootComponent);
 	HurtBox->bHiddenInGame = false;
+	HurtBox->OnComponentBeginOverlap.AddDynamic(this, &AMonsterBase::HurtBoxOverlapEvent);
 	
 	HitBox = CreateDefaultSubobject<UBoxComponent>(TEXT("HitBox"));
 	HitBox->SetCollisionProfileName(FName("HitBox"));
@@ -35,7 +36,6 @@ AMonsterBase::AMonsterBase(const FObjectInitializer& ObjectInitializer)
 	HitBox->SetupAttachment(RootComponent);
 	HitBox->bHiddenInGame = false;
 	HitBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	HitBox->OnComponentBeginOverlap.AddDynamic(this, &AMonsterBase::HitBoxOverlapEvent);
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("Camera Boom"));
 	CameraBoom->SetRelativeLocation(FVector(0.0f, 0.0f, 90.0f));
@@ -324,7 +324,7 @@ AMonsterController* AMonsterBase::GetMonsterController()
 }
 
 
-void AMonsterBase::HitBoxOverlapEvent(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AMonsterBase::HurtBoxOverlapEvent(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (GetLocalRole() < ENetRole::ROLE_Authority || OtherActor == this)
 	{
@@ -334,6 +334,5 @@ void AMonsterBase::HitBoxOverlapEvent(UPrimitiveComponent* OverlappedComponent, 
 		return;
 	}
 
-	AMonsterBase* hitMonster = Cast<AMonsterBase>(OtherActor);
-	hitMonster->ExecuteDodge();
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, TEXT("Hurtbox event"));
 }
