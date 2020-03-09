@@ -134,22 +134,12 @@ FRotator AMonsterBase::GetViewRotator()
 
 void AMonsterBase::LightAttack()
 {
-	/*if (!CurrentTarget)
-	{
-		return;
-	}*/
-
-	Server_AttackHit(10.0f, FDamageEvent(), GetController(), this);
+	Server_ToggleHitBox();
 }
 
 void AMonsterBase::HeavyAttack()
 {
-	/*if (!CurrentTarget)
-	{
-		return;
-	}*/
-
-	Server_AttackHit(20.0f, FDamageEvent(), GetController(), this);
+	Server_ToggleHitBox();
 }
 
 void AMonsterBase::ExecuteDodge()
@@ -161,7 +151,7 @@ void AMonsterBase::ExecuteDodge()
 	}
 	dodgeDirection.Normalize();
 
-	GetMonsterMovement()->Client_LaunchMonster(dodgeDirection, DodgeStrength);
+	GetMonsterMovement()->Client_Dodge(dodgeDirection, DodgeStrength, ELaunchType::LT_DODGE);
 }
 
 #pragma endregion
@@ -251,13 +241,13 @@ void AMonsterBase::TurnToLockOnTarget(float DeltaTime)
 #pragma endregion
 
 #pragma region Damage
-bool AMonsterBase::Server_AttackHit_Validate(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+bool AMonsterBase::Server_ToggleHitBox_Validate()
 {
 	return true;
 }
 
 #include "Engine/Engine.h"
-void AMonsterBase::Server_AttackHit_Implementation(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+void AMonsterBase::Server_ToggleHitBox_Implementation()
 {
 	if (HitBox->IsCollisionEnabled())
 	{
@@ -270,6 +260,21 @@ void AMonsterBase::Server_AttackHit_Implementation(float DamageAmount, FDamageEv
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, TEXT("Enable"));
 	}
 }
+
+bool AMonsterBase::Server_AttackHit_Validate(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	return true;
+}
+
+
+void AMonsterBase::Server_AttackHit_Implementation(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, TEXT("Server_AttackHit_Event"));
+	//GetMonsterMovement()->Client_Dodge(GetActorForwardVector() * -1.0f, DodgeStrength, ELaunchType::LT_KNOCKBACK);
+	LaunchCharacter(GetActorForwardVector() * -1.0f * DodgeStrength, true, true);
+}
+
+
 
 float AMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
@@ -334,5 +339,5 @@ void AMonsterBase::HurtBoxOverlapEvent(UPrimitiveComponent* OverlappedComponent,
 		return;
 	}
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, TEXT("Hurtbox event"));
+	Server_AttackHit(10.0f, FDamageEvent(), GetController(), this);
 }

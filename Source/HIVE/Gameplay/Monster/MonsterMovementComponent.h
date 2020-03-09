@@ -45,7 +45,8 @@ UENUM()
 enum class ELaunchType : uint8
 {
 	LT_NULL	UMETA(DisplayName = "NULL"),
-	LT_DODGE	UMETA(DisplayName = "Dodge")
+	LT_DODGE	UMETA(DisplayName = "Dodge"),
+	LT_KNOCKBACK UMETA(DisplayName = "Knockback")
 };
 
 /**
@@ -106,12 +107,13 @@ public:
 	uint8 bRequestLaunch : 1;
 	FVector LaunchDirection;
 	float LaunchStrength;
+	ELaunchType NewLaunchState;
 
 	UFUNCTION(Reliable, Server, WithValidation)
-		void Server_LaunchMonster(FVector InLaunchDirection, float InLaunchStrength);
+		void Server_LaunchMonster(FVector InLaunchDirection, float InLaunchStrength, ELaunchType InLaunchType = ELaunchType::LT_DODGE);
 	
 	UFUNCTION(BlueprintCallable, Category = "Launch")
-		void Client_LaunchMonster(FVector InLaunchDirection, float InLaunchStrength = 1000.0f);
+		void Client_Dodge(FVector InLaunchDirection, float InLaunchStrength = 1000.0f, ELaunchType InLaunchType = ELaunchType::LT_DODGE);
 #pragma endregion
 
 #pragma region Networking

@@ -167,12 +167,15 @@ void UMonsterMovementComponent::OnMovementUpdated(float DeltaTime, const FVector
 	{
 		bRequestLaunch = false;
 		// Only dodge when on ground
-		if (IsMovingOnGround())
+		bool canLaunch = (IsMovingOnGround() && NewLaunchState == ELaunchType::LT_DODGE) || (NewLaunchState == ELaunchType::LT_KNOCKBACK);
+
+		if (canLaunch)
 		{
 			LaunchDirection.Normalize();
 			FVector dodgeVelocity = LaunchDirection * LaunchStrength;
 			dodgeVelocity.Z = 0.0f;
-			LaunchState = ELaunchType::LT_DODGE;
+			LaunchState = NewLaunchState;
+			NewLaunchState = ELaunchType::LT_NULL;
 			GroundFriction = 0.0f;
 			Launch(dodgeVelocity);
 		}
@@ -232,27 +235,25 @@ void UMonsterMovementComponent::Client_SetMaxWalkSpeed(float InWalkSpeed)
 #pragma endregion
 
 #pragma region LaunchMonster
-bool UMonsterMovementComponent::Server_LaunchMonster_Validate(FVector InLaunchDirection, float InLaunchStrength)
+bool UMonsterMovementComponent::Server_LaunchMonster_Validate(FVector InLaunchDirection, float InLaunchStrength, ELaunchType InLaunchType)
 {
 	return true;
 }
 
-void UMonsterMovementComponent::Server_LaunchMonster_Implementation(FVector InLaunchDirection, float InLaunchStrength)
+void UMonsterMovementComponent::Server_LaunchMonster_Implementation(FVector InLaunchDirection, float InLaunchStrength, ELaunchType InLaunchType)
 {
 	LaunchDirection = InLaunchDirection;
 	LaunchStrength = InLaunchStrength;
+	NewLaunchState = InLaunchType;
 }
 
-void UMonsterMovementComponent::Client_LaunchMonster(FVector InLaunchDirection, float InLaunchStrength)
+void UMonsterMovementComponent::Client_Dodge(FVector InLaunchDirection, float InLaunchStrength, ELaunchType InLaunchType)
 {
-	if (PawnOwner->IsLocallyControlled() && LaunchState == ELaunchType::LT_NULL)
-	{
-		LaunchDirection = InLaunchDirection;
-		LaunchStrength = InLaunchStrength;
-		Server_LaunchMonster(LaunchDirection, LaunchStrength);
-		bRequestLaunch = true;
-	}
-
+	LaunchDirection = InLaunchDirection;
+	LaunchStrength = InLaunchStrength;
+	NewLaunchState = InLaunchType;
+	Server_LaunchMonster(LaunchDirection, LaunchStrength, InLaunchType);
+	bRequestLaunch = true;
 }
 
 
