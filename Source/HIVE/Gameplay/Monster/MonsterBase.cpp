@@ -272,7 +272,8 @@ void AMonsterBase::Server_AttackHit_Implementation(float DamageAmount, FDamageEv
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, TEXT("Server_AttackHit_Event"));
 	//GetMonsterMovement()->Client_Dodge(GetActorForwardVector() * -1.0f, DodgeStrength, ELaunchType::LT_KNOCKBACK);
 	//LaunchCharacter(GetActorForwardVector() * -1.0f * DodgeStrength, true, true);
-	GetMonsterMovement()->General_LaunchMonster(GetActorForwardVector() * -1.0f, DodgeStrength, ELaunchType::LT_KNOCKBACK);
+	//GetMonsterMovement()->General_LaunchMonster(GetActorForwardVector() * -1.0f, DodgeStrength, ELaunchType::LT_KNOCKBACK);
+	Health -= DamageAmount;
 }
 
 

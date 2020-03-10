@@ -2,8 +2,9 @@
 
 
 #include "MonsterMovementComponent.h"
-#include "MonsterBase.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Net/UnrealNetwork.h"
+#include "MonsterBase.h"
 #include "Engine.h"
 
 #pragma region FSavedMove_Monster
@@ -172,13 +173,11 @@ void UMonsterMovementComponent::OnMovementUpdated(float DeltaTime, const FVector
 		if (canLaunch)
 		{
 			LaunchDirection.Normalize();
-			/*FVector dodgeVelocity = LaunchDirection * LaunchStrength;
-			dodgeVelocity.Z = 0.0f;
+			FVector launchVelocity = LaunchDirection * LaunchStrength;
+			launchVelocity.Z = 0.0f;
 			LaunchState = NewLaunchState;
 			GroundFriction = 0.0f;
-			Launch(dodgeVelocity);*/
-
-			General_LaunchMonster(LaunchDirection, LaunchStrength, NewLaunchState);
+			Launch(launchVelocity);
 			NewLaunchState = ELaunchType::LT_NULL;
 		}
 	}
@@ -275,5 +274,7 @@ void UMonsterMovementComponent::Client_Dodge(FVector InLaunchDirection, float In
 void UMonsterMovementComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UMonsterMovementComponent, LaunchState);
 }
 #pragma endregion
