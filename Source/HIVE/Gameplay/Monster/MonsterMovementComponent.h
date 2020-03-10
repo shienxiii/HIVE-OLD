@@ -110,10 +110,12 @@ public:
 	ELaunchType NewLaunchState;
 
 	UFUNCTION(Reliable, Server, WithValidation)
-		void Server_LaunchMonster(FVector InLaunchDirection, float InLaunchStrength, ELaunchType InLaunchType = ELaunchType::LT_DODGE);
-	
+		void Server_LaunchMonster(FVector InLaunchDirection, float InLaunchStrength, ELaunchType InLaunchState = ELaunchType::LT_DODGE);
+
+	void General_LaunchMonster(FVector InLaunchDirection, float InLaunchStrength, ELaunchType InLaunchState = ELaunchType::LT_DODGE);
+
 	UFUNCTION(BlueprintCallable, Category = "Launch")
-		void Client_Dodge(FVector InLaunchDirection, float InLaunchStrength = 1000.0f, ELaunchType InLaunchType = ELaunchType::LT_DODGE);
+		void Client_Dodge(FVector InLaunchDirection, float InLaunchStrength = 1000.0f, ELaunchType InLaunchState = ELaunchType::LT_DODGE);
 #pragma endregion
 
 #pragma region Networking

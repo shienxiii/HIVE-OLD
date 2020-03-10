@@ -172,12 +172,14 @@ void UMonsterMovementComponent::OnMovementUpdated(float DeltaTime, const FVector
 		if (canLaunch)
 		{
 			LaunchDirection.Normalize();
-			FVector dodgeVelocity = LaunchDirection * LaunchStrength;
+			/*FVector dodgeVelocity = LaunchDirection * LaunchStrength;
 			dodgeVelocity.Z = 0.0f;
 			LaunchState = NewLaunchState;
-			NewLaunchState = ELaunchType::LT_NULL;
 			GroundFriction = 0.0f;
-			Launch(dodgeVelocity);
+			Launch(dodgeVelocity);*/
+
+			General_LaunchMonster(LaunchDirection, LaunchStrength, NewLaunchState);
+			NewLaunchState = ELaunchType::LT_NULL;
 		}
 	}
 }
@@ -235,24 +237,34 @@ void UMonsterMovementComponent::Client_SetMaxWalkSpeed(float InWalkSpeed)
 #pragma endregion
 
 #pragma region LaunchMonster
-bool UMonsterMovementComponent::Server_LaunchMonster_Validate(FVector InLaunchDirection, float InLaunchStrength, ELaunchType InLaunchType)
+bool UMonsterMovementComponent::Server_LaunchMonster_Validate(FVector InLaunchDirection, float InLaunchStrength, ELaunchType InLaunchState)
 {
 	return true;
 }
 
-void UMonsterMovementComponent::Server_LaunchMonster_Implementation(FVector InLaunchDirection, float InLaunchStrength, ELaunchType InLaunchType)
+void UMonsterMovementComponent::Server_LaunchMonster_Implementation(FVector InLaunchDirection, float InLaunchStrength, ELaunchType InLaunchState)
 {
 	LaunchDirection = InLaunchDirection;
 	LaunchStrength = InLaunchStrength;
-	NewLaunchState = InLaunchType;
+	NewLaunchState = InLaunchState;
 }
 
-void UMonsterMovementComponent::Client_Dodge(FVector InLaunchDirection, float InLaunchStrength, ELaunchType InLaunchType)
+void UMonsterMovementComponent::General_LaunchMonster(FVector InLaunchDirection, float InLaunchStrength, ELaunchType InLaunchState)
+{
+	LaunchDirection.Normalize();
+	FVector launchVelocity = InLaunchDirection * InLaunchStrength;
+	launchVelocity.Z = 0.0f;
+	LaunchState = InLaunchState;
+	GroundFriction = 0.0f;
+	Launch(launchVelocity);
+}
+
+void UMonsterMovementComponent::Client_Dodge(FVector InLaunchDirection, float InLaunchStrength, ELaunchType InLaunchState)
 {
 	LaunchDirection = InLaunchDirection;
 	LaunchStrength = InLaunchStrength;
-	NewLaunchState = InLaunchType;
-	Server_LaunchMonster(LaunchDirection, LaunchStrength, InLaunchType);
+	NewLaunchState = InLaunchState;
+	Server_LaunchMonster(LaunchDirection, LaunchStrength, InLaunchState);
 	bRequestLaunch = true;
 }
 
