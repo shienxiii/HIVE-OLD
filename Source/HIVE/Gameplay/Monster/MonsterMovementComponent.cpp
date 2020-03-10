@@ -99,6 +99,57 @@ void UMonsterMovementComponent::InitializeComponent()
 	BaseYawRotation = RotationRate.Yaw;
 }
 
+
+
+#pragma region WalkSpeed
+bool UMonsterMovementComponent::Server_SetMaxWalkSpeed_Validate(const float InWalkSpeed)
+{
+	return true;
+}
+
+void UMonsterMovementComponent::Server_SetMaxWalkSpeed_Implementation(const float InWalkSpeed)
+{
+	NewMaxWalkSpeed = InWalkSpeed;
+}
+
+void UMonsterMovementComponent::Client_SetMaxWalkSpeed(float InWalkSpeed)
+{
+	if (PawnOwner->IsLocallyControlled())
+	{
+		NewMaxWalkSpeed = InWalkSpeed; // client side
+		Server_SetMaxWalkSpeed(NewMaxWalkSpeed); // server side
+	}
+	
+	bRequestWalkSpeedChange = true;
+
+}
+#pragma endregion
+
+#pragma region LaunchMonster
+bool UMonsterMovementComponent::Server_LaunchMonster_Validate(FVector InLaunchDirection, float InLaunchStrength, ELaunchType InLaunchState)
+{
+	return true;
+}
+
+void UMonsterMovementComponent::Server_LaunchMonster_Implementation(FVector InLaunchDirection, float InLaunchStrength, ELaunchType InLaunchState)
+{
+	LaunchDirection = InLaunchDirection;
+	LaunchStrength = InLaunchStrength;
+	NewLaunchState = InLaunchState;
+}
+
+void UMonsterMovementComponent::Client_Dodge(FVector InLaunchDirection, float InLaunchStrength, ELaunchType InLaunchState)
+{
+	LaunchDirection = InLaunchDirection;
+	LaunchStrength = InLaunchStrength;
+	NewLaunchState = InLaunchState;
+	Server_LaunchMonster(LaunchDirection, LaunchStrength, InLaunchState);
+	bRequestLaunch = true;
+}
+
+
+#pragma endregion
+
 #pragma region NetworkPrediciton
 void UMonsterMovementComponent::PhysWalking(float DeltaTime, int32 Iterations)
 {
@@ -210,65 +261,6 @@ FNetworkPredictionData_Client* UMonsterMovementComponent::GetPredictionData_Clie
 }
 #pragma endregion
 
-
-#pragma region WalkSpeed
-bool UMonsterMovementComponent::Server_SetMaxWalkSpeed_Validate(const float InWalkSpeed)
-{
-	return true;
-}
-
-void UMonsterMovementComponent::Server_SetMaxWalkSpeed_Implementation(const float InWalkSpeed)
-{
-	NewMaxWalkSpeed = InWalkSpeed;
-}
-
-void UMonsterMovementComponent::Client_SetMaxWalkSpeed(float InWalkSpeed)
-{
-	if (PawnOwner->IsLocallyControlled())
-	{
-		NewMaxWalkSpeed = InWalkSpeed; // client side
-		Server_SetMaxWalkSpeed(NewMaxWalkSpeed); // server side
-	}
-	
-	bRequestWalkSpeedChange = true;
-
-}
-#pragma endregion
-
-#pragma region LaunchMonster
-bool UMonsterMovementComponent::Server_LaunchMonster_Validate(FVector InLaunchDirection, float InLaunchStrength, ELaunchType InLaunchState)
-{
-	return true;
-}
-
-void UMonsterMovementComponent::Server_LaunchMonster_Implementation(FVector InLaunchDirection, float InLaunchStrength, ELaunchType InLaunchState)
-{
-	LaunchDirection = InLaunchDirection;
-	LaunchStrength = InLaunchStrength;
-	NewLaunchState = InLaunchState;
-}
-
-void UMonsterMovementComponent::General_LaunchMonster(FVector InLaunchDirection, float InLaunchStrength, ELaunchType InLaunchState)
-{
-	LaunchDirection.Normalize();
-	FVector launchVelocity = InLaunchDirection * InLaunchStrength;
-	launchVelocity.Z = 0.0f;
-	LaunchState = InLaunchState;
-	GroundFriction = 0.0f;
-	Launch(launchVelocity);
-}
-
-void UMonsterMovementComponent::Client_Dodge(FVector InLaunchDirection, float InLaunchStrength, ELaunchType InLaunchState)
-{
-	LaunchDirection = InLaunchDirection;
-	LaunchStrength = InLaunchStrength;
-	NewLaunchState = InLaunchState;
-	Server_LaunchMonster(LaunchDirection, LaunchStrength, InLaunchState);
-	bRequestLaunch = true;
-}
-
-
-#pragma endregion
 
 #pragma region Networking
 void UMonsterMovementComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

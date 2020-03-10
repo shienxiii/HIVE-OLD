@@ -57,9 +57,6 @@ class HIVE_API UMonsterMovementComponent : public UCharacterMovementComponent
 {
 	GENERATED_BODY()
 
-private:
-	float BaseYawRotation = 0.0f;
-
 protected:
 	AMonsterBase* MonsterOwner;
 
@@ -74,22 +71,14 @@ protected:
 	UPROPERTY(Replicated)
 		ELaunchType LaunchState = ELaunchType::LT_NULL;
 	
+	float BaseYawRotation = 0.0f;
+
 	virtual void PhysWalking(float DeltaTime, int32 Iterations) override;
 
 public:
 	typedef UCharacterMovementComponent Super;
 	virtual void InitializeComponent() override;
 
-#pragma region NetworkPrediction
-	virtual FVector ConsumeInputVector() override;
-	virtual FRotator GetDeltaRotation(float DeltaTime) const override;
-	virtual FRotator ComputeOrientToMovementRotation(const FRotator& CurrentRotation, float DeltaTime, FRotator& DeltaRotation) const override;
-	void OnMovementUpdated(float DeltaTime, const FVector& OldLocation, const FVector& OldVelocity); // NOTE: All update to movement component need to happen here, otherwise net correction will happen
-	virtual void UpdateFromCompressedFlags(uint8 Flags) override;
-	virtual class FNetworkPredictionData_Client* GetPredictionData_Client() const override;
-	
-	UFUNCTION(BlueprintPure) ELaunchType GetLaunchState() { return LaunchState; }
-#pragma endregion
 	
 
 #pragma region MaxWalkSpeedChange
@@ -112,10 +101,19 @@ public:
 	UFUNCTION(Reliable, Server, WithValidation)
 		void Server_LaunchMonster(FVector InLaunchDirection, float InLaunchStrength, ELaunchType InLaunchState = ELaunchType::LT_DODGE);
 
-	void General_LaunchMonster(FVector InLaunchDirection, float InLaunchStrength, ELaunchType InLaunchState = ELaunchType::LT_DODGE);
-
 	UFUNCTION(BlueprintCallable, Category = "Launch")
 		void Client_Dodge(FVector InLaunchDirection, float InLaunchStrength = 1000.0f, ELaunchType InLaunchState = ELaunchType::LT_DODGE);
+#pragma endregion
+
+#pragma region NetworkPrediction
+	virtual FVector ConsumeInputVector() override;
+	virtual FRotator GetDeltaRotation(float DeltaTime) const override;
+	virtual FRotator ComputeOrientToMovementRotation(const FRotator& CurrentRotation, float DeltaTime, FRotator& DeltaRotation) const override;
+	void OnMovementUpdated(float DeltaTime, const FVector& OldLocation, const FVector& OldVelocity); // NOTE: All update to movement component need to happen here, otherwise net correction will happen
+	virtual void UpdateFromCompressedFlags(uint8 Flags) override;
+	virtual class FNetworkPredictionData_Client* GetPredictionData_Client() const override;
+	
+	UFUNCTION(BlueprintPure) ELaunchType GetLaunchState() { return LaunchState; }
 #pragma endregion
 
 #pragma region Networking
