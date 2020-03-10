@@ -102,7 +102,7 @@ public:
 		void Server_LaunchMonster(FVector InLaunchDirection, float InLaunchStrength, ELaunchType InLaunchState = ELaunchType::LT_DODGE);
 
 	UFUNCTION(BlueprintCallable, Category = "Launch")
-		void Client_Dodge(FVector InLaunchDirection, float InLaunchStrength = 1000.0f, ELaunchType InLaunchState = ELaunchType::LT_DODGE);
+		void Client_Dodge(FVector InLaunchDirection, float InLaunchStrength = 1000.0f);
 #pragma endregion
 
 #pragma region NetworkPrediction

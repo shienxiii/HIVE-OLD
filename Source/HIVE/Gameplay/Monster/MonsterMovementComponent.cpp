@@ -138,12 +138,12 @@ void UMonsterMovementComponent::Server_LaunchMonster_Implementation(FVector InLa
 	NewLaunchState = InLaunchState;
 }
 
-void UMonsterMovementComponent::Client_Dodge(FVector InLaunchDirection, float InLaunchStrength, ELaunchType InLaunchState)
+void UMonsterMovementComponent::Client_Dodge(FVector InLaunchDirection, float InLaunchStrength)
 {
 	LaunchDirection = InLaunchDirection;
 	LaunchStrength = InLaunchStrength;
-	NewLaunchState = InLaunchState;
-	Server_LaunchMonster(LaunchDirection, LaunchStrength, InLaunchState);
+	NewLaunchState = ELaunchType::LT_DODGE;
+	Server_LaunchMonster(LaunchDirection, LaunchStrength, NewLaunchState);
 	bRequestLaunch = true;
 }
 

@@ -151,7 +151,7 @@ void AMonsterBase::ExecuteDodge()
 	}
 	dodgeDirection.Normalize();
 
-	GetMonsterMovement()->Client_Dodge(dodgeDirection, DodgeStrength, ELaunchType::LT_DODGE);
+	GetMonsterMovement()->Client_Dodge(dodgeDirection, DodgeStrength);
 }
 
 #pragma endregion
@@ -270,9 +270,6 @@ bool AMonsterBase::Server_AttackHit_Validate(float DamageAmount, FDamageEvent co
 void AMonsterBase::Server_AttackHit_Implementation(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, TEXT("Server_AttackHit_Event"));
-	//GetMonsterMovement()->Client_Dodge(GetActorForwardVector() * -1.0f, DodgeStrength, ELaunchType::LT_KNOCKBACK);
-	//LaunchCharacter(GetActorForwardVector() * -1.0f * DodgeStrength, true, true);
-	//GetMonsterMovement()->General_LaunchMonster(GetActorForwardVector() * -1.0f, DodgeStrength, ELaunchType::LT_KNOCKBACK);
 	Health -= DamageAmount;
 }
 
@@ -280,8 +277,9 @@ void AMonsterBase::Server_AttackHit_Implementation(float DamageAmount, FDamageEv
 
 float AMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	// Currently called on server side
+	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	Health = FMath::Clamp(Health - DamageAmount, 0.0f, 100.0f);
-	//Server_AttackHit(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
 	return DamageAmount;
 }
@@ -341,5 +339,5 @@ void AMonsterBase::HurtBoxOverlapEvent(UPrimitiveComponent* OverlappedComponent,
 		return;
 	}
 
-	Server_AttackHit(10.0f, FDamageEvent(), GetController(), this);
+	TakeDamage(10.0f, FDamageEvent(), GetController(), this);
 }
