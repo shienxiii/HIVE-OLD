@@ -28,7 +28,6 @@ AMonsterBase::AMonsterBase(const FObjectInitializer& ObjectInitializer)
 	HurtBox->SetCollisionProfileName(FName("HurtBox"));
 	HurtBox->SetupAttachment(RootComponent);
 	HurtBox->bHiddenInGame = false;
-	HurtBox->OnComponentBeginOverlap.AddDynamic(this, &AMonsterBase::HurtBoxOverlapEvent);
 	
 	HitBox = CreateDefaultSubobject<UBoxComponent>(TEXT("HitBox"));
 	HitBox->SetCollisionProfileName(FName("HitBox"));
@@ -36,6 +35,7 @@ AMonsterBase::AMonsterBase(const FObjectInitializer& ObjectInitializer)
 	HitBox->SetupAttachment(RootComponent);
 	HitBox->bHiddenInGame = false;
 	HitBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	HitBox->OnComponentBeginOverlap.AddDynamic(this, &AMonsterBase::HitBoxOverlapEvent);
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("Camera Boom"));
 	CameraBoom->SetRelativeLocation(FVector(0.0f, 0.0f, 90.0f));
@@ -246,33 +246,18 @@ bool AMonsterBase::Server_ToggleHitBox_Validate()
 	return true;
 }
 
-#include "Engine/Engine.h"
+
 void AMonsterBase::Server_ToggleHitBox_Implementation()
 {
 	if (HitBox->IsCollisionEnabled())
 	{
 		HitBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, TEXT("Disable"));
 	}
 	else
 	{
 		HitBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, TEXT("Enable"));
 	}
 }
-
-bool AMonsterBase::Server_AttackHit_Validate(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
-{
-	return true;
-}
-
-
-void AMonsterBase::Server_AttackHit_Implementation(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
-{
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, TEXT("Server_AttackHit_Event"));
-	Health -= DamageAmount;
-}
-
 
 
 float AMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -329,15 +314,21 @@ AMonsterController* AMonsterBase::GetMonsterController()
 }
 
 
-void AMonsterBase::HurtBoxOverlapEvent(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AMonsterBase::HitBoxOverlapEvent(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	// Make sure only process this overlap event on server side and ignore self
 	if (GetLocalRole() < ENetRole::ROLE_Authority || OtherActor == this)
 	{
-		UEnum* enumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("ENetRole"), true);
-		FString EnumString = enumPtr->GetNameStringByValue(GetLocalRole());
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, EnumString);
 		return;
 	}
 
-	TakeDamage(10.0f, FDamageEvent(), GetController(), this);
+	ITeamInterface* otherTeam = Cast<ITeamInterface>(OtherActor);
+
+	// Check if OtherActor implements ITeamInterface and is from another team
+	if (!otherTeam || otherTeam->GetTeam() == GetTeam())
+	{
+		return;
+	}
+
+	OtherActor->TakeDamage(10.0f, FDamageEvent(), GetController(), this);
 }

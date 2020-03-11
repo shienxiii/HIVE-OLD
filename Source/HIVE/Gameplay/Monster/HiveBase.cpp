@@ -12,10 +12,16 @@ AHiveBase::AHiveBase()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	Root = CreateDefaultSubobject<USphereComponent>(TEXT("RootComponent"));
+	Root = CreateDefaultSubobject<USphereComponent>(TEXT("Root"));
 	Root->SetSphereRadius(100.0f);
-	Root->SetCollisionProfileName(FName("HurtBox"));
-	this->SetRootComponent(Root);
+	Root->SetCollisionProfileName(FName("Pawn"));
+	SetRootComponent(Root);
+
+
+	HurtBox = CreateDefaultSubobject<USphereComponent>(TEXT("HurtBox"));
+	HurtBox->SetSphereRadius(100.0f);
+	HurtBox->SetCollisionProfileName(FName("HurtBox"));
+	HurtBox->SetupAttachment(Root);
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(Root);
@@ -33,6 +39,18 @@ void AHiveBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+float AHiveBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	Health -= DamageAmount;
+
+	if (Health <= 0.0f)
+	{
+		Destroy();
+	}
+
+	return DamageAmount;
 }
 
 void AHiveBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
