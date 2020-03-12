@@ -102,4 +102,7 @@ public:
 
 	UFUNCTION(Exec)
 		void StartGame();
+
+	UFUNCTION()
+		void GameOver(AActor* InDeadHive);
 };

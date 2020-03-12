@@ -8,6 +8,7 @@
 #include "HiveBase.generated.h"
 
 class USphereComponent;
+class AGM_HiveWar;
 //class UStaticMeshComponent;
 
 UCLASS()
@@ -17,6 +18,9 @@ class HIVE_API AHiveBase : public AActor, public ITeamInterface
 	
 
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		AGM_HiveWar* GM;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		ETeamEnum TeamID = ETeamEnum::TE_NEUTRAL;
 

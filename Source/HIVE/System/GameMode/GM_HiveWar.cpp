@@ -154,6 +154,16 @@ void AGM_HiveWar::StartGame()
 	}
 }
 
+void AGM_HiveWar::GameOver(AActor* InDeadHive)
+{
+	ITeamInterface* deadHiveInterface = Cast<ITeamInterface>(InDeadHive);
+	check(deadHiveInterface);
+
+	ETeamEnum losingTeam = deadHiveInterface->GetTeam();
+
+	InDeadHive->Destroy();
+}
+
 
 #pragma region TeamSpawnArea
 int32 FTeamSpawnArea::AvailableSpawnPoints()

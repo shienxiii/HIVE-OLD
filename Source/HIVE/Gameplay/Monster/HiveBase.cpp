@@ -4,6 +4,8 @@
 #include "HiveBase.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "HIVE/System/GameMode/GM_HiveWar.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
 // Sets default values
@@ -32,6 +34,10 @@ void AHiveBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	AGameModeBase* levelGameMode = UGameplayStatics::GetGameMode(this);
+	GM = Cast<AGM_HiveWar>(levelGameMode);
+
+	check(GM);
 }
 
 // Called every frame
@@ -47,7 +53,7 @@ float AHiveBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
 
 	if (Health <= 0.0f)
 	{
-		Destroy();
+		GM->GameOver(this);
 	}
 
 	return DamageAmount;
