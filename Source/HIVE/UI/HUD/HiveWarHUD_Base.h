@@ -64,7 +64,6 @@ protected:
 		UWidget* LockOnIcon;
 
 	virtual void InitializeInputComponent() override;
-	virtual void OpenInGameMenu();
 
 public:
 	virtual void NativeOnInitialized() override;
@@ -74,6 +73,9 @@ public:
 	 * Override synchronise the property of this UUserWidget on both editor and game
 	 */
 	virtual void SynchronizeProperties() override;
+
+	UFUNCTION()
+		virtual void OpenInGameMenu();
 
 	bool SwitchActivePanel(EHUDActiveWidget InNewActiveWidget);
 

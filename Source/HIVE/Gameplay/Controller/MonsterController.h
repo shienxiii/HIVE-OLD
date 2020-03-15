@@ -40,13 +40,17 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	// Runs on server side when possessing a pawn
-	//virtual void OnPossess(APawn* InPawn) override;
 public:
 	//virtual void Tick(float DeltaTime) override;
 	AMonsterController(const FObjectInitializer& ObjectInitializer);
+
+	// Called to bind functionality to input
+	virtual void SetupInputComponent() override;
+
 	void PawnRestarted(AMonsterBase* InMonster);
 
+	UFUNCTION()
+		void OpenInGameMenu();
 
 #pragma region CharacterSelect
 	/**

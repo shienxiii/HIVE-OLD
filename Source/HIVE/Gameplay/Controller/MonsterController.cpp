@@ -44,6 +44,13 @@ AMonsterController::AMonsterController(const FObjectInitializer& ObjectInitializ
 	}*/
 }
 
+void AMonsterController::SetupInputComponent()
+{
+	Super::SetupInputComponent();
+
+	InputComponent->BindAction("Start", EInputEvent::IE_Pressed, this, &AMonsterController::OpenInGameMenu);
+}
+
 void AMonsterController::PawnRestarted(AMonsterBase* InMonster)
 {
 	if (!IsLocalPlayerController())
@@ -53,6 +60,11 @@ void AMonsterController::PawnRestarted(AMonsterBase* InMonster)
 
 	HUD->SwitchActivePanel(EHUDActiveWidget::HAW_STAT);
 	HUD->BindMonster(InMonster);
+}
+
+void AMonsterController::OpenInGameMenu()
+{
+	HUD->OpenInGameMenu();
 }
 
 

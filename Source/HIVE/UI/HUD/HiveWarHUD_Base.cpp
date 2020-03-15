@@ -17,15 +17,10 @@ void UHiveWarHUD_Base::InitializeInputComponent()
 {
 	Super::InitializeInputComponent();
 
-	InputComponent->BindAction("Start", EInputEvent::IE_Pressed, this, &UHiveWarHUD_Base::OpenInGameMenu);
-
 	InGameMenu->GetReturnButton()->OnClicked.AddDynamic(this, &UHiveWarHUD_Base::ReturnToGame);
 }
 
-void UHiveWarHUD_Base::OpenInGameMenu()
-{
-	SwitchActivePanel(EHUDActiveWidget::HAW_INGAMEMENU);
-}
+
 void UHiveWarHUD_Base::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
@@ -49,6 +44,11 @@ void UHiveWarHUD_Base::SynchronizeProperties()
 	OwningPlayer = Cast<AMonsterController>(GetOwningPlayer());
 }
 
+void UHiveWarHUD_Base::OpenInGameMenu()
+{
+	SwitchActivePanel(EHUDActiveWidget::HAW_INGAMEMENU);
+}
+
 bool UHiveWarHUD_Base::SwitchActivePanel(EHUDActiveWidget InNewActiveWidget)
 {
 	switch (InNewActiveWidget)
@@ -56,11 +56,8 @@ bool UHiveWarHUD_Base::SwitchActivePanel(EHUDActiveWidget InNewActiveWidget)
 		case EHUDActiveWidget::HAW_STAT:
 			Switcher->SetActiveWidget(PlayerHUD);
 
-			GameAndUIInput.SetWidgetToFocus(this->TakeWidget());
-			GameAndUIInput.SetLockMouseToViewportBehavior(EMouseLockMode::LockInFullscreen);
-
 			//OwningPlayer->SetInputMode(GameInput);
-			OwningPlayer->SetInputMode(GameAndUIInput);
+			OwningPlayer->SetInputMode(GameInput);
 			OwningPlayer->bShowMouseCursor = false;
 			break;
 		case EHUDActiveWidget::HAW_CHARACTERSELECT:
