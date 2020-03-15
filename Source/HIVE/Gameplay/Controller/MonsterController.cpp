@@ -31,24 +31,13 @@ void AMonsterController::BeginPlay()
 
 AMonsterController::AMonsterController(const FObjectInitializer& ObjectInitializer)
 {
-	/*if (CharacterSelectBP != NULL && CharacterSelectBP != UCharacterSelectBase::StaticClass())
-	{
-		return;
-	}
-
-	static ConstructorHelpers::FClassFinder<UUserWidget> charSelect(TEXT("/Game/Blueprint/UI/Gameplay/CharacterSelect.CharacterSelect_C"));
-
-	if (charSelect.Class != nullptr)
-	{
-		CharacterSelectBP = charSelect.Class;
-	}*/
 }
 
 void AMonsterController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
-	InputComponent->BindAction("Start", EInputEvent::IE_Pressed, this, &AMonsterController::OpenInGameMenu);
+	//InputComponent->BindAction("Start", EInputEvent::IE_Pressed, this, &AMonsterController::StartButtonEvent);
 }
 
 void AMonsterController::PawnRestarted(AMonsterBase* InMonster)
@@ -62,7 +51,7 @@ void AMonsterController::PawnRestarted(AMonsterBase* InMonster)
 	HUD->BindMonster(InMonster);
 }
 
-void AMonsterController::OpenInGameMenu()
+void AMonsterController::StartButtonEvent()
 {
 	HUD->OpenInGameMenu();
 }

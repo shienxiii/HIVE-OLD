@@ -50,7 +50,7 @@ public:
 	void PawnRestarted(AMonsterBase* InMonster);
 
 	UFUNCTION()
-		void OpenInGameMenu();
+		void StartButtonEvent();
 
 #pragma region CharacterSelect
 	/**

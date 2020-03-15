@@ -27,6 +27,12 @@ AHiveBase::AHiveBase()
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(Root);
+
+	SetReplicates(true);
+	SetReplicatingMovement(true);
+	bAlwaysRelevant = true;
+	bOnlyRelevantToOwner = false;
+	bNetLoadOnClient = true;
 }
 
 // Called when the game starts or when spawned
@@ -34,6 +40,7 @@ void AHiveBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	if (GetLocalRole() != ENetRole::ROLE_Authority) { return; }
 	AGameModeBase* levelGameMode = UGameplayStatics::GetGameMode(this);
 	GM = Cast<AGM_HiveWar>(levelGameMode);
 

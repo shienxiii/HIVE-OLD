@@ -46,7 +46,10 @@ void UHiveWarHUD_Base::SynchronizeProperties()
 
 void UHiveWarHUD_Base::OpenInGameMenu()
 {
-	SwitchActivePanel(EHUDActiveWidget::HAW_INGAMEMENU);
+	if (Switcher->GetActiveWidget() == PlayerHUD)
+	{
+		SwitchActivePanel(EHUDActiveWidget::HAW_INGAMEMENU);
+	}
 }
 
 bool UHiveWarHUD_Base::SwitchActivePanel(EHUDActiveWidget InNewActiveWidget)
