@@ -56,6 +56,13 @@ void AMonsterController::StartButtonEvent()
 	HUD->OpenInGameMenu();
 }
 
+void AMonsterController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner)
+{
+	Super::GameHasEnded(EndGameFocus, bIsWinner);
+
+	UnPossess();
+}
+
 
 #pragma region CharacterSelect
 bool AMonsterController::UpdateSelectedMonster_Validate(TSubclassOf<AMonsterBase> InNewMonster)

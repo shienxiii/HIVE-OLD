@@ -49,13 +49,16 @@ public:
 
 	void PawnRestarted(AMonsterBase* InMonster);
 
+#pragma region Events
 	UFUNCTION()
 		void StartButtonEvent();
 
+	UFUNCTION()
+		virtual void GameHasEnded(AActor* EndGameFocus, bool bIsWinner) override;
+#pragma endregion
+
 #pragma region CharacterSelect
-	/**
-	 * Update the selected monster to the server version of this player controller
-	 */
+	// Update the selected monster to the server version of this player controller
 	UFUNCTION(Reliable, Server, WithValidation)
 		void UpdateSelectedMonster(TSubclassOf<AMonsterBase> InNewMonster);
 
@@ -67,21 +70,15 @@ public:
 
 
 #pragma region Networking
-	/**
-	 * Needs to be implemented to initialize replicated properties
-	 */
+	// Needs to be implemented to initialize replicated properties
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 #pragma endregion
 
 #pragma region TeamInterface
-	/**
-	 * Assign the team on the relevant PlayerState and return a bool indicating whether the assignment is successful or not
-	 */
+	// Assign the team on the relevant PlayerState and return a bool indicating whether the assignment is successful or not
 	virtual bool AssignTeam(ETeamEnum InTeam) override;
 
-	/**
-	 * Search the relevant PlayerState and determine the team this MonsterController belongs to
-	 */
+	// Search the relevant PlayerState and determine the team this MonsterController belongs to
 	UFUNCTION(BlueprintPure)
 		virtual ETeamEnum GetTeam() override;
 #pragma endregion
