@@ -3,6 +3,7 @@
 
 #include "GM_HiveWar.h"
 #include "HIVE/Gameplay/Monster/MonsterBase.h"
+#include "HIVE/Gameplay/Monster/HiveBase.h"
 #include "HIVE/Gameplay/Monster/MonsterSpawnPoint.h"
 #include "HIVE/Gameplay/Controller/MonsterController.h"
 #include "HIVE/Gameplay/PlayerState/MonsterPlayerState.h"
@@ -161,17 +162,37 @@ void AGM_HiveWar::GameOver(AActor* InDeadHive)
 
 	ETeamEnum losingTeam = deadHiveInterface->GetTeam();
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("GameOver"));
-	//EndMatch();
 
-	TArray<AActor*> players;
-	UGameplayStatics::GetAllActorsOfClass(this, APlayerController::StaticClass(), players);
+	// Find living hive
+	TArray<AActor*> hives;
+	UGameplayStatics::GetAllActorsOfClass(this, AHiveBase::StaticClass(), hives);
+	check(hives.Num() == 2);
 
-	for (int i = 0; i < players.Num(); i++)
+	AHiveBase* winningHive = nullptr;
+
+	for (int i = 0; i < hives.Num(); i++)
 	{
-		APlayerController* player = Cast<APlayerController>(players[i]);
-		player->GameHasEnded(InDeadHive);
+		if (hives[i] != InDeadHive)
+		{
+			winningHive = Cast<AHiveBase>(hives[i]);
+			break;
+		}
 	}
-	//InDeadHive->Destroy();
+
+	AHiveWarGameState* gameState = GetGameState<AHiveWarGameState>();
+	check(gameState && winningHive);
+
+
+	gameState->SetWinningTeam(winningHive->GetTeam());
+	//TArray<AActor*> players;
+	//UGameplayStatics::GetAllActorsOfClass(this, APlayerController::StaticClass(), players);
+
+	//for (int i = 0; i < players.Num(); i++)
+	//{
+	//	APlayerController* player = Cast<APlayerController>(players[i]);
+	//	player->GameHasEnded(InDeadHive);
+	//}
+	////InDeadHive->Destroy();
 }
 
 

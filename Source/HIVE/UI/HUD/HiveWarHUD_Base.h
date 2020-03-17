@@ -56,6 +56,8 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 		UInGameMenuBase* InGameMenu;
 
+	UUserWidget* ResultScreen;
+
 	// NOTE: This is the overlay for the HUD that displays the monster stat and lock on icon
 	UPROPERTY(meta = (BindWidget))
 		UWidget* PlayerHUD;

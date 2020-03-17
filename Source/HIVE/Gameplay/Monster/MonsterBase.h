@@ -42,7 +42,7 @@ protected:
 	UPROPERTY(Replicated, BlueprintReadOnly, VisibleAnywhere, Category = "LockOn")
 		AActor* CurrentTarget = nullptr;
 
-	UPROPERTY(Replicated, ReplicatedUsing=OnHealthRep, BlueprintReadOnly, VisibleAnywhere, Category = "Stats", meta = (DisplayName = "Health", ClampMin = "0", UIMin = "0"))
+	UPROPERTY(ReplicatedUsing=OnHealthRep, BlueprintReadOnly, VisibleAnywhere, Category = "Stats", meta = (DisplayName = "Health", ClampMin = "0", UIMin = "0"))
 		float Health = 100.0f;
 
 	UPROPERTY(Replicated, BlueprintReadOnly, VisibleAnywhere, Category = "Stats", meta = (DisplayName = "Max Health", ClampMin = "0", UIMin = "0"))
