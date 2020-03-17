@@ -42,7 +42,7 @@ protected:
 	UPROPERTY(Replicated, BlueprintReadOnly, VisibleAnywhere, Category = "LockOn")
 		AActor* CurrentTarget = nullptr;
 
-	UPROPERTY(Replicated, BlueprintReadOnly, VisibleAnywhere, Category = "Stats", meta = (DisplayName = "Health", ClampMin = "0", UIMin = "0"))
+	UPROPERTY(Replicated, ReplicatedUsing=OnHealthRep, BlueprintReadOnly, VisibleAnywhere, Category = "Stats", meta = (DisplayName = "Health", ClampMin = "0", UIMin = "0"))
 		float Health = 100.0f;
 
 	UPROPERTY(Replicated, BlueprintReadOnly, VisibleAnywhere, Category = "Stats", meta = (DisplayName = "Max Health", ClampMin = "0", UIMin = "0"))
@@ -62,6 +62,8 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	UFUNCTION()
+		void OnHealthRep();
 
 #pragma region Input
 	// Called to bind functionality to input

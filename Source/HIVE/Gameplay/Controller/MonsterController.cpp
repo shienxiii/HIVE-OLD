@@ -58,9 +58,9 @@ void AMonsterController::StartButtonEvent()
 
 void AMonsterController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner)
 {
-	Super::GameHasEnded(EndGameFocus, bIsWinner);
-	GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Cyan, TEXT("GameEnd"));
-	UnPossess();
+	//Super::GameHasEnded(EndGameFocus, bIsWinner);
+	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Cyan, TEXT("GameEnd"));
+	SetViewTargetWithBlend(EndGameFocus, 0.5f);
 }
 
 

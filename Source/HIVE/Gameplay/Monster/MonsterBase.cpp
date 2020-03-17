@@ -79,6 +79,13 @@ void AMonsterBase::Tick(float DeltaTime)
 	TurnToLockOnTarget(DeltaTime);
 }
 
+
+#include "Engine/Engine.h"
+void AMonsterBase::OnHealthRep()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, TEXT("HealthReplicated"));
+}
+
 #pragma region Input
 // Called to bind functionality to input
 void AMonsterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
