@@ -160,8 +160,10 @@ void AGM_HiveWar::GameOver(AActor* InDeadHive)
 	check(deadHiveInterface);
 
 	ETeamEnum losingTeam = deadHiveInterface->GetTeam();
-
-	InDeadHive->Destroy();
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("GameOver"));
+	//EndMatch();
+	
+	//InDeadHive->Destroy();
 }
 
 
