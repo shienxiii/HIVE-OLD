@@ -17,7 +17,7 @@ void UHiveWarHUD_Base::InitializeInputComponent()
 {
 	Super::InitializeInputComponent();
 
-	InGameMenu->GetReturnButton()->OnClicked.AddDynamic(this, &UHiveWarHUD_Base::ReturnToGame);
+	if (InGameMenu) { InGameMenu->GetReturnButton()->OnClicked.AddDynamic(this, &UHiveWarHUD_Base::ReturnToGame); }
 }
 
 
