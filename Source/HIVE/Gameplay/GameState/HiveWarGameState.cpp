@@ -11,6 +11,22 @@ AHiveWarGameState::AHiveWarGameState()
 	//PrimaryActorTick.bCanEverTick = true;
 }
 
+void AHiveWarGameState::SetWinningTeam(ETeamEnum InWinningTeam)
+{
+	WinningTeam = InWinningTeam;
+
+	TArray<AActor*> players;
+	UGameplayStatics::GetAllActorsOfClass(this, APlayerController::StaticClass(), players);
+
+	for (int i = 0; i < players.Num(); i++)
+	{
+		APlayerController* player = Cast<APlayerController>(players[i]);
+
+		if (player->IsLocalPlayerController()) { player->GameHasEnded(); }
+		else { GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Skipping")); }
+	}
+}
+
 void AHiveWarGameState::WinningTeamRepEvent()
 {
 	// Don't need to run this on the server

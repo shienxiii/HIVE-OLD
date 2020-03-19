@@ -12,7 +12,8 @@ enum class EHUDActiveWidget : uint8
 {
 	HAW_STAT,
 	HAW_CHARACTERSELECT,
-	HAW_INGAMEMENU
+	HAW_INGAMEMENU,
+	HAW_ENDSCREEN
 };
 
 class UWidgetSwitcher;

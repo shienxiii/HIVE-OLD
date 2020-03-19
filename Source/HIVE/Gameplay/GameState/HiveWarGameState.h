@@ -30,7 +30,7 @@ public:
 
 	void UpdateGameStartTime(float InUpdatedTime) { SpawnCountdown = InUpdatedTime; }
 	float GetSpawnCountdown() { return SpawnCountdown; }
-	void SetWinningTeam(ETeamEnum InWinningTeam) { WinningTeam = InWinningTeam; }
+	void SetWinningTeam(ETeamEnum InWinningTeam);
 
 	UFUNCTION()
 		void WinningTeamRepEvent();

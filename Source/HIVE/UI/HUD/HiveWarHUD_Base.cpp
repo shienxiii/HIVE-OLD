@@ -62,6 +62,7 @@ bool UHiveWarHUD_Base::SwitchActivePanel(EHUDActiveWidget InNewActiveWidget)
 			//OwningPlayer->SetInputMode(GameInput);
 			OwningPlayer->SetInputMode(GameInput);
 			OwningPlayer->bShowMouseCursor = false;
+
 			break;
 		case EHUDActiveWidget::HAW_CHARACTERSELECT:
 			Switcher->SetActiveWidget(CharacterSelector);
@@ -80,6 +81,17 @@ bool UHiveWarHUD_Base::SwitchActivePanel(EHUDActiveWidget InNewActiveWidget)
 
 			OwningPlayer->SetInputMode(UIInput);
 			OwningPlayer->bShowMouseCursor = true;
+
+			break;
+		case EHUDActiveWidget::HAW_ENDSCREEN:
+			Switcher->SetActiveWidget(ResultScreen);
+			UIInput.SetLockMouseToViewportBehavior(EMouseLockMode::LockInFullscreen);
+			UIInput.SetWidgetToFocus(ResultScreen->TakeWidget());
+
+			OwningPlayer->SetInputMode(UIInput);
+			OwningPlayer->bShowMouseCursor = true;
+
+			break;
 		default:
 			break;
 	}
