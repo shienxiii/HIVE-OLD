@@ -19,7 +19,4 @@ protected:
 
 public:
 	virtual void NativeOnInitialized() override;
-
-	UFUNCTION()
-		virtual void ReturnToLobby();
 };

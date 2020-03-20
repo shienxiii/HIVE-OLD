@@ -25,6 +25,7 @@ void AMonsterController::BeginPlay()
 	}
 
 	HUD = CreateWidget<UHiveWarHUD_Base>(this, HUD_BP);
+	HUD->SetOwningPlayer(this);
 	HUD->AddToViewport();
 	HUD->SwitchActivePanel(EHUDActiveWidget::HAW_CHARACTERSELECT);
 }

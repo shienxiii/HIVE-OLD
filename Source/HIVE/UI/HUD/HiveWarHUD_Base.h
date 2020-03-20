@@ -88,7 +88,8 @@ public:
 
 	UFUNCTION()
 		void ReturnToGame();
-
+	UFUNCTION()
+		void Confirm_Event();
 
 	/**
 	 * Calculates the location of the actor in UMG canvas space

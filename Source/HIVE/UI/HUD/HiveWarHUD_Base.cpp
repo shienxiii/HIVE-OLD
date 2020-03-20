@@ -7,6 +7,7 @@
 #include "HIVE/UI/CharacterSelect/CharacterSelectBase.h"
 #include "HIVE/UI/HUD/MonsterStat_Base.h"
 #include "HIVE/UI/HUD/ResultScreen_Base.h"
+#include "HIVE/System/GameInstance/HiveGameInstance.h"
 #include "HIVE/UI/MenuSystem/InGameMenuBase.h"
 #include "HIVE/Gameplay/Controller/MonsterController.h"
 #include "HIVE/Gameplay/Monster/MonsterBase.h"
@@ -20,6 +21,7 @@ void UHiveWarHUD_Base::InitializeInputComponent()
 
 	// Initialize the return button for InGameMenu since it needs to communicate with the switcher
 	if (InGameMenu && InGameMenu->GetReturnButton()) { InGameMenu->GetReturnButton()->OnClicked.AddDynamic(this, &UHiveWarHUD_Base::ReturnToGame); }
+	InputComponent->BindAction("Confirm", EInputEvent::IE_Pressed, this, &UHiveWarHUD_Base::Confirm_Event);
 }
 
 
@@ -60,9 +62,10 @@ bool UHiveWarHUD_Base::SwitchActivePanel(EHUDActiveWidget InNewActiveWidget)
 	{
 		case EHUDActiveWidget::HAW_STAT:
 			Switcher->SetActiveWidget(PlayerHUD);
+			GameAndUIInput.SetWidgetToFocus(PlayerHUD->TakeWidget());
 
-			OwningPlayer->SetInputMode(GameInput);
-			OwningPlayer->bShowMouseCursor = false;
+			GetOwningPlayer()->SetInputMode(GameAndUIInput);
+			GetOwningPlayer()->bShowMouseCursor = false;
 
 			break;
 		case EHUDActiveWidget::HAW_CHARACTERSELECT:
@@ -71,8 +74,8 @@ bool UHiveWarHUD_Base::SwitchActivePanel(EHUDActiveWidget InNewActiveWidget)
 			UIInput.SetLockMouseToViewportBehavior(EMouseLockMode::LockInFullscreen);
 			UIInput.SetWidgetToFocus(CharacterSelector->TakeWidget());
 
-			OwningPlayer->SetInputMode(UIInput);
-			OwningPlayer->bShowMouseCursor = true;
+			GetOwningPlayer()->SetInputMode(UIInput);
+			GetOwningPlayer()->bShowMouseCursor = true;
 			break;
 		case EHUDActiveWidget::HAW_INGAMEMENU:
 			Switcher->SetActiveWidget(InGameMenu);
@@ -80,18 +83,18 @@ bool UHiveWarHUD_Base::SwitchActivePanel(EHUDActiveWidget InNewActiveWidget)
 			UIInput.SetLockMouseToViewportBehavior(EMouseLockMode::LockInFullscreen);
 			UIInput.SetWidgetToFocus(InGameMenu->TakeWidget());
 
-			OwningPlayer->SetInputMode(UIInput);
-			OwningPlayer->bShowMouseCursor = true;
+			GetOwningPlayer()->SetInputMode(UIInput);
+			GetOwningPlayer()->bShowMouseCursor = true;
 
 			break;
 		case EHUDActiveWidget::HAW_ENDSCREEN:
 			Switcher->SetActiveWidget(ResultScreen);
+			/*UIInput.SetLockMouseToViewportBehavior(EMouseLockMode::LockInFullscreen);
 
-			UIInput.SetLockMouseToViewportBehavior(EMouseLockMode::LockInFullscreen);
 			UIInput.SetWidgetToFocus(ResultScreen->TakeWidget());
 
-			OwningPlayer->SetInputMode(UIInput);
-			OwningPlayer->bShowMouseCursor = true;
+			GetOwningPlayer()->SetInputMode(UIInput);*/
+			GetOwningPlayer()->bShowMouseCursor = true;
 
 			break;
 		default:
@@ -110,6 +113,20 @@ void UHiveWarHUD_Base::BindMonster(AMonsterBase* InMonster)
 void UHiveWarHUD_Base::ReturnToGame()
 {
 	SwitchActivePanel(EHUDActiveWidget::HAW_STAT);
+}
+
+void UHiveWarHUD_Base::Confirm_Event()
+{
+	if (Switcher->GetActiveWidget() == ResultScreen)
+	{
+		UHiveGameInstance* GM = GetGameInstance<UHiveGameInstance>();
+		check(GM);
+		GM->ReturnToLobby(GetOwningPlayer());
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Yellow, TEXT("Nothing"));
+	}
 }
 
 FVector2D UHiveWarHUD_Base::GetWorldPositionToScreenPositionUMGScaled(AActor* InActor)
