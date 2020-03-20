@@ -3,7 +3,7 @@
 
 #include "MainMenuBase.h"
 #include "Components/Button.h"
-#include "HIVE/System/Game Instance/HiveGameInstance.h"
+#include "HIVE/System/GameInstance/HiveGameInstance.h"
 
 void UMainMenuBase::NativeOnInitialized()
 {

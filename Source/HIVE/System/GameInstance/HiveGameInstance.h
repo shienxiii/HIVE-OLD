@@ -34,5 +34,12 @@ public:
 
 	UFUNCTION(Exec)
 		void ExitGame();
+
+	/**
+	 * Called to return to the game lobby
+	 *
+	 * @param InPlayerController The PlayerController instance that represent the player to be returned to the lobby
+	 */
+	UFUNCTION() void ReturnToLobby(APlayerController* InPlayerController);
 #pragma endregion
 };

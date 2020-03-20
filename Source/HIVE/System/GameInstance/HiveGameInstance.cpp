@@ -52,3 +52,8 @@ void UHiveGameInstance::ExitGame()
 	//FGenericPlatformMisc::RequestExit(false);
 	UKismetSystemLibrary::QuitGame(controller, controller, EQuitPreference::Quit, true);
 }
+
+void UHiveGameInstance::ReturnToLobby(APlayerController* InPlayerController)
+{
+	InPlayerController->ClientTravel(TEXT("/Game/Blueprint/Maps/Lobby.Lobby_C"), ETravelType::TRAVEL_Absolute);
+}

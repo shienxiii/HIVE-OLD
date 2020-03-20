@@ -2,6 +2,8 @@
 
 
 #include "InGameMenuBase.h"
+#include "Kismet/GameplayStatics.h"
+#include "HIVE/System/GameInstance/HiveGameInstance.h"
 #include "Components/Button.h"
 #include "Engine/Engine.h"
 
@@ -11,8 +13,9 @@ void UInGameMenuBase::NativeOnInitialized()
 	Super::NativeOnInitialized();
 
 	//if (CancelButton) { CancelButton->OnClicked.AddDynamic(this, &UInGameMenuBase::CancelPressedEvent); }
-
 	if (QuitButton) { QuitButton->OnClicked.AddDynamic(this, &UInGameMenuBase::QuitPressedEvent); }
+
+	bIsFocusable = true;
 }
 
 void UInGameMenuBase::ReturnPressedEvent()
@@ -22,5 +25,7 @@ void UInGameMenuBase::ReturnPressedEvent()
 
 void UInGameMenuBase::QuitPressedEvent()
 {
-	GetOwningPlayer()->ClientTravel(TEXT("/Game/Blueprint/Maps/Lobby.Lobby_C"), ETravelType::TRAVEL_Absolute);
+	UHiveGameInstance* GM = GetGameInstance<UHiveGameInstance>();
+	check(GM);
+	GM->ReturnToLobby(GetOwningPlayer());
 }

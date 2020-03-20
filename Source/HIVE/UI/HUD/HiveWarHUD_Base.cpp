@@ -6,6 +6,7 @@
 #include "Components/Button.h"
 #include "HIVE/UI/CharacterSelect/CharacterSelectBase.h"
 #include "HIVE/UI/HUD/MonsterStat_Base.h"
+#include "HIVE/UI/HUD/ResultScreen_Base.h"
 #include "HIVE/UI/MenuSystem/InGameMenuBase.h"
 #include "HIVE/Gameplay/Controller/MonsterController.h"
 #include "HIVE/Gameplay/Monster/MonsterBase.h"
@@ -17,7 +18,8 @@ void UHiveWarHUD_Base::InitializeInputComponent()
 {
 	Super::InitializeInputComponent();
 
-	if (InGameMenu) { InGameMenu->GetReturnButton()->OnClicked.AddDynamic(this, &UHiveWarHUD_Base::ReturnToGame); }
+	// Initialize the return button for InGameMenu since it needs to communicate with the switcher
+	if (InGameMenu && InGameMenu->GetReturnButton()) { InGameMenu->GetReturnButton()->OnClicked.AddDynamic(this, &UHiveWarHUD_Base::ReturnToGame); }
 }
 
 
@@ -59,7 +61,6 @@ bool UHiveWarHUD_Base::SwitchActivePanel(EHUDActiveWidget InNewActiveWidget)
 		case EHUDActiveWidget::HAW_STAT:
 			Switcher->SetActiveWidget(PlayerHUD);
 
-			//OwningPlayer->SetInputMode(GameInput);
 			OwningPlayer->SetInputMode(GameInput);
 			OwningPlayer->bShowMouseCursor = false;
 
@@ -85,6 +86,7 @@ bool UHiveWarHUD_Base::SwitchActivePanel(EHUDActiveWidget InNewActiveWidget)
 			break;
 		case EHUDActiveWidget::HAW_ENDSCREEN:
 			Switcher->SetActiveWidget(ResultScreen);
+
 			UIInput.SetLockMouseToViewportBehavior(EMouseLockMode::LockInFullscreen);
 			UIInput.SetWidgetToFocus(ResultScreen->TakeWidget());
 

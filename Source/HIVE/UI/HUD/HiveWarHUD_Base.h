@@ -20,6 +20,7 @@ class UWidgetSwitcher;
 class UCharacterSelectBase;
 class UMonsterStat_Base;
 class UPlayerStatHUD;
+class UResultScreen_Base;
 class UInGameMenuBase;
 class AMonsterController;
 class AMonsterBase;
@@ -58,7 +59,7 @@ protected:
 		UInGameMenuBase* InGameMenu;
 
 	UPROPERTY(meta = (BindWidget))
-		UUserWidget* ResultScreen;
+		UResultScreen_Base* ResultScreen;
 
 	// NOTE: This is the overlay for the HUD that displays the monster stat and lock on icon
 	UPROPERTY(meta = (BindWidget))

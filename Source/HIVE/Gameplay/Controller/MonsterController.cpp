@@ -37,7 +37,7 @@ void AMonsterController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
-	//InputComponent->BindAction("Start", EInputEvent::IE_Pressed, this, &AMonsterController::StartButtonEvent);
+	InputComponent->BindAction("Start", EInputEvent::IE_Pressed, this, &AMonsterController::StartButtonEvent);
 }
 
 void AMonsterController::PawnRestarted(AMonsterBase* InMonster)
