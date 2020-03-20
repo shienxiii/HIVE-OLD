@@ -62,9 +62,8 @@ bool UHiveWarHUD_Base::SwitchActivePanel(EHUDActiveWidget InNewActiveWidget)
 	{
 		case EHUDActiveWidget::HAW_STAT:
 			Switcher->SetActiveWidget(PlayerHUD);
-			GameAndUIInput.SetWidgetToFocus(PlayerHUD->TakeWidget());
 
-			GetOwningPlayer()->SetInputMode(GameAndUIInput);
+			GetOwningPlayer()->SetInputMode(GameInput);
 			GetOwningPlayer()->bShowMouseCursor = false;
 
 			break;
