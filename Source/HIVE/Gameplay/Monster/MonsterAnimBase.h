@@ -44,6 +44,6 @@ public:
 	UFUNCTION(Server, WithValidation, Reliable)
 		virtual void Server_RegisterAttack(EAttackType InNewAttack);
 	
-	void ToggleHitbox(UShapeComponent* InHitBox, ECollisionEnabled InEnable);
-	void ToggleHitbox(TArray<UShapeComponent*> InHitBoxes, ECollisionEnabled InEnable);
+	void ToggleHitbox(UShapeComponent* InHitBox, ECollisionEnabled::Type InEnable);
+	void ToggleHitbox(TArray<UShapeComponent*> InHitBoxes, ECollisionEnabled::Type InEnable);
 };

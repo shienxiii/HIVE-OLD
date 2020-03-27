@@ -2,6 +2,7 @@
 
 
 #include "MonsterBase.h"
+#include "Components/ShapeComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/InputComponent.h"
@@ -144,6 +145,8 @@ void AMonsterBase::LightAttack()
 	{
 		return;
 	}
+
+	animClass->RegisterAttack(EAttackType::AT_LIGHT);
 }
 
 void AMonsterBase::HeavyAttack()
@@ -154,6 +157,8 @@ void AMonsterBase::HeavyAttack()
 	{
 		return;
 	}
+
+	animClass->RegisterAttack(EAttackType::AT_HEAVY);
 }
 
 void AMonsterBase::ExecuteDodge()
@@ -278,6 +283,19 @@ void AMonsterBase::Server_ToggleHitBox_Implementation()
 	}*/
 }
 
+
+void AMonsterBase::ToggleHitbox(UShapeComponent* InHitBox, ECollisionEnabled::Type InEnable)
+{
+	InHitBox->SetCollisionEnabled(InEnable);
+}
+
+void AMonsterBase::ToggleHitbox(TArray<UShapeComponent*> InHitBoxes, ECollisionEnabled::Type InEnable)
+{
+	for (int i = 0; i < InHitBoxes.Num(); i++)
+	{
+		InHitBoxes[i]->SetCollisionEnabled(InEnable);
+	}
+}
 
 float AMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {

@@ -133,6 +133,9 @@ public:
 	UFUNCTION(Server, Reliable, WithValidation)
 		virtual void Server_ToggleHitBox();
 
+	void ToggleHitbox(UShapeComponent* InHitBox, ECollisionEnabled::Type InEnable);
+	void ToggleHitbox(TArray<UShapeComponent*> InHitBoxes, ECollisionEnabled::Type InEnable);
+
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 #pragma endregion
 

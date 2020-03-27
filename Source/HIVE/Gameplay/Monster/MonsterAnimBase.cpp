@@ -43,20 +43,17 @@ bool UMonsterAnimBase::Server_RegisterAttack_Validate(EAttackType InNewAttack)
 	return true;
 }
 
-void UMonsterAnimBase::Server_RegisterAttack(EAttackType InNewAttack)
+void UMonsterAnimBase::Server_RegisterAttack_Implementation(EAttackType InNewAttack)
 {
 	AttackRegister = InNewAttack;
 }
 
-void UMonsterAnimBase::ToggleHitbox(UShapeComponent* InHitBox, ECollisionEnabled InEnable)
+void UMonsterAnimBase::ToggleHitbox(UShapeComponent* InHitBox, ECollisionEnabled::Type InEnable)
 {
-	InHitBox->SetCollisionEnabled(InEnable);
+	OwningMonster->ToggleHitbox(InHitBox, InEnable);
 }
 
-void UMonsterAnimBase::ToggleHitbox(TArray<UShapeComponent*> InHitBoxes, ECollisionEnabled InEnable)
+void UMonsterAnimBase::ToggleHitbox(TArray<UShapeComponent*> InHitBoxes, ECollisionEnabled::Type InEnable)
 {
-	for (int i = 0; i < InHitBoxes.Num(); i++)
-	{
-		InHitBoxes[i]->SetCollisionEnabled(InEnable);
-	}
+	OwningMonster->ToggleHitbox(InHitBoxes, InEnable);
 }
