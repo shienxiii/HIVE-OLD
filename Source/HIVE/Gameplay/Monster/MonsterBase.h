@@ -13,15 +13,6 @@ class AMonsterController;
 class UHIVE_ThirdPersonCamera;
 class USpringArmComponent;
 
-UENUM()
-enum class EAttackType : uint8
-{
-	AT_NULL		UMETA(DisplayName = "NULL"),
-	AT_LIGHT	UMETA(DisplayName = "Light Attack"),
-	AT_HEAVY	UMETA(DisplayName = "Heavy Attack")
-};
-
-
 UCLASS()
 class HIVE_API AMonsterBase : public ACharacter, public ITeamInterface
 {
@@ -30,7 +21,6 @@ class HIVE_API AMonsterBase : public ACharacter, public ITeamInterface
 protected:
 	bool bCanMove = true;
 	bool bCanRegisterAttackInput = true;
-	EAttackType AttackRegister = EAttackType::AT_NULL;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 		UCapsuleComponent* HurtBox;
@@ -99,14 +89,6 @@ public:
 	// Returns the character movement component type defined to a UMonsterMovementComponent
 	UFUNCTION(BlueprintPure)
 		UMonsterMovementComponent* GetMonsterMovement() { return Cast<UMonsterMovementComponent>(GetCharacterMovement()); };
-
-	/**
-	 * Return the value of the next attack type and set the AttackRegister variable to null
-	 *
-	 * @return	The EAttackType enum representing the next attack type
-	 */
-	UFUNCTION(BlueprintCallable)
-		EAttackType ConsumeAttackRegister();
 
 	/**
 	 * Resets all boolean that relates to attacking

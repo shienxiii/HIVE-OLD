@@ -144,8 +144,6 @@ void AMonsterBase::LightAttack()
 	{
 		return;
 	}
-	
-	AttackRegister = EAttackType::AT_LIGHT;
 }
 
 void AMonsterBase::HeavyAttack()
@@ -156,8 +154,6 @@ void AMonsterBase::HeavyAttack()
 	{
 		return;
 	}
-
-	AttackRegister = EAttackType::AT_HEAVY;
 }
 
 void AMonsterBase::ExecuteDodge()
@@ -176,13 +172,6 @@ void AMonsterBase::ExecuteDodge()
 
 #pragma region LockOn
 
-
-EAttackType AMonsterBase::ConsumeAttackRegister()
-{
-	EAttackType retVal = AttackRegister;
-	AttackRegister = EAttackType::AT_NULL;
-	return retVal;
-}
 
 void AMonsterBase::RecoverFromAttack()
 {
