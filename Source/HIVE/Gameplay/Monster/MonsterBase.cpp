@@ -5,6 +5,8 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/InputComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "MonsterAnimBase.h"
 #include "Engine/World.h"
 #include "Net/UnrealNetwork.h"
 #include "Kismet/GameplayStatics.h"
@@ -28,14 +30,6 @@ AMonsterBase::AMonsterBase(const FObjectInitializer& ObjectInitializer)
 	HurtBox->SetCollisionProfileName(FName("HurtBox"));
 	HurtBox->SetupAttachment(RootComponent);
 	HurtBox->bHiddenInGame = false;
-	
-	HitBox = CreateDefaultSubobject<UBoxComponent>(TEXT("HitBox"));
-	HitBox->SetCollisionProfileName(FName("HitBox"));
-	HitBox->AddRelativeLocation(FVector(50.0f, 0.0f, 0.0f));
-	HitBox->SetupAttachment(RootComponent);
-	HitBox->bHiddenInGame = false;
-	HitBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	HitBox->OnComponentBeginOverlap.AddDynamic(this, &AMonsterBase::HitBoxOverlapEvent);
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("Camera Boom"));
 	CameraBoom->SetRelativeLocation(FVector(0.0f, 0.0f, 90.0f));
@@ -106,11 +100,13 @@ void AMonsterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void AMonsterBase::MoveForward(float inAxis)
 {
+	if (!bCanMove) { return; }
 	AddMovementInput(UKismetMathLibrary::GetForwardVector(GetViewRotator()), inAxis);
 }
 
 void AMonsterBase::MoveRight(float inAxis)
 {
+	if (!bCanMove) { return; }
 	AddMovementInput(UKismetMathLibrary::GetRightVector(GetViewRotator()), inAxis);
 }
 
@@ -141,12 +137,27 @@ FRotator AMonsterBase::GetViewRotator()
 
 void AMonsterBase::LightAttack()
 {
-	Server_ToggleHitBox();
+	if (!bCanRegisterAttackInput) { return; }
+
+	UMonsterAnimBase* animClass = Cast<UMonsterAnimBase>(GetMesh()->GetAnimClass());
+	if (!animClass)
+	{
+		return;
+	}
+	
+	AttackRegister = EAttackType::AT_LIGHT;
 }
 
 void AMonsterBase::HeavyAttack()
 {
-	Server_ToggleHitBox();
+	if (!bCanRegisterAttackInput) { return; }
+	UMonsterAnimBase* animClass = Cast<UMonsterAnimBase>(GetMesh()->GetAnimClass());
+	if (!animClass)
+	{
+		return;
+	}
+
+	AttackRegister = EAttackType::AT_HEAVY;
 }
 
 void AMonsterBase::ExecuteDodge()
@@ -165,6 +176,18 @@ void AMonsterBase::ExecuteDodge()
 
 #pragma region LockOn
 
+
+EAttackType AMonsterBase::ConsumeAttackRegister()
+{
+	EAttackType retVal = AttackRegister;
+	AttackRegister = EAttackType::AT_NULL;
+	return retVal;
+}
+
+void AMonsterBase::RecoverFromAttack()
+{
+	bCanRegisterAttackInput = true;
+}
 
 void AMonsterBase::ToggleLockOn()
 {
@@ -256,14 +279,14 @@ bool AMonsterBase::Server_ToggleHitBox_Validate()
 
 void AMonsterBase::Server_ToggleHitBox_Implementation()
 {
-	if (HitBox->IsCollisionEnabled())
+	/*if (HitBox->IsCollisionEnabled())
 	{
 		HitBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 	else
 	{
 		HitBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	}
+	}*/
 }
 
 
