@@ -1,10 +1,11 @@
 // Copyright of Honeycomb Studio
 
 
-#include "Components/ShapeComponent.h"
 #include "MonsterAnimBase.h"
+#include "Components/ShapeComponent.h"
 #include "MonsterBase.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Engine/Engine.h"
 
 void UMonsterAnimBase::NativeBeginPlay()
 {
@@ -32,7 +33,7 @@ void UMonsterAnimBase::NativeUpdateAnimation(float DeltaSeconds)
 
 void UMonsterAnimBase::RegisterAttack(EAttackType InNewAttack)
 {
-	if (!OwningMonster->IsLocallyControlled()) { return; }
+	if (!(OwningMonster->IsLocallyControlled())) { return; }
 
 	AttackRegister = InNewAttack;
 	Server_RegisterAttack(InNewAttack);

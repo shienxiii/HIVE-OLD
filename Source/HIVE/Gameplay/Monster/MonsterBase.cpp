@@ -16,6 +16,7 @@
 #include "HIVE/Gameplay/Controller/MonsterController.h"
 #include "HIVE/Gameplay/Camera/HIVE_ThirdPersonCamera.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Engine/Engine.h"
 
 // Sets default values
 AMonsterBase::AMonsterBase(const FObjectInitializer& ObjectInitializer)
@@ -140,7 +141,8 @@ void AMonsterBase::LightAttack()
 {
 	if (!bCanRegisterAttackInput) { return; }
 
-	UMonsterAnimBase* animClass = Cast<UMonsterAnimBase>(GetMesh()->GetAnimClass());
+	UMonsterAnimBase* animClass = Cast<UMonsterAnimBase>(GetMesh()->GetAnimInstance());
+	
 	if (!animClass)
 	{
 		return;
@@ -152,7 +154,9 @@ void AMonsterBase::LightAttack()
 void AMonsterBase::HeavyAttack()
 {
 	if (!bCanRegisterAttackInput) { return; }
-	UMonsterAnimBase* animClass = Cast<UMonsterAnimBase>(GetMesh()->GetAnimClass());
+
+	UMonsterAnimBase* animClass = Cast<UMonsterAnimBase>(GetMesh()->GetAnimInstance());
+
 	if (!animClass)
 	{
 		return;
