@@ -9,7 +9,7 @@
 
 class AMonsterBase;
 
-UENUM()
+UENUM(BlueprintType)
 enum class EAttackType : uint8
 {
 	AT_NULL		UMETA(DisplayName = "NULL"),
@@ -33,8 +33,11 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 		float RightAxis = 0.0f;
 
-	EAttackType AttackRegister = EAttackType::AT_NULL;
-	bool CanBeginNextAttack = true;
+	UPROPERTY(BlueprintReadWrite)
+		EAttackType AttackRegister = EAttackType::AT_NULL;
+
+	UPROPERTY()
+		bool bCanBeginNextAttack = true;
 public:
 	virtual void NativeBeginPlay() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;

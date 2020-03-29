@@ -23,10 +23,10 @@ void UMonsterAnimBase::NativeUpdateAnimation(float DeltaSeconds)
 	ForwardAxis = FVector::DotProduct(GetOwningActor()->GetActorForwardVector(), OwnerVelocity);
 	RightAxis = FVector::DotProduct(GetOwningActor()->GetActorRightVector(), OwnerVelocity);
 
-	if (AttackRegister != EAttackType::AT_NULL)
+	/*if (AttackRegister != EAttackType::AT_NULL)
 	{
 
-	}
+	}*/
 
 }
 
