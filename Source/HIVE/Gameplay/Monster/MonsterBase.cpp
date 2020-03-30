@@ -357,7 +357,6 @@ AMonsterController* AMonsterBase::GetMonsterController()
 
 void AMonsterBase::HitBoxOverlapEvent(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, TEXT("Hitbox overlap"));
 	// Make sure only process this overlap event on server side and ignore self
 	if (GetLocalRole() < ENetRole::ROLE_Authority || OtherActor == this)
 	{
