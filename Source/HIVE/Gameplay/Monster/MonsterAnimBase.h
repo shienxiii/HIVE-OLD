@@ -33,7 +33,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 		float RightAxis = 0.0f;
 
-	UPROPERTY(BlueprintReadWrite, Replicated)
+	UPROPERTY(BlueprintReadWrite)
 		EAttackType AttackRegister = EAttackType::AT_NULL;
 
 	UPROPERTY()
@@ -43,15 +43,7 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 	virtual void RegisterAttack(EAttackType InNewAttack);
-
-	UFUNCTION(Server, WithValidation, Reliable)
-		virtual void Server_RegisterAttack(EAttackType InNewAttack);
 	
 	void ToggleHitbox(UShapeComponent* InHitBox, ECollisionEnabled::Type InEnable);
 	void ToggleHitbox(TArray<UShapeComponent*> InHitBoxes, ECollisionEnabled::Type InEnable);
-
-	/**
-	 * Needs to be implemented to initialize replicated properties
-	 */
-	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 };

@@ -147,7 +147,7 @@ void AMonsterBase::LightAttack()
 		return;
 	}
 
-	//animClass->RegisterAttack(EAttackType::AT_LIGHT);
+	animClass->RegisterAttack(EAttackType::AT_LIGHT);
 	Server_RegisterAttack(EAttackType::AT_LIGHT);
 }
 
@@ -286,7 +286,7 @@ void AMonsterBase::Server_RegisterAttack_Implementation(EAttackType InAttack)
 		return;
 	}
 
-	animClass->RegisterAttack(EAttackType::AT_LIGHT);
+	animClass->RegisterAttack(InAttack);
 }
 
 
