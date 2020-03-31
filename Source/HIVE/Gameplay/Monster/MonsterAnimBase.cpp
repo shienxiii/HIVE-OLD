@@ -47,6 +47,7 @@ bool UMonsterAnimBase::Server_RegisterAttack_Validate(EAttackType InNewAttack)
 
 void UMonsterAnimBase::Server_RegisterAttack_Implementation(EAttackType InNewAttack)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, TEXT("Server Register Attack"));
 	AttackRegister = InNewAttack;
 }
 
