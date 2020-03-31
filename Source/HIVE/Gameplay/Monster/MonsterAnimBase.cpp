@@ -37,7 +37,7 @@ void UMonsterAnimBase::RegisterAttack(EAttackType InNewAttack)
 	if (!(OwningMonster->IsLocallyControlled())) { return; }
 
 	AttackRegister = InNewAttack;
-	Server_RegisterAttack(InNewAttack);
+	//Server_RegisterAttack(InNewAttack);
 }
 
 bool UMonsterAnimBase::Server_RegisterAttack_Validate(EAttackType InNewAttack)

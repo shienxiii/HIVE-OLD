@@ -147,7 +147,8 @@ void AMonsterBase::LightAttack()
 		return;
 	}
 
-	animClass->RegisterAttack(EAttackType::AT_LIGHT);
+	//animClass->RegisterAttack(EAttackType::AT_LIGHT);
+	Server_RegisterAttack(EAttackType::AT_LIGHT);
 }
 
 void AMonsterBase::HeavyAttack()
@@ -268,22 +269,24 @@ void AMonsterBase::TurnToLockOnTarget(float DeltaTime)
 #pragma endregion
 
 #pragma region Damage
-bool AMonsterBase::Server_ToggleHitBox_Validate()
+bool AMonsterBase::Server_RegisterAttack_Validate(EAttackType InAttack)
 {
 	return true;
 }
 
 
-void AMonsterBase::Server_ToggleHitBox_Implementation()
+void AMonsterBase::Server_RegisterAttack_Implementation(EAttackType InAttack)
 {
-	/*if (HitBox->IsCollisionEnabled())
+	GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, TEXT("Toggle"));
+
+	UMonsterAnimBase* animClass = Cast<UMonsterAnimBase>(GetMesh()->GetAnimInstance());
+
+	if (!animClass)
 	{
-		HitBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		return;
 	}
-	else
-	{
-		HitBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	}*/
+
+	animClass->RegisterAttack(EAttackType::AT_LIGHT);
 }
 
 

@@ -131,7 +131,7 @@ public:
 
 #pragma region Damage
 	UFUNCTION(Server, Reliable, WithValidation)
-		virtual void Server_ToggleHitBox();
+		virtual void Server_RegisterAttack(EAttackType InAttack);
 
 	void ToggleHitbox(UShapeComponent* InHitBox, ECollisionEnabled::Type InEnable);
 	void ToggleHitbox(TArray<UShapeComponent*> InHitBoxes, ECollisionEnabled::Type InEnable);
