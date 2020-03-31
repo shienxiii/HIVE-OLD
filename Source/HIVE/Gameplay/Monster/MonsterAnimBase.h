@@ -33,7 +33,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 		float RightAxis = 0.0f;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, Replicated)
 		EAttackType AttackRegister = EAttackType::AT_NULL;
 
 	UPROPERTY()
@@ -49,4 +49,9 @@ public:
 	
 	void ToggleHitbox(UShapeComponent* InHitBox, ECollisionEnabled::Type InEnable);
 	void ToggleHitbox(TArray<UShapeComponent*> InHitBoxes, ECollisionEnabled::Type InEnable);
+
+	/**
+	 * Needs to be implemented to initialize replicated properties
+	 */
+	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 };

@@ -6,6 +6,7 @@
 #include "MonsterBase.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Engine/Engine.h"
+#include "Net/UnrealNetwork.h"
 
 void UMonsterAnimBase::NativeBeginPlay()
 {
@@ -57,4 +58,11 @@ void UMonsterAnimBase::ToggleHitbox(UShapeComponent* InHitBox, ECollisionEnabled
 void UMonsterAnimBase::ToggleHitbox(TArray<UShapeComponent*> InHitBoxes, ECollisionEnabled::Type InEnable)
 {
 	OwningMonster->ToggleHitbox(InHitBoxes, InEnable);
+}
+
+void UMonsterAnimBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UMonsterAnimBase, AttackRegister);
 }

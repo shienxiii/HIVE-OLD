@@ -76,7 +76,6 @@ void AMonsterBase::Tick(float DeltaTime)
 }
 
 
-#include "Engine/Engine.h"
 void AMonsterBase::OnHealthRep()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, TEXT("HealthReplicated"));
