@@ -26,13 +26,6 @@ void UMonsterAnimBase::NativeUpdateAnimation(float DeltaSeconds)
 
 }
 
-void UMonsterAnimBase::RegisterAttack(EAttackType InNewAttack)
-{
-	//if (!(OwningMonster->IsLocallyControlled())) { return; }
-
-	AttackRegister = InNewAttack;
-}
-
 void UMonsterAnimBase::ToggleHitbox(UShapeComponent* InHitBox, ECollisionEnabled::Type InEnable)
 {
 	OwningMonster->ToggleHitbox(InHitBox, InEnable);
@@ -41,4 +34,9 @@ void UMonsterAnimBase::ToggleHitbox(UShapeComponent* InHitBox, ECollisionEnabled
 void UMonsterAnimBase::ToggleHitbox(TArray<UShapeComponent*> InHitBoxes, ECollisionEnabled::Type InEnable)
 {
 	OwningMonster->ToggleHitbox(InHitBoxes, InEnable);
+}
+
+EAttackType UMonsterAnimBase::GetMonsterAttack()
+{
+	return OwningMonster->GetAttackRegister();
 }

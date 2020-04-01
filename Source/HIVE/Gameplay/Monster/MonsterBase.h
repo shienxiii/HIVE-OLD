@@ -13,6 +13,15 @@ class AMonsterController;
 class UHIVE_ThirdPersonCamera;
 class USpringArmComponent;
 
+
+UENUM(BlueprintType)
+enum class EAttackType : uint8
+{
+	AT_NULL		UMETA(DisplayName = "NULL"),
+	AT_LIGHT	UMETA(DisplayName = "Light Attack"),
+	AT_HEAVY	UMETA(DisplayName = "Heavy Attack")
+};
+
 UCLASS()
 class HIVE_API AMonsterBase : public ACharacter, public ITeamInterface
 {
@@ -21,6 +30,10 @@ class HIVE_API AMonsterBase : public ACharacter, public ITeamInterface
 protected:
 	bool bCanMove = true;
 	bool bCanRegisterAttackInput = true;
+
+	// This property is updated and being read by the animation blueprint to determine the next attack
+	UPROPERTY(BlueprintReadWrite, Replicated)
+		EAttackType AttackRegister = EAttackType::AT_NULL;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 		UCapsuleComponent* HurtBox;
@@ -90,11 +103,17 @@ public:
 	UFUNCTION(BlueprintPure)
 		UMonsterMovementComponent* GetMonsterMovement() { return Cast<UMonsterMovementComponent>(GetCharacterMovement()); };
 
+#pragma region Attack
+	UFUNCTION(Server, Reliable, WithValidation)
+		virtual void Server_RegisterAttack(EAttackType InAttack);
+
 	/**
 	 * Resets all boolean that relates to attacking
 	 */
 	UFUNCTION(BlueprintCallable)
 		void RecoverFromAttack();
+
+#pragma endregion
 
 #pragma region LockOn
 	AActor* GetCurrentLockOnTarget() { return CurrentTarget; };
@@ -130,8 +149,7 @@ public:
 
 
 #pragma region Damage
-	UFUNCTION(Server, Reliable, WithValidation)
-		virtual void Server_RegisterAttack(EAttackType InAttack);
+	
 
 	void ToggleHitbox(UShapeComponent* InHitBox, ECollisionEnabled::Type InEnable);
 	void ToggleHitbox(TArray<UShapeComponent*> InHitBoxes, ECollisionEnabled::Type InEnable);
@@ -141,9 +159,7 @@ public:
 
 
 #pragma region Networking
-	/**
-	 * Needs to be implemented to initialize replicated properties
-	 */
+	// Needs to be implemented to initialize replicated properties
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
 	// Override to perform tasks when pawn is restarted, usually possessed
@@ -154,15 +170,14 @@ public:
 	virtual ETeamEnum GetTeam() override;
 #pragma endregion
 
-	/**
-	 * Get the player controller casted into AMonsterController player controller
-	 *
-	 * Returns null if this monster is controlled by AI or non-child of AMonsterController
-	 */
+	//Get the player controller casted into AMonsterController player controller.Returns null if this monster is controlled by AI or non-child of AMonsterController
 	AMonsterController* GetMonsterController();
 
 	UFUNCTION(BlueprintPure)
 		float GetHealthPercentRatio() { return Health / MaxHealth; }
+
+	UFUNCTION(BlueprintPure)
+		EAttackType GetAttackRegister() { return AttackRegister; }
 
 
 	UFUNCTION(BlueprintCallable)

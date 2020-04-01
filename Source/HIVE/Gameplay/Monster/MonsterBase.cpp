@@ -7,7 +7,6 @@
 #include "Components/BoxComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/SkeletalMeshComponent.h"
-#include "MonsterAnimBase.h"
 #include "Engine/World.h"
 #include "Net/UnrealNetwork.h"
 #include "Kismet/GameplayStatics.h"
@@ -140,14 +139,8 @@ void AMonsterBase::LightAttack()
 {
 	if (!bCanRegisterAttackInput) { return; }
 
-	UMonsterAnimBase* animClass = Cast<UMonsterAnimBase>(GetMesh()->GetAnimInstance());
-	
-	if (!animClass)
-	{
-		return;
-	}
+	AttackRegister = EAttackType::AT_LIGHT;
 
-	animClass->RegisterAttack(EAttackType::AT_LIGHT);
 	Server_RegisterAttack(EAttackType::AT_LIGHT);
 }
 
@@ -155,14 +148,8 @@ void AMonsterBase::HeavyAttack()
 {
 	if (!bCanRegisterAttackInput) { return; }
 
-	UMonsterAnimBase* animClass = Cast<UMonsterAnimBase>(GetMesh()->GetAnimInstance());
-
-	if (!animClass)
-	{
-		return;
-	}
-
-	animClass->RegisterAttack(EAttackType::AT_HEAVY);
+	AttackRegister = EAttackType::AT_HEAVY;
+	Server_RegisterAttack(EAttackType::AT_HEAVY);
 }
 
 void AMonsterBase::ExecuteDodge()
@@ -179,13 +166,31 @@ void AMonsterBase::ExecuteDodge()
 
 #pragma endregion
 
-#pragma region LockOn
+#pragma region Attack
+bool AMonsterBase::Server_RegisterAttack_Validate(EAttackType InAttack)
+{
+	return true;
+}
 
+
+void AMonsterBase::Server_RegisterAttack_Implementation(EAttackType InAttack)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, TEXT("Toggle"));
+
+	AttackRegister = InAttack;
+}
 
 void AMonsterBase::RecoverFromAttack()
 {
+	bCanMove = true;
 	bCanRegisterAttackInput = true;
+	AttackRegister = EAttackType::AT_NULL;
 }
+#pragma endregion
+
+#pragma region LockOn
+
+
 
 void AMonsterBase::ToggleLockOn()
 {
@@ -269,26 +274,6 @@ void AMonsterBase::TurnToLockOnTarget(float DeltaTime)
 #pragma endregion
 
 #pragma region Damage
-bool AMonsterBase::Server_RegisterAttack_Validate(EAttackType InAttack)
-{
-	return true;
-}
-
-
-void AMonsterBase::Server_RegisterAttack_Implementation(EAttackType InAttack)
-{
-	GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, TEXT("Toggle"));
-
-	UMonsterAnimBase* animClass = Cast<UMonsterAnimBase>(GetMesh()->GetAnimInstance());
-
-	if (!animClass)
-	{
-		return;
-	}
-
-	animClass->RegisterAttack(InAttack);
-}
-
 
 void AMonsterBase::ToggleHitbox(UShapeComponent* InHitBox, ECollisionEnabled::Type InEnable)
 {
@@ -322,6 +307,7 @@ void AMonsterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 
 	DOREPLIFETIME(AMonsterBase, Health);
 	DOREPLIFETIME(AMonsterBase, CurrentTarget);
+	DOREPLIFETIME(AMonsterBase, AttackRegister);
 }
 
 
