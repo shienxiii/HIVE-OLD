@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Components/WidgetSwitcher.h"
-#include "Components/EditableTextBox.h"
 #include "MainMenuBase.generated.h"
 
 class UHiveGameInstance;
+class UWidgetSwitcher;
+class UComboBoxString;
 class UButton;
 
 /**
@@ -28,16 +28,22 @@ protected:
         UWidgetSwitcher* MenuSwitcher;
 
     UPROPERTY(meta = (BindWidget))
+        UWidget* MainMenu;
+
+    UPROPERTY(meta = (BindWidget))
+        UWidget* LobbyMenu;
+
+    UPROPERTY(meta = (BindWidget))
+        UButton* LobbyBtn;
+
+    UPROPERTY(meta = (BindWidget))
         UButton* HostBtn;
 
     UPROPERTY(meta = (BindWidget))
         UButton* JoinBtn;
 
     UPROPERTY(meta = (BindWidget))
-        UEditableTextBox* TargetIP;
-
-    UPROPERTY(meta = (BindWidget))
-        UButton* JoinServerBtn;
+        UComboBoxString* TargetIP;
 
     UPROPERTY(meta = (BindWidget))
         UButton* BackBtn;
@@ -51,13 +57,13 @@ public:
     void Setup();
 
     UFUNCTION()
+        void LobbyClickEvent();
+
+    UFUNCTION()
         void HostClickEvent();
 
     UFUNCTION()
         void JoinClickEvent();
-
-    UFUNCTION()
-        void JoinServerClickEvent();
 
     UFUNCTION()
         void BackClickEvent();

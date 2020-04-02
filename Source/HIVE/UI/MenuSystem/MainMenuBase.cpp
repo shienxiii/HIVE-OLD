@@ -2,6 +2,9 @@
 
 
 #include "MainMenuBase.h"
+#include "Components/WidgetSwitcher.h"
+#include "Components/ComboBoxString.h"
+#include "Components/PanelWidget.h"
 #include "Components/Button.h"
 #include "HIVE/System/GameInstance/HiveGameInstance.h"
 
@@ -13,14 +16,15 @@ void UMainMenuBase::NativeOnInitialized()
 
 	GameInstance = Cast<UHiveGameInstance>(GetGameInstance());
 	if (!GameInstance) { return; }
+	
+	if (LobbyBtn) { LobbyBtn->OnClicked.AddDynamic(this, &UMainMenuBase::LobbyClickEvent); }
 
 	if (HostBtn) { HostBtn->OnClicked.AddDynamic(this, &UMainMenuBase::HostClickEvent); }
 
 	if (JoinBtn) { JoinBtn->OnClicked.AddDynamic(this, &UMainMenuBase::JoinClickEvent); }
 
-	if (JoinServerBtn) { JoinServerBtn->OnClicked.AddDynamic(this, &UMainMenuBase::JoinServerClickEvent); }
-
 	if (BackBtn) { BackBtn->OnClicked.AddDynamic(this, &UMainMenuBase::BackClickEvent); }
+
 
 	Setup();
 }
@@ -54,6 +58,11 @@ void UMainMenuBase::Setup()
 	controller->bShowMouseCursor = true;
 }
 
+void UMainMenuBase::LobbyClickEvent()
+{
+	MenuSwitcher->SetActiveWidget(LobbyMenu);
+}
+
 void UMainMenuBase::HostClickEvent()
 {
 	GameInstance->Host();
@@ -61,25 +70,19 @@ void UMainMenuBase::HostClickEvent()
 
 void UMainMenuBase::JoinClickEvent()
 {
-	if (MenuSwitcher->GetChildrenCount() >= 2)
-	{
-		MenuSwitcher->SetActiveWidgetIndex(1);
-	}
-}
-
-void UMainMenuBase::JoinServerClickEvent()
-{
-	if (!TargetIP->Text.IsEmpty())
+	/*if (!TargetIP->Text.IsEmpty())
 	{
 		GameInstance->Join(TargetIP->Text.ToString());
 	}
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("NO IP detected"));
-	}
+	}*/
+
+	GameInstance->Join(TargetIP->GetSelectedOption());
 }
 
 void UMainMenuBase::BackClickEvent()
 {
-	MenuSwitcher->SetActiveWidgetIndex(0);
+	MenuSwitcher->SetActiveWidget(MainMenu);
 }
