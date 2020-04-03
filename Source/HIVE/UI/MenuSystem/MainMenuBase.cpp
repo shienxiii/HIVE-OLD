@@ -19,6 +19,8 @@ void UMainMenuBase::NativeOnInitialized()
 	
 	if (LobbyBtn) { LobbyBtn->OnClicked.AddDynamic(this, &UMainMenuBase::LobbyClickEvent); }
 
+	if (QuitBtn) { QuitBtn->OnClicked.AddDynamic(this, &UMainMenuBase::QuitClickEvent); }
+
 	if (HostBtn) { HostBtn->OnClicked.AddDynamic(this, &UMainMenuBase::HostClickEvent); }
 
 	if (JoinBtn) { JoinBtn->OnClicked.AddDynamic(this, &UMainMenuBase::JoinClickEvent); }
@@ -61,6 +63,11 @@ void UMainMenuBase::Setup()
 void UMainMenuBase::LobbyClickEvent()
 {
 	MenuSwitcher->SetActiveWidget(LobbyMenu);
+}
+
+void UMainMenuBase::QuitClickEvent()
+{
+	GameInstance->ExitGame();
 }
 
 void UMainMenuBase::HostClickEvent()

@@ -88,6 +88,8 @@ bool UHiveWarHUD_Base::SwitchActivePanel(EHUDActiveWidget InNewActiveWidget)
 			break;
 		case EHUDActiveWidget::HAW_ENDSCREEN:
 			Switcher->SetActiveWidget(ResultScreen);
+			UIInput.SetWidgetToFocus(ResultScreen->TakeWidget());
+			ResultScreen->RegisterInput();
 			/*UIInput.SetLockMouseToViewportBehavior(EMouseLockMode::LockInFullscreen);
 
 			UIInput.SetWidgetToFocus(ResultScreen->TakeWidget());

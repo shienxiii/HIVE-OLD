@@ -19,4 +19,6 @@ protected:
 
 public:
 	virtual void NativeOnInitialized() override;
+	virtual void StartButtonEvent();
+	virtual void RegisterInput() { RegisterInputComponent(); }
 };

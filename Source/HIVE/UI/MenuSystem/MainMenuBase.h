@@ -37,6 +37,9 @@ protected:
         UButton* LobbyBtn;
 
     UPROPERTY(meta = (BindWidget))
+        UButton* QuitBtn;
+
+    UPROPERTY(meta = (BindWidget))
         UButton* HostBtn;
 
     UPROPERTY(meta = (BindWidget))
@@ -58,6 +61,9 @@ public:
 
     UFUNCTION()
         void LobbyClickEvent();
+
+    UFUNCTION()
+        void QuitClickEvent();
 
     UFUNCTION()
         void HostClickEvent();
