@@ -12,7 +12,7 @@ void UInGameMenuBase::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
-	//if (CancelButton) { CancelButton->OnClicked.AddDynamic(this, &UInGameMenuBase::CancelPressedEvent); }
+	if (ReturnButton) { ReturnButton->OnClicked.AddDynamic(this, &UInGameMenuBase::ReturnPressedEvent); }
 	if (QuitButton) { QuitButton->OnClicked.AddDynamic(this, &UInGameMenuBase::QuitPressedEvent); }
 
 	bIsFocusable = true;
@@ -20,7 +20,14 @@ void UInGameMenuBase::NativeOnInitialized()
 
 void UInGameMenuBase::ReturnPressedEvent()
 {
-	//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, TEXT("Cancel Event"));
+	if (QuitButton->OnClicked.IsBound())
+	{
+		QuitButton->OnClicked.Broadcast();
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, TEXT("Cancel Event"));
+	}
 }
 
 void UInGameMenuBase::QuitPressedEvent()

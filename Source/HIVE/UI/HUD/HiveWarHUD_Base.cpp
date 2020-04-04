@@ -21,7 +21,7 @@ void UHiveWarHUD_Base::InitializeInputComponent()
 	Super::InitializeInputComponent();
 
 	// Initialize the return button for InGameMenu since it needs to communicate with the switcher
-	if (InGameMenu && InGameMenu->GetReturnButton()) { InGameMenu->GetReturnButton()->OnClicked.AddDynamic(this, &UHiveWarHUD_Base::ReturnToGame); }
+	
 	//InputComponent->BindAction("Confirm", EInputEvent::IE_Pressed, this, &UHiveWarHUD_Base::Confirm_Event);
 }
 
@@ -29,7 +29,8 @@ void UHiveWarHUD_Base::InitializeInputComponent()
 void UHiveWarHUD_Base::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
-	InitializeInputComponent();
+
+	//if (InGameMenu && InGameMenu->GetReturnButton()) { InGameMenu->GetReturnButton()->OnClicked.AddDynamic(this, &UHiveWarHUD_Base::ReturnToGame); }
 }
 
 void UHiveWarHUD_Base::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -53,8 +54,8 @@ void UHiveWarHUD_Base::OpenInGameMenu()
 {
 	if (Switcher->GetActiveWidget() == PlayerHUD)
 	{
-		//SwitchActivePanel(EHUDActiveWidget::HAW_INGAMEMENU);
-		SwitchActivePanel(EHUDActiveWidget::HAW_ENDSCREEN);
+		SwitchActivePanel(EHUDActiveWidget::HAW_INGAMEMENU);
+		//SwitchActivePanel(EHUDActiveWidget::HAW_ENDSCREEN);
 	}
 }
 
@@ -91,10 +92,10 @@ bool UHiveWarHUD_Base::SwitchActivePanel(EHUDActiveWidget InNewActiveWidget)
 		case EHUDActiveWidget::HAW_ENDSCREEN:
 			Switcher->SetActiveWidget(ResultScreen);
 			UIInput.SetWidgetToFocus(ResultScreen->TakeWidget());
-			
+
 			GetOwningPlayer()->SetInputMode(UIInput);
 			GetOwningPlayer()->bShowMouseCursor = true;
-			
+
 			break;
 		default:
 			break;
