@@ -359,5 +359,5 @@ void AMonsterBase::HitBoxOverlapEvent(UPrimitiveComponent* OverlappedComponent, 
 		return;
 	}
 
-	OtherActor->TakeDamage(10.0f, FDamageEvent(), GetController(), this);
+	OtherActor->TakeDamage(100.0f, FDamageEvent(), GetController(), this);
 }

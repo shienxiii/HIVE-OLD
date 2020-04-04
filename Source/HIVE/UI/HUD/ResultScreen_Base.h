@@ -19,6 +19,8 @@ protected:
 
 public:
 	virtual void NativeOnInitialized() override;
-	virtual void StartButtonEvent();
+	virtual FReply NativeOnFocusReceived(const FGeometry& InGeometry, const FFocusEvent& InFocusEvent) override;
+	virtual void NativeOnFocusLost(const FFocusEvent& InFocusEvent) override;
 	virtual void RegisterInput() { RegisterInputComponent(); }
+	virtual void StartButtonEvent();
 };
