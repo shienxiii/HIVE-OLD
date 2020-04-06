@@ -19,10 +19,6 @@
 void UHiveWarHUD_Base::InitializeInputComponent()
 {
 	Super::InitializeInputComponent();
-
-	// Initialize the return button for InGameMenu since it needs to communicate with the switcher
-	
-	//InputComponent->BindAction("Confirm", EInputEvent::IE_Pressed, this, &UHiveWarHUD_Base::Confirm_Event);
 }
 
 
@@ -30,13 +26,15 @@ void UHiveWarHUD_Base::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
-	//if (InGameMenu && InGameMenu->GetReturnButton()) { InGameMenu->GetReturnButton()->OnClicked.AddDynamic(this, &UHiveWarHUD_Base::ReturnToGame); }
+	// Initilaize the click event for the InGameMenu so it calls the ReturnToGame function in this class
+	if (InGameMenu && InGameMenu->GetReturnButton()) { InGameMenu->GetReturnButton()->OnClicked.AddDynamic(this, &UHiveWarHUD_Base::ReturnToGame); }
 }
 
 void UHiveWarHUD_Base::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
+	// Handle the positioning of the lock on icon
 	LockOnIcon->SetVisibility(OwningMonster && OwningMonster->GetCurrentLockOnTarget() ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 
 	if (!LockOnIcon->IsVisible()) { return; }
@@ -55,7 +53,6 @@ void UHiveWarHUD_Base::OpenInGameMenu()
 	if (Switcher->GetActiveWidget() == PlayerHUD)
 	{
 		SwitchActivePanel(EHUDActiveWidget::HAW_INGAMEMENU);
-		//SwitchActivePanel(EHUDActiveWidget::HAW_ENDSCREEN);
 	}
 }
 
@@ -115,19 +112,6 @@ void UHiveWarHUD_Base::ReturnToGame()
 	SwitchActivePanel(EHUDActiveWidget::HAW_STAT);
 }
 
-void UHiveWarHUD_Base::Confirm_Event()
-{
-	if (Switcher->GetActiveWidget() == ResultScreen)
-	{
-		UHiveGameInstance* GM = GetGameInstance<UHiveGameInstance>();
-		check(GM);
-		GM->ReturnToLobby(GetOwningPlayer());
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Yellow, TEXT("Nothing"));
-	}
-}
 
 FVector2D UHiveWarHUD_Base::GetWorldPositionToScreenPositionUMGScaled(AActor* InActor)
 {

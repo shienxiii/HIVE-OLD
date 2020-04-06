@@ -24,7 +24,8 @@ class HIVE_API AMonsterController : public APlayerController, public ITeamInterf
 	GENERATED_BODY()
 
 protected:
-	UHiveWarHUD_Base* HUD;
+	UPROPERTY()
+		UHiveWarHUD_Base* HUD;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 		TSubclassOf<UHiveWarHUD_Base> HUD_BP = NULL;

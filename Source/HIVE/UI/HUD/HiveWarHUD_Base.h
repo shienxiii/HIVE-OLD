@@ -79,17 +79,22 @@ public:
 	 */
 	virtual void SynchronizeProperties() override;
 
-	UFUNCTION()
-		virtual void OpenInGameMenu();
+	UFUNCTION() virtual void OpenInGameMenu();
 
 	bool SwitchActivePanel(EHUDActiveWidget InNewActiveWidget);
 
+
+	/**
+	 * Binds the monster currently controlled by the player allow the UI to reflect the monster's stat
+	 *
+	 * @param InMonster The monster currently controlled by the owning player
+	 */
 	void BindMonster(AMonsterBase* InMonster);
 
-	UFUNCTION()
-		void ReturnToGame();
-	UFUNCTION()
-		void Confirm_Event();
+	/**
+	 * Used as an intermediary to tell the Switcher to switch back to the MonsterStat HUD
+	 */
+	UFUNCTION() void ReturnToGame();
 
 	/**
 	 * Calculates the location of the actor in UMG canvas space

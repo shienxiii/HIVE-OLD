@@ -46,6 +46,9 @@ protected:
         UButton* JoinBtn;
 
     UPROPERTY(meta = (BindWidget))
+        UButton* FindSessionsBtn;
+
+    UPROPERTY(meta = (BindWidget))
         UComboBoxString* TargetIP;
 
     UPROPERTY(meta = (BindWidget))
@@ -70,6 +73,9 @@ public:
 
     UFUNCTION()
         void JoinClickEvent();
+
+    UFUNCTION()
+        void FindSessionsClickEvent();
 
     UFUNCTION()
         void BackClickEvent();

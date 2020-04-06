@@ -17,6 +17,7 @@ void UMainMenuBase::NativeOnInitialized()
 	GameInstance = Cast<UHiveGameInstance>(GetGameInstance());
 	if (!GameInstance) { return; }
 	
+	// Set click events for the buttons
 	if (LobbyBtn) { LobbyBtn->OnClicked.AddDynamic(this, &UMainMenuBase::LobbyClickEvent); }
 
 	if (QuitBtn) { QuitBtn->OnClicked.AddDynamic(this, &UMainMenuBase::QuitClickEvent); }
@@ -24,6 +25,8 @@ void UMainMenuBase::NativeOnInitialized()
 	if (HostBtn) { HostBtn->OnClicked.AddDynamic(this, &UMainMenuBase::HostClickEvent); }
 
 	if (JoinBtn) { JoinBtn->OnClicked.AddDynamic(this, &UMainMenuBase::JoinClickEvent); }
+
+	if (FindSessionsBtn) { FindSessionsBtn->OnClicked.AddDynamic(this, &UMainMenuBase::FindSessionsClickEvent); }
 
 	if (BackBtn) { BackBtn->OnClicked.AddDynamic(this, &UMainMenuBase::BackClickEvent); }
 
@@ -87,6 +90,11 @@ void UMainMenuBase::JoinClickEvent()
 	}*/
 
 	GameInstance->Join(TargetIP->GetSelectedOption());
+}
+
+void UMainMenuBase::FindSessionsClickEvent()
+{
+	GameInstance->FindSessions();
 }
 
 void UMainMenuBase::BackClickEvent()

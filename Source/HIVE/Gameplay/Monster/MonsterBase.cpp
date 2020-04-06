@@ -77,7 +77,7 @@ void AMonsterBase::Tick(float DeltaTime)
 
 void AMonsterBase::OnHealthRep()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, TEXT("HealthReplicated"));
+	//GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, TEXT("HealthReplicated"));
 }
 
 #pragma region Input
@@ -175,8 +175,6 @@ bool AMonsterBase::Server_RegisterAttack_Validate(EAttackType InAttack)
 
 void AMonsterBase::Server_RegisterAttack_Implementation(EAttackType InAttack)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, TEXT("Toggle"));
-
 	AttackRegister = InAttack;
 }
 
@@ -306,6 +304,7 @@ void AMonsterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AMonsterBase, Health);
+	DOREPLIFETIME(AMonsterBase, MaxHealth);
 	DOREPLIFETIME(AMonsterBase, CurrentTarget);
 	DOREPLIFETIME(AMonsterBase, AttackRegister);
 }
