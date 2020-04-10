@@ -83,7 +83,7 @@ void UHiveGameInstance::FindSessions()
 	if (SessionSearch.IsValid())
 	{
 		//SessionSearch->bIsLanQuery = true;
-		
+		SessionSearch->MaxSearchResults = 10;
 		SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals); // Setting the search query to search presence
 
 		OnlineSessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
