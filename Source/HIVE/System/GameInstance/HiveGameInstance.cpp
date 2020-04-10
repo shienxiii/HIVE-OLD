@@ -46,6 +46,19 @@ void UHiveGameInstance::Init()
 
 }
 
+void UHiveGameInstance::FinishDestroy()
+{
+	Super::FinishDestroy();
+
+	auto ExistingSession = OnlineSessionInterface->GetNamedSession(SESSION_NAME);
+	//OnlineSessionInterface->session
+	if (ExistingSession)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Destroying existing session"));
+		OnlineSessionInterface->DestroySession(SESSION_NAME);
+	}
+}
+
 void UHiveGameInstance::LoadMenu()
 {
 	if (MenuClass == nullptr) return;
