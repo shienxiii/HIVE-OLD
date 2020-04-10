@@ -31,7 +31,7 @@ private:
 public:
 	UHiveGameInstance(const FObjectInitializer& ObjectInitializer);
 	virtual void Init() override;
-	virtual void FinishDestroy() override;
+	virtual void BeginDestroy() override;
 
 
 	UFUNCTION(Exec, BlueprintCallable)
