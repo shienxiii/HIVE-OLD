@@ -4,12 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "OnlineSessionSettings.h"
 #include "MainMenuBase.generated.h"
 
 class UHiveGameInstance;
 class UWidgetSwitcher;
 class UComboBoxString;
 class UButton;
+class UScrollBox;
+class UServerListEntryBase;
 
 /**
  * 
@@ -23,7 +26,7 @@ protected:
     UHiveGameInstance* GameInstance;
 
     // A UPROPERTY with BindWidget metadata will automatically bind the button on the editor to the variable
-
+#pragma region BoundWidget
     UPROPERTY(meta = (BindWidget))
         UWidgetSwitcher* MenuSwitcher;
 
@@ -32,6 +35,9 @@ protected:
 
     UPROPERTY(meta = (BindWidget))
         UWidget* LobbyMenu;
+
+    UPROPERTY(meta = (BindWidget))
+        UScrollBox* SessionList;
 
     UPROPERTY(meta = (BindWidget))
         UButton* LobbyBtn;
@@ -49,12 +55,15 @@ protected:
         UButton* FindSessionsBtn;
 
     UPROPERTY(meta = (BindWidget))
-        UComboBoxString* TargetIP;
-
-    UPROPERTY(meta = (BindWidget))
         UButton* BackBtn;
+#pragma endregion
+
+    TSubclassOf<UServerListEntryBase> ServerEntryClass;
+    TOptional<uint32> SessionIndex;
 
 public:
+    UMainMenuBase(const FObjectInitializer& ObjectInitializer);
+
     virtual void NativeOnInitialized() override;
 
     // Automatically called when the level in which this widget belonged to is removed from the world
@@ -76,7 +85,10 @@ public:
 
     UFUNCTION()
         void FindSessionsClickEvent();
-
+    
     UFUNCTION()
         void BackClickEvent();
+
+    void PopulateSessionList(TArray<FOnlineSessionSearchResult> InSearchResults);
+    void SetSessionIndex(uint32 InIndex);
 };

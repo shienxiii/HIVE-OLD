@@ -5,6 +5,7 @@
 #include "Engine/World.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Blueprint/UserWidget.h"
+#include "HIVE/UI/MenuSystem/MainMenuBase.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/Engine.h"
 
@@ -13,7 +14,7 @@ const static FName SESSION_NAME = TEXT("My Session");
 UHiveGameInstance::UHiveGameInstance(const FObjectInitializer& ObjectInitializer)
 {
 	//static ConstructorHelpers::FClassFinder<UUserWidget> MenuBP(TEXT("/Game/Blueprint/UI/MainMenu/LAN_Menu.LAN_Menu_C"));
-	static ConstructorHelpers::FClassFinder<UUserWidget> MenuBP(TEXT("/Game/Blueprint/UI/MainMenu/MainMenu.MainMenu_C"));
+	static ConstructorHelpers::FClassFinder<UMainMenuBase> MenuBP(TEXT("/Game/Blueprint/UI/MainMenu/MainMenu.MainMenu_C"));
 
 	if (MenuBP.Class != nullptr)
 	{
@@ -32,11 +33,12 @@ void UHiveGameInstance::Init()
 	OnlineSubsystem = IOnlineSubsystem::Get();
 	check(OnlineSubsystem);
 
-	SessionInterface = OnlineSubsystem->GetSessionInterface();
-	check(SessionInterface);
+	OnlineSessionInterface = OnlineSubsystem->GetSessionInterface();
+	check(OnlineSessionInterface);
 
-	SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UHiveGameInstance::CreateSessionComplete);
-	SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UHiveGameInstance::FindSessionsComplete);
+	OnlineSessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UHiveGameInstance::CreateSessionComplete);
+	OnlineSessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UHiveGameInstance::FindSessionsComplete);
+	OnlineSessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &UHiveGameInstance::JoinSessionComplete);
 
 	SessionSearch = MakeShareable(new FOnlineSessionSearch());
 	check(SessionSearch);
@@ -46,13 +48,12 @@ void UHiveGameInstance::Init()
 void UHiveGameInstance::LoadMenu()
 {
 	if (MenuClass == nullptr) return;
-	UE_LOG(LogTemp, Warning, TEXT("Generating Widget"));
-	UUserWidget* menu = CreateWidget<UUserWidget>(this, MenuClass);
+	MainMenu = CreateWidget<UMainMenuBase>(this, MenuClass);
 }
 
 void UHiveGameInstance::Host()
 {
-	if (!SessionInterface.IsValid())
+	if (!OnlineSessionInterface.IsValid())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Invalid session interface"));
 		return;
@@ -60,31 +61,37 @@ void UHiveGameInstance::Host()
 
 	// Check if there is an existing session
 	// NOTE: Find a way to destroy session on match end on final game
-	auto ExistingSession = SessionInterface->GetNamedSession(SESSION_NAME);
+	auto ExistingSession = OnlineSessionInterface->GetNamedSession(SESSION_NAME);
 	if (ExistingSession)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Destroying existing session"));
-		SessionInterface->DestroySession(SESSION_NAME);
+		OnlineSessionInterface->DestroySession(SESSION_NAME);
 	}
 
 	FOnlineSessionSettings sessionSettings;
-	SessionInterface->CreateSession(0, SESSION_NAME, sessionSettings);
+	sessionSettings.bIsLANMatch = true;
+	sessionSettings.NumPublicConnections = 10;
+	sessionSettings.bShouldAdvertise = true;
+
+	OnlineSessionInterface->CreateSession(0, SESSION_NAME, sessionSettings);
 }
 
 void UHiveGameInstance::FindSessions()
 {
 	if (SessionSearch.IsValid())
 	{
-		SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
+		SessionSearch->bIsLanQuery = true;
+
+		OnlineSessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
 	}
 }
 
-void UHiveGameInstance::Join(const FString& InAddress)
+void UHiveGameInstance::Join(uint32 InIndex)
 {
-	APlayerController* controller = GetFirstLocalPlayerController();
-	if (!ensure(controller != nullptr)) { return; }
+	if (!OnlineSessionInterface.IsValid()) { return; }
+	if (!SessionSearch.IsValid()) { return; }
 
-	controller->ClientTravel(*InAddress, ETravelType::TRAVEL_Absolute);
+	OnlineSessionInterface->JoinSession(0, SESSION_NAME, SessionSearch->SearchResults[InIndex]);
 }
 
 void UHiveGameInstance::ExitGame()
@@ -123,11 +130,26 @@ void UHiveGameInstance::FindSessionsComplete(bool wasSuccessful)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Session search successful"));
 
-		TArray<FOnlineSessionSearchResult> results = SessionSearch->SearchResults;
-
-		for (int i = 0; i < results.Num(); i++)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("%s"), *results[i].GetSessionIdStr());
-		}
+		MainMenu->PopulateSessionList(SessionSearch->SearchResults);
 	}
+}
+
+void UHiveGameInstance::JoinSessionComplete(FName InName, const EOnJoinSessionCompleteResult::Type InJoinSessionCompleteResult)
+{
+	if (!OnlineSessionInterface) { return; }
+
+	// Get the string needed to do a client travel to join the match
+	FString Address;
+	if (!OnlineSessionInterface->GetResolvedConnectString(InName, Address))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to get connection string to join match"));
+		return;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Completed Session Joining"));
+
+	APlayerController* controller = GetFirstLocalPlayerController();
+	if (!ensure(controller != nullptr)) { return; }
+
+	controller->ClientTravel(Address, ETravelType::TRAVEL_Absolute);
 }

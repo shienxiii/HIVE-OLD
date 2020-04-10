@@ -6,7 +6,25 @@
 #include "Components/ComboBoxString.h"
 #include "Components/PanelWidget.h"
 #include "Components/Button.h"
+#include "Components/ScrollBox.h"
+#include "ServerListEntryBase.h"
+#include "UObject/ConstructorHelpers.h"
 #include "HIVE/System/GameInstance/HiveGameInstance.h"
+
+UMainMenuBase::UMainMenuBase(const FObjectInitializer& ObjectInitializer)
+	: UUserWidget(ObjectInitializer)
+{
+	static ConstructorHelpers::FClassFinder<UUserWidget> ServerBP(TEXT("/Game/Blueprint/UI/MainMenu/ServerListEntry.ServerListEntry_C"));
+
+	if (ServerBP.Class != nullptr)
+	{
+		ServerEntryClass = ServerBP.Class;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Fail to find BP"));
+	}
+}
 
 void UMainMenuBase::NativeOnInitialized()
 {
@@ -80,24 +98,43 @@ void UMainMenuBase::HostClickEvent()
 
 void UMainMenuBase::JoinClickEvent()
 {
-	/*if (!TargetIP->Text.IsEmpty())
-	{
-		GameInstance->Join(TargetIP->Text.ToString());
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("NO IP detected"));
-	}*/
+	if (!GameInstance) { UE_LOG(LogTemp, Warning, TEXT("Invalid GameInstance class")); return; }
 
-	GameInstance->Join(TargetIP->GetSelectedOption());
+	if (!SessionIndex.IsSet()) { UE_LOG(LogTemp, Warning, TEXT("No Session Selected")); return; }
+
+	// SessionIndex value corresponds to the indexes of the sessions TArray in the GameInstance
+	GameInstance->Join(SessionIndex.GetValue());
 }
 
 void UMainMenuBase::FindSessionsClickEvent()
 {
+	// Clear the list before populating it
+	SessionList->ClearChildren();
+	SessionIndex.Reset();
 	GameInstance->FindSessions();
 }
 
 void UMainMenuBase::BackClickEvent()
 {
 	MenuSwitcher->SetActiveWidget(MainMenu);
+}
+
+void UMainMenuBase::PopulateSessionList(TArray<FOnlineSessionSearchResult> InSearchResults)
+{
+	uint32 i = 0;
+	for (FOnlineSessionSearchResult& SearchResult : InSearchResults)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Parsing"));
+		UServerListEntryBase* newEntry = CreateWidget<UServerListEntryBase>(this, ServerEntryClass);
+		newEntry->SetSessionInfo(SearchResult.GetSessionIdStr(), SearchResult.PingInMs);
+		newEntry->Setup(this, i);
+		SessionList->AddChild(newEntry);
+
+		i++;
+	}
+}
+
+void UMainMenuBase::SetSessionIndex(uint32 InIndex)
+{
+	SessionIndex = InIndex;
 }

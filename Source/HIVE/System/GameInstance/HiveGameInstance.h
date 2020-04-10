@@ -10,8 +10,7 @@
 #include "HiveGameInstance.generated.h"
 
 
-class IOnlineSubsystem;
-//struct FInputModeDataBase;
+class UMainMenuBase;
 /**
  * 
  */
@@ -22,11 +21,12 @@ class HIVE_API UHiveGameInstance : public UGameInstance
 private:
 	// Online subsystem properties
 	IOnlineSubsystem* OnlineSubsystem;
-	IOnlineSessionPtr SessionInterface;
+	IOnlineSessionPtr OnlineSessionInterface;
 	TSharedPtr<FOnlineSessionSearch> SessionSearch;
 
 
-	TSubclassOf<class UUserWidget> MenuClass;
+	TSubclassOf<class UMainMenuBase> MenuClass;
+	UMainMenuBase* MainMenu;
 
 public:
 	UHiveGameInstance(const FObjectInitializer& ObjectInitializer);
@@ -45,7 +45,7 @@ public:
 		void FindSessions();
 
 	UFUNCTION(Exec)
-		void Join(const FString& InAddress);
+		void Join(uint32 InIndex);
 
 	UFUNCTION(Exec)
 		void ExitGame();
@@ -66,5 +66,8 @@ public:
 	 * To be binded to the online subsystem delegate that runs when an online session is created
 	 */
 	UFUNCTION() void FindSessionsComplete(bool wasSuccessful);
+
+	//UFUNCTION() commented out because it causes error with EJoinSessionCompleteResult parameter
+	void JoinSessionComplete(FName InName, const EOnJoinSessionCompleteResult::Type InJoinSessionCompleteResult);
 #pragma endregion
 };
