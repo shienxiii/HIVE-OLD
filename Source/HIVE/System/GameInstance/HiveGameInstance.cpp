@@ -32,6 +32,7 @@ void UHiveGameInstance::Init()
 
 	OnlineSubsystem = IOnlineSubsystem::Get();
 	check(OnlineSubsystem);
+	UE_LOG(LogTemp, Warning, TEXT("Found Subsystem %s"), *OnlineSubsystem->GetSubsystemName().ToString());
 
 	OnlineSessionInterface = OnlineSubsystem->GetSessionInterface();
 	check(OnlineSessionInterface);
@@ -69,9 +70,10 @@ void UHiveGameInstance::Host()
 	}
 
 	FOnlineSessionSettings sessionSettings;
-	sessionSettings.bIsLANMatch = true;
+	sessionSettings.bIsLANMatch = false;
 	sessionSettings.NumPublicConnections = 10;
 	sessionSettings.bShouldAdvertise = true;
+	sessionSettings.bUsesPresence = true; // Use presence to allow search to work over Steam
 
 	OnlineSessionInterface->CreateSession(0, SESSION_NAME, sessionSettings);
 }
@@ -80,7 +82,9 @@ void UHiveGameInstance::FindSessions()
 {
 	if (SessionSearch.IsValid())
 	{
-		SessionSearch->bIsLanQuery = true;
+		//SessionSearch->bIsLanQuery = true;
+		
+		SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals); // Setting the search query to search presence
 
 		OnlineSessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
 	}
