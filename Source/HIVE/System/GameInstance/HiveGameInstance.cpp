@@ -117,7 +117,7 @@ void UHiveGameInstance::FindSessionsComplete(bool wasSuccessful)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Session search successful"));
 
-		//MainMenu->PopulateSessionList(SessionSearch->SearchResults);
+		MainMenu->PopulateSessionList(OnlineInterface->GetSessionSearch()->SearchResults);
 	}
 }
 

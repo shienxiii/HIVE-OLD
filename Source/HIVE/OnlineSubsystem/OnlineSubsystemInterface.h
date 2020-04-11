@@ -28,6 +28,7 @@ public:
 	UOnlineSubsystemInterface();
 	~UOnlineSubsystemInterface();
 	IOnlineSessionPtr GetSessionInterface() { return SessionInterface; }
+	TSharedPtr<FOnlineSessionSearch> GetSessionSearch() { return SessionSearch; }
 
 
 	bool CreateSession(int32 HostingPlayerNum, const FOnlineSessionSettings& NewSessionSettings);
