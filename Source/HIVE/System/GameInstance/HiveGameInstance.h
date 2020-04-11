@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+#include "HIVE/OnlineSubsystem/OnlineSubsystemInterface.h"
 #include "OnlineSubsystem.h"
 #include "OnlineSessionSettings.h"
 #include "Interfaces/OnlineSessionInterface.h"
@@ -19,10 +20,8 @@ class HIVE_API UHiveGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 private:
-	// Online subsystem properties
-	IOnlineSubsystem* OnlineSubsystem;
-	IOnlineSessionPtr OnlineSessionInterface;
-	TSharedPtr<FOnlineSessionSearch> SessionSearch;
+	UPROPERTY()
+		UOnlineSubsystemInterface* OnlineInterface;
 
 
 	TSubclassOf<class UMainMenuBase> MenuClass;

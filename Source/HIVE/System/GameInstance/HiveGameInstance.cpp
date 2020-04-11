@@ -9,7 +9,6 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/Engine.h"
 
-const static FName SESSION_NAME = TEXT("My Session");
 
 UHiveGameInstance::UHiveGameInstance(const FObjectInitializer& ObjectInitializer)
 {
@@ -30,19 +29,14 @@ void UHiveGameInstance::Init()
 {
 	Super::Init();
 
-	OnlineSubsystem = IOnlineSubsystem::Get();
-	check(OnlineSubsystem);
-	UE_LOG(LogTemp, Warning, TEXT("Found Subsystem %s"), *OnlineSubsystem->GetSubsystemName().ToString());
+	OnlineInterface = NewObject<UOnlineSubsystemInterface>(this);
 
-	OnlineSessionInterface = OnlineSubsystem->GetSessionInterface();
-	check(OnlineSessionInterface);
-
-	OnlineSessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UHiveGameInstance::CreateSessionComplete);
-	OnlineSessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UHiveGameInstance::FindSessionsComplete);
-	OnlineSessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &UHiveGameInstance::JoinSessionComplete);
-
-	SessionSearch = MakeShareable(new FOnlineSessionSearch());
-	check(SessionSearch);
+	if (OnlineInterface->GetSessionInterface())
+	{
+		OnlineInterface->GetSessionInterface()->OnCreateSessionCompleteDelegates.AddUObject(this, &UHiveGameInstance::CreateSessionComplete);
+		OnlineInterface->GetSessionInterface()->OnFindSessionsCompleteDelegates.AddUObject(this, &UHiveGameInstance::FindSessionsComplete);
+		OnlineInterface->GetSessionInterface()->OnJoinSessionCompleteDelegates.AddUObject(this, &UHiveGameInstance::JoinSessionComplete);
+	}
 
 }
 
@@ -67,48 +61,24 @@ void UHiveGameInstance::LoadMenu()
 
 void UHiveGameInstance::Host()
 {
-	if (!OnlineSessionInterface.IsValid())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Invalid session interface"));
-		return;
-	}
-
-	// Check if there is an existing session
-	// NOTE: Find a way to destroy session on match end on final game
-	auto ExistingSession = OnlineSessionInterface->GetNamedSession(SESSION_NAME);
-	if (ExistingSession)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Destroying existing session"));
-		OnlineSessionInterface->DestroySession(SESSION_NAME);
-	}
-
 	FOnlineSessionSettings sessionSettings;
 	sessionSettings.bIsLANMatch = false;
 	sessionSettings.NumPublicConnections = 10;
 	sessionSettings.bShouldAdvertise = true;
-	sessionSettings.bUsesPresence = true; // Use presence to allow search to work over Steam
+	sessionSettings.bUsesPresence = true; // Enable on both server and search for steam to use lobbies
 
-	OnlineSessionInterface->CreateSession(0, SESSION_NAME, sessionSettings);
+
+	OnlineInterface->CreateSession(0, sessionSettings);
 }
 
 void UHiveGameInstance::FindSessions()
 {
-	if (SessionSearch.IsValid())
-	{
-		//SessionSearch->bIsLanQuery = true;
-		SessionSearch->MaxSearchResults = 10;
-		SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals); // Setting the search query to search presence
-
-		OnlineSessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
-	}
+	OnlineInterface->FindSession();
 }
 
 void UHiveGameInstance::Join(uint32 InIndex)
 {
-	if (!OnlineSessionInterface.IsValid()) { return; }
-	if (!SessionSearch.IsValid()) { return; }
-
-	OnlineSessionInterface->JoinSession(0, SESSION_NAME, SessionSearch->SearchResults[InIndex]);
+	OnlineInterface->JoinSession(InIndex);
 }
 
 void UHiveGameInstance::ExitGame()
@@ -147,17 +117,17 @@ void UHiveGameInstance::FindSessionsComplete(bool wasSuccessful)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Session search successful"));
 
-		MainMenu->PopulateSessionList(SessionSearch->SearchResults);
+		//MainMenu->PopulateSessionList(SessionSearch->SearchResults);
 	}
 }
 
 void UHiveGameInstance::JoinSessionComplete(FName InName, const EOnJoinSessionCompleteResult::Type InJoinSessionCompleteResult)
 {
-	if (!OnlineSessionInterface) { return; }
+	if (!OnlineInterface) { return; }
 
 	// Get the string needed to do a client travel to join the match
 	FString Address;
-	if (!OnlineSessionInterface->GetResolvedConnectString(InName, Address))
+	if (!OnlineInterface->GetSessionInterface()->GetResolvedConnectString(InName, Address))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Failed to get connection string to join match"));
 		return;
