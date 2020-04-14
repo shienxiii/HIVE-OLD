@@ -29,10 +29,19 @@ protected:
 		UTextBlock* ServerID_Txt;
 
 	UPROPERTY(meta = (BindWidget))
+		UTextBlock* Username_Txt;
+
+	UPROPERTY(meta = (BindWidget))
+		UTextBlock* PlayerCount_Txt;
+
+	UPROPERTY(meta = (BindWidget))
 		UTextBlock* Ping_Txt;
 
 	UPROPERTY(meta = (BindWidget))
 		UButton* SessionBtn;
+
+	uint32 CurrentPlayers;
+	uint32 MaxPlayers;
 
 	UPROPERTY()
 		UMainMenuBase* Parent;
@@ -50,12 +59,9 @@ protected:
 
 public:
 	virtual void NativeOnInitialized() override;
-
-	UFUNCTION()
-		void SetSessionInfo(FString InServerID, int32 InPing);
 	
-	UFUNCTION()
-		void Setup(UMainMenuBase* InParent, uint32 InIndex);
+	void SetSessionInfo(FOnlineSessionSearchResult& SearchResult, UMainMenuBase* InParent, uint32 InIndex);
+
 
 	// Return if the session displayed by this entry is selected
 	bool CurrentlySelected();

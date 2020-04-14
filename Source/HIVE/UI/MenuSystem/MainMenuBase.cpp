@@ -124,14 +124,15 @@ void UMainMenuBase::PopulateSessionList(TArray<FOnlineSessionSearchResult> InSea
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Parsing"));
 		UServerListEntryBase* newEntry = CreateWidget<UServerListEntryBase>(this, ServerEntryClass);
-		newEntry->SetSessionInfo(SearchResult.GetSessionIdStr(), SearchResult.PingInMs);
-		newEntry->Setup(this, i);
+		newEntry->SetSessionInfo(SearchResult, this, i);
+		//newEntry->SetSessionInfo(SearchResult.GetSessionIdStr(), SearchResult.PingInMs);
+		//newEntry->Setup(this, i);
 		SessionList->AddChild(newEntry);
 
 		i++;
 	}
 
-	int y = i + 3;
+	/*int y = i + 3;
 	for (int x = i; x < y; x++)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Populating fake server for UI testing"));
@@ -140,9 +141,8 @@ void UMainMenuBase::PopulateSessionList(TArray<FOnlineSessionSearchResult> InSea
 		FString fakeName = FString("Do not select ");
 		fakeName.Append(FString::FromInt(x));
 		newEntry->SetSessionInfo(FString(fakeName), x);
-		newEntry->Setup(this, x);
 		SessionList->AddChild(newEntry);
-	}
+	}*/
 
 }
 

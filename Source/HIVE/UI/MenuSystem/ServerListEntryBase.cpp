@@ -20,21 +20,27 @@ void UServerListEntryBase::NativeOnInitialized()
 	SessionBtn->OnClicked.AddDynamic(this, &UServerListEntryBase::SessionSelectedEvent);
 }
 
-void UServerListEntryBase::SetSessionInfo(FString InServerID, int32 InPing)
+
+void UServerListEntryBase::SetSessionInfo(FOnlineSessionSearchResult& SearchResult, UMainMenuBase* InParent, uint32 InIndex)
 {
-	ServerID	= InServerID;
-	Ping		= InPing;
+	SearchResult.GetSessionIdStr();
+
+	Parent = InParent;
+	SessionIndex = InIndex;
+
+	ServerID = SearchResult.GetSessionIdStr();
+	Ping = SearchResult.PingInMs;
 
 	ServerID_Txt->SetText(FText::FromString(ServerID));
 	Ping_Txt->SetText(FText::FromString(FString::FromInt(Ping)));
+	Username_Txt->SetText(FText::FromString(SearchResult.Session.OwningUserName));
+
+	CurrentPlayers = SearchResult.Session.NumOpenPrivateConnections;
+	MaxPlayers = SearchResult.Session.SessionSettings.NumPublicConnections;
+
+	PlayerCount_Txt->SetText(FText::FromString(FString::Printf(TEXT("%d/%d"), CurrentPlayers, MaxPlayers)));
 }
 
-void UServerListEntryBase::Setup(UMainMenuBase* InParent, uint32 InIndex)
-{
-	Parent = InParent;
-	SessionIndex = InIndex;
-	//Ping_Txt->SetText(FText::FromString(FString::FromInt(SessionIndex)));
-}
 
 bool UServerListEntryBase::CurrentlySelected()
 {
@@ -79,5 +85,7 @@ void UServerListEntryBase::UnSelectSession()
 void UServerListEntryBase::ChangeTextBlockColors(FSlateColor InColor)
 {
 	ServerID_Txt->SetColorAndOpacity(InColor);
+	Username_Txt->SetColorAndOpacity(InColor);
 	Ping_Txt->SetColorAndOpacity(InColor);
+	PlayerCount_Txt->->SetColorAndOpacity(InColor);;
 }
