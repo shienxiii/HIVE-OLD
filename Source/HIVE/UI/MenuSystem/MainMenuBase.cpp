@@ -70,9 +70,6 @@ void UMainMenuBase::Setup()
 	APlayerController* controller = world->GetFirstPlayerController();
 	if (!controller) { return; }
 
-	AddToViewport();
-
-
 	FInputModeUIOnly uiInputMode;
 	uiInputMode.SetWidgetToFocus(TakeWidget());
 	uiInputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
@@ -122,6 +119,7 @@ void UMainMenuBase::BackClickEvent()
 void UMainMenuBase::PopulateSessionList(TArray<FOnlineSessionSearchResult> InSearchResults)
 {
 	uint32 i = 0;
+
 	for (FOnlineSessionSearchResult& SearchResult : InSearchResults)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Parsing"));
@@ -132,9 +130,34 @@ void UMainMenuBase::PopulateSessionList(TArray<FOnlineSessionSearchResult> InSea
 
 		i++;
 	}
+
+	int y = i + 3;
+	for (int x = i; x < y; x++)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Populating fake server for UI testing"));
+		UServerListEntryBase* newEntry = CreateWidget<UServerListEntryBase>(this, ServerEntryClass);
+
+		FString fakeName = FString("Do not select ");
+		fakeName.Append(FString::FromInt(x));
+		newEntry->SetSessionInfo(FString(fakeName), x);
+		newEntry->Setup(this, x);
+		SessionList->AddChild(newEntry);
+	}
+
 }
 
 void UMainMenuBase::SetSessionIndex(uint32 InIndex)
 {
+	if (SessionIndex.IsSet())
+	{
+		UServerListEntryBase* prevSelection = Cast<UServerListEntryBase>
+														(SessionList->GetChildAt(SessionIndex.GetValue())
+																										);
+
+		if (prevSelection)
+		{
+			prevSelection->UnSelectSession();
+		}
+	}
 	SessionIndex = InIndex;
 }

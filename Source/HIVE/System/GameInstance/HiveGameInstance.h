@@ -25,7 +25,9 @@ private:
 
 
 	TSubclassOf<class UMainMenuBase> MenuClass;
-	UMainMenuBase* MainMenu;
+
+	UPROPERTY()
+		UMainMenuBase* MainMenu;
 
 public:
 	UHiveGameInstance(const FObjectInitializer& ObjectInitializer);

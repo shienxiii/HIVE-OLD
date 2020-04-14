@@ -39,6 +39,15 @@ protected:
 
 	uint32 SessionIndex;
 
+
+	FSlateColor DefaultTxtColor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Setup)
+		FSlateColor HoverTxtColor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Setup)
+		FSlateColor SelectedTxtColor;
+
 public:
 	virtual void NativeOnInitialized() override;
 
@@ -48,7 +57,28 @@ public:
 	UFUNCTION()
 		void Setup(UMainMenuBase* InParent, uint32 InIndex);
 
-	UFUNCTION()
-		void SessionSelectedEvent();
+	// Return if the session displayed by this entry is selected
+	bool CurrentlySelected();
 
+	/**
+	 * Click event for this entry
+	 */
+	UFUNCTION() void SessionSelectedEvent();
+
+	/**
+	 * Hover event for this entry
+	 */
+	UFUNCTION() void EntryHovered();
+
+	/**
+	 * Unhover event for this entry
+	 */
+	UFUNCTION() void EntryUnHovered();
+
+	/**
+	 * To be run when another entry is selected
+	 */
+	UFUNCTION() void UnSelectSession();
+
+	void ChangeTextBlockColors(FSlateColor InColor);
 };

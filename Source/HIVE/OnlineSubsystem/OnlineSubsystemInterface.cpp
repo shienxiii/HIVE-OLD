@@ -24,21 +24,20 @@ UOnlineSubsystemInterface::~UOnlineSubsystemInterface()
 	SessionInterface = NULL;
 }
 
-bool UOnlineSubsystemInterface::CreateSession(int32 HostingPlayerNum, const FOnlineSessionSettings& NewSessionSettings)
+bool UOnlineSubsystemInterface::CreateSession(int32 HostingPlayerNum)
 {
 	if (!SessionInterface) { UE_LOG(LogTemp, Warning, TEXT("Invalid session interface")); return false; }
 
-	// Check if there is an existing session
-	// NOTE: Find a way to destroy session on match end on final game
-	auto ExistingSession = SessionInterface->GetNamedSession(SESSION_NAME);
-	if (ExistingSession)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Destroying existing session"));
-		SessionInterface->DestroySession(SESSION_NAME);
-	}
+	DestroyExistingSession();
 
-	SessionInterface->CreateSession(0, SESSION_NAME, NewSessionSettings);
-	SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
+	FOnlineSessionSettings sessionSettings;
+	sessionSettings.bIsLANMatch = (OnlineSubsystem->GetSubsystemName() == "NULL");
+	sessionSettings.NumPublicConnections = 10;
+	sessionSettings.bShouldAdvertise = true;
+	sessionSettings.bUsesPresence = true; // Enable on both server and search for steam to use lobbies
+
+	SessionInterface->CreateSession(0, SESSION_NAME, sessionSettings);
+
 	return true;
 }
 
@@ -63,4 +62,16 @@ bool UOnlineSubsystemInterface::JoinSession(int32 SessionIndex)
 	SessionInterface->JoinSession(0, SESSION_NAME, SessionSearch->SearchResults[SessionIndex]);
 
 	return true;
+}
+
+void UOnlineSubsystemInterface::DestroyExistingSession()
+{
+	// Check if there is an existing session
+	// NOTE: Find a way to destroy session on match end on final game
+	auto ExistingSession = SessionInterface->GetNamedSession(SESSION_NAME);
+	if (ExistingSession)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Destroying existing session"));
+		SessionInterface->DestroySession(SESSION_NAME);
+	}
 }

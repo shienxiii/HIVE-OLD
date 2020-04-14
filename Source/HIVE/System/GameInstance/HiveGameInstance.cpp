@@ -42,33 +42,26 @@ void UHiveGameInstance::Init()
 
 void UHiveGameInstance::BeginDestroy()
 {
-	/*auto ExistingSession = OnlineSessionInterface->GetNamedSession(SESSION_NAME);
-	OnlineSessionInterface->session
-	if (ExistingSession)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Destroying existing session"));
-		OnlineSessionInterface->DestroySession(SESSION_NAME);
-	}*/
-
 	Super::BeginDestroy();
 }
 
 void UHiveGameInstance::LoadMenu()
 {
 	if (MenuClass == nullptr) return;
-	MainMenu = CreateWidget<UMainMenuBase>(this, MenuClass);
+
+	if (!MainMenu)
+	{
+		MainMenu = CreateWidget<UMainMenuBase>(this, MenuClass);
+	}
+	
+	MainMenu->AddToViewport();
+
+	OnlineInterface->DestroyExistingSession();
 }
 
 void UHiveGameInstance::Host()
 {
-	FOnlineSessionSettings sessionSettings;
-	sessionSettings.bIsLANMatch = false;
-	sessionSettings.NumPublicConnections = 10;
-	sessionSettings.bShouldAdvertise = true;
-	sessionSettings.bUsesPresence = true; // Enable on both server and search for steam to use lobbies
-
-
-	OnlineInterface->CreateSession(0, sessionSettings);
+	OnlineInterface->CreateSession(0);
 }
 
 void UHiveGameInstance::FindSessions()
@@ -117,13 +110,20 @@ void UHiveGameInstance::FindSessionsComplete(bool wasSuccessful)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Session search successful"));
 
-		MainMenu->PopulateSessionList(OnlineInterface->GetSessionSearch()->SearchResults);
+		if (MainMenu)
+		{
+			MainMenu->PopulateSessionList(OnlineInterface->GetSessionSearch()->SearchResults);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Error, MainMenu not found"));
+		}
 	}
 }
 
 void UHiveGameInstance::JoinSessionComplete(FName InName, const EOnJoinSessionCompleteResult::Type InJoinSessionCompleteResult)
 {
-	if (!OnlineInterface) { return; }
+	if (!OnlineInterface) { UE_LOG(LogTemp, Warning, TEXT("Failed to get OnlineInterface")); return; }
 
 	// Get the string needed to do a client travel to join the match
 	FString Address;
@@ -136,7 +136,7 @@ void UHiveGameInstance::JoinSessionComplete(FName InName, const EOnJoinSessionCo
 	UE_LOG(LogTemp, Warning, TEXT("Completed Session Joining"));
 
 	APlayerController* controller = GetFirstLocalPlayerController();
-	if (!ensure(controller != nullptr)) { return; }
+	if (!ensure(controller != nullptr)) { UE_LOG(LogTemp, Warning, TEXT("Failed to get player controller")); return; }
 
 	controller->ClientTravel(Address, ETravelType::TRAVEL_Absolute);
 }

@@ -31,8 +31,9 @@ public:
 	TSharedPtr<FOnlineSessionSearch> GetSessionSearch() { return SessionSearch; }
 
 
-	bool CreateSession(int32 HostingPlayerNum, const FOnlineSessionSettings& NewSessionSettings);
+	bool CreateSession(int32 HostingPlayerNum);
 	bool FindSession();
 	bool JoinSession(int32 SessionIndex);
+	void DestroyExistingSession();
 	// CMD: Log LogOnline VeryVerbose
 };

@@ -91,4 +91,5 @@ public:
 
     void PopulateSessionList(TArray<FOnlineSessionSearchResult> InSearchResults);
     void SetSessionIndex(uint32 InIndex);
+    TOptional<uint32> GetSessionIndex() { return SessionIndex; }
 };
