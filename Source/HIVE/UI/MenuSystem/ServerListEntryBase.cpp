@@ -87,5 +87,5 @@ void UServerListEntryBase::ChangeTextBlockColors(FSlateColor InColor)
 	ServerID_Txt->SetColorAndOpacity(InColor);
 	Username_Txt->SetColorAndOpacity(InColor);
 	Ping_Txt->SetColorAndOpacity(InColor);
-	PlayerCount_Txt->->SetColorAndOpacity(InColor);;
+	PlayerCount_Txt->SetColorAndOpacity(InColor);;
 }
