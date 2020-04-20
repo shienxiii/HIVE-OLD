@@ -289,8 +289,19 @@ void AMonsterBase::ToggleHitbox(TArray<UShapeComponent*> InHitBoxes, ECollisionE
 float AMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	// Currently called on server side
+	if (GetLocalRole() != ENetRole::ROLE_Authority)
+	{
+		return 0.0f;
+	}
+
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	Health = FMath::Clamp(Health - DamageAmount, 0.0f, 100.0f);
+
+	if (Health <= 0.0f)
+	{
+		// Disable input for this monster if dead
+		DisableInput(GetMonsterController());
+	}
 
 	return DamageAmount;
 }

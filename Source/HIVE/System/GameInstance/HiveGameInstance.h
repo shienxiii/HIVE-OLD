@@ -15,6 +15,7 @@ class UMainMenuBase;
 /**
  * 
  */
+
 UCLASS()
 class HIVE_API UHiveGameInstance : public UGameInstance
 {

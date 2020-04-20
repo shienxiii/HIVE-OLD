@@ -16,7 +16,22 @@ void UMonsterAnimBase::NativeBeginPlay()
 
 void UMonsterAnimBase::NativeUpdateAnimation(float DeltaSeconds)
 {
-	if (!GetOwningActor()) { return; }
+	if (!OwningMonster) { return; }
+
+	// Check if player monster is still alive
+	if (OwningMonster->GetHealthPercentRatio() <= 0.0f)
+	{
+		if (!bIsAlive)
+		{
+			return;
+		}
+		else
+		{
+			PlayDeathMontage();
+			bIsAlive = false;
+			return;
+		}
+	}
 
 	FVector OwnerVelocity = GetOwningActor()->GetVelocity();
 	FTransform OwnerTransform = GetOwningActor()->GetActorTransform();
@@ -39,4 +54,17 @@ void UMonsterAnimBase::ToggleHitbox(TArray<UShapeComponent*> InHitBoxes, ECollis
 EAttackType UMonsterAnimBase::GetMonsterAttack()
 {
 	return OwningMonster->GetAttackRegister();
+}
+
+void UMonsterAnimBase::PlayDeathMontage()
+{
+	if (DeathMontage)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Playing Death Montage"));
+		Montage_Play(DeathMontage);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Death Montage not found"));
+	}
 }

@@ -25,8 +25,15 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 		float RightAxis = 0.0f;
 
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		UAnimMontage* DeathMontage = NULL;
+
 	UPROPERTY()
 		bool bCanBeginNextAttack = true;
+
+	UPROPERTY(BlueprintReadOnly)
+		bool bIsAlive = true;
+
 public:
 	virtual void NativeBeginPlay() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
@@ -36,4 +43,10 @@ public:
 
 	UFUNCTION(BlueprintPure)
 		EAttackType GetMonsterAttack();
+
+	UFUNCTION(BlueprintCallable)
+		void PlayDeathMontage();
+
+	UFUNCTION(BlueprintPure)
+		bool IsAlive() { return bIsAlive; }
 };

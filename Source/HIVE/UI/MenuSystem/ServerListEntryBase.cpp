@@ -35,8 +35,9 @@ void UServerListEntryBase::SetSessionInfo(FOnlineSessionSearchResult& SearchResu
 	Ping_Txt->SetText(FText::FromString(FString::FromInt(Ping)));
 	Username_Txt->SetText(FText::FromString(SearchResult.Session.OwningUserName));
 
-	CurrentPlayers = SearchResult.Session.NumOpenPrivateConnections;
 	MaxPlayers = SearchResult.Session.SessionSettings.NumPublicConnections;
+	//SearchResult.Session.SessionSettings.Get() //use this to obtain custom session settings for the sessions on using FOnlineSessionSettings::Set()
+	CurrentPlayers = MaxPlayers - SearchResult.Session.NumOpenPublicConnections;
 
 	PlayerCount_Txt->SetText(FText::FromString(FString::Printf(TEXT("%d/%d"), CurrentPlayers, MaxPlayers)));
 }

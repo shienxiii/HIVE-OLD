@@ -36,7 +36,9 @@ protected:
 	UPROPERTY(Replicated, BlueprintReadOnly)
 		TSubclassOf<AMonsterBase> SelectedMonster = NULL;
 
-	
+	UPROPERTY(Replicated, BlueprintReadOnly)
+		bool bCanExitGameEnd = false; // Indicator used to ensure that player data is updated on the server before allowing them to exit on game end
+
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -56,6 +58,9 @@ public:
 
 	UFUNCTION()
 		virtual void GameHasEnded(AActor* EndGameFocus, bool bIsWinner) override;
+
+	UFUNCTION()
+		virtual void SetCanExitGameEnd();
 #pragma endregion
 
 #pragma region CharacterSelect

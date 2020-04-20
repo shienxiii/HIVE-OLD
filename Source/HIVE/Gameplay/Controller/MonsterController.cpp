@@ -66,6 +66,13 @@ void AMonsterController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner)
 	SetViewTargetWithBlend(EndGameFocus, 0.5f);
 }
 
+void AMonsterController::SetCanExitGameEnd()
+{
+	if (GetLocalRole() != ENetRole::ROLE_Authority) { return; }
+
+	bCanExitGameEnd = true;
+}
+
 
 #pragma region CharacterSelect
 bool AMonsterController::UpdateSelectedMonster_Validate(TSubclassOf<AMonsterBase> InNewMonster)

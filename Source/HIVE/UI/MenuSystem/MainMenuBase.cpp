@@ -125,8 +125,6 @@ void UMainMenuBase::PopulateSessionList(TArray<FOnlineSessionSearchResult> InSea
 		UE_LOG(LogTemp, Warning, TEXT("Parsing"));
 		UServerListEntryBase* newEntry = CreateWidget<UServerListEntryBase>(this, ServerEntryClass);
 		newEntry->SetSessionInfo(SearchResult, this, i);
-		//newEntry->SetSessionInfo(SearchResult.GetSessionIdStr(), SearchResult.PingInMs);
-		//newEntry->Setup(this, i);
 		SessionList->AddChild(newEntry);
 
 		i++;

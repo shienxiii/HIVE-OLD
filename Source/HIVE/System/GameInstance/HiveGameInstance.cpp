@@ -38,6 +38,7 @@ void UHiveGameInstance::Init()
 		OnlineInterface->GetSessionInterface()->OnJoinSessionCompleteDelegates.AddUObject(this, &UHiveGameInstance::JoinSessionComplete);
 	}
 
+	OnlineInterface->InitializePlayerOnlineIdentity();
 }
 
 void UHiveGameInstance::BeginDestroy()
