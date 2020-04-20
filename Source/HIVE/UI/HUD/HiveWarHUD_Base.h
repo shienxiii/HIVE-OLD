@@ -13,7 +13,8 @@ enum class EHUDActiveWidget : uint8
 	HAW_STAT,
 	HAW_CHARACTERSELECT,
 	HAW_INGAMEMENU,
-	HAW_ENDSCREEN
+	HAW_ENDSCREEN,
+	HAW_WAIT
 };
 
 class UWidgetSwitcher;
@@ -46,27 +47,22 @@ protected:
 
 	EHUDActiveWidget ActiveWidget = EHUDActiveWidget::HAW_CHARACTERSELECT;
 
-	UPROPERTY(meta = (BindWidget))
-		UWidgetSwitcher* Switcher;
+	UPROPERTY(meta = (BindWidget)) UWidgetSwitcher* Switcher;
 
-	UPROPERTY(meta = (BindWidget))
-		UCharacterSelectBase* CharacterSelector;
+	UPROPERTY(meta = (BindWidget)) UCharacterSelectBase* CharacterSelector;
 
-	UPROPERTY(meta = (BindWidget))
-		UMonsterStat_Base* MonsterStat;
+	UPROPERTY(meta = (BindWidget)) UMonsterStat_Base* MonsterStat;
 
-	UPROPERTY(meta = (BindWidget))
-		UInGameMenuBase* InGameMenu;
+	UPROPERTY(meta = (BindWidget)) UInGameMenuBase* InGameMenu;
 
-	UPROPERTY(meta = (BindWidget))
-		UResultScreen_Base* ResultScreen;
+	UPROPERTY(meta = (BindWidget)) UResultScreen_Base* ResultScreen;
+
+	UPROPERTY(meta = (BindWidget)) UUserWidget* WaitScreen;
 
 	// NOTE: This is the overlay for the HUD that displays the monster stat and lock on icon
-	UPROPERTY(meta = (BindWidget))
-		UWidget* PlayerHUD;
+	UPROPERTY(meta = (BindWidget)) UWidget* PlayerHUD;
 
-	UPROPERTY(meta = (BindWidget))
-		UWidget* LockOnIcon;
+	UPROPERTY(meta = (BindWidget)) UWidget* LockOnIcon;
 
 	virtual void InitializeInputComponent() override;
 
@@ -79,7 +75,8 @@ public:
 	 */
 	virtual void SynchronizeProperties() override;
 
-	UFUNCTION() virtual void OpenInGameMenu();
+	UFUNCTION()
+		virtual void OpenInGameMenu();
 
 	bool SwitchActivePanel(EHUDActiveWidget InNewActiveWidget);
 

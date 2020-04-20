@@ -94,6 +94,15 @@ bool UHiveWarHUD_Base::SwitchActivePanel(EHUDActiveWidget InNewActiveWidget)
 			GetOwningPlayer()->bShowMouseCursor = true;
 
 			break;
+
+		case EHUDActiveWidget::HAW_WAIT:
+			Switcher->SetActiveWidget(WaitScreen);
+			UIInput.SetWidgetToFocus(WaitScreen->TakeWidget());
+
+			GetOwningPlayer()->SetInputMode(UIInput);
+			GetOwningPlayer()->bShowMouseCursor = false;
+
+			break;
 		default:
 			break;
 	}

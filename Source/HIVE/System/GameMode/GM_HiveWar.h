@@ -74,6 +74,9 @@ class HIVE_API AGM_HiveWar : public AGameMode
 
 protected:
 	TMap<ETeamEnum, FTeamSpawnArea> TeamSpawnPoints;
+	TArray<AMonsterController*> PlayerList;
+
+	int32 MatchPlayerCount = 2;
 
 	// Boolean to decide if the game is in a state where they can spawn the player character
 	bool bCanSpawnPlayerCharacter = false;

@@ -78,6 +78,24 @@ void AGM_HiveWar::SpawnMonsterForController(AMonsterController* InPlayerControl)
 void AGM_HiveWar::PostLogin(APlayerController* InPlayerController)
 {
 	Super::PostLogin(InPlayerController);
+
+	AMonsterController* controller = Cast<AMonsterController>(InPlayerController);
+	controller->SetupPlayerHUD();
+	PlayerList.Add(controller);
+
+	if (PlayerList.Num() < MatchPlayerCount)
+	{
+		controller->LoadWaitScreen();
+	}
+	else if (PlayerList.Num() == MatchPlayerCount)
+	{
+		BeginTeamAllocation();
+
+		for (AMonsterController* control : PlayerList)
+		{
+			control->LoadCharacterSelectScreen();
+		}
+	}
 }
 
 void AGM_HiveWar::BeginTeamAllocation()

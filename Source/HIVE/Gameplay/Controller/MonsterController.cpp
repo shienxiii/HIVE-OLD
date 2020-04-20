@@ -19,15 +19,7 @@ void AMonsterController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!IsLocalPlayerController())
-	{
-		return;
-	}
-
-	HUD = CreateWidget<UHiveWarHUD_Base>(this, HUD_BP);
-	HUD->SetOwningPlayer(this);
-	HUD->AddToViewport();
-	HUD->SwitchActivePanel(EHUDActiveWidget::HAW_CHARACTERSELECT);
+	//SetupPlayerHUD();
 }
 
 AMonsterController::AMonsterController(const FObjectInitializer& ObjectInitializer)
@@ -41,6 +33,19 @@ void AMonsterController::SetupInputComponent()
 	InputComponent->BindAction("Start", EInputEvent::IE_Pressed, this, &AMonsterController::StartButtonEvent);
 }
 
+void AMonsterController::SetupPlayerHUD_Implementation()
+{
+	if (!IsLocalPlayerController())
+	{
+		return;
+	}
+
+	HUD = CreateWidget<UHiveWarHUD_Base>(this, HUD_BP);
+	HUD->SetOwningPlayer(this);
+	HUD->AddToViewport();
+	HUD->SwitchActivePanel(EHUDActiveWidget::HAW_CHARACTERSELECT);
+}
+
 void AMonsterController::PawnRestarted(AMonsterBase* InMonster)
 {
 	if (!IsLocalPlayerController())
@@ -50,6 +55,27 @@ void AMonsterController::PawnRestarted(AMonsterBase* InMonster)
 
 	HUD->SwitchActivePanel(EHUDActiveWidget::HAW_STAT);
 	HUD->BindMonster(InMonster);
+}
+
+void AMonsterController::LoadWaitScreen_Implementation()
+{
+	HUD->SwitchActivePanel(EHUDActiveWidget::HAW_WAIT);
+}
+
+void AMonsterController::LoadCharacterSelectScreen_Implementation()
+{
+	HUD->SwitchActivePanel(EHUDActiveWidget::HAW_CHARACTERSELECT);
+}
+
+void AMonsterController::OnUnPossess()
+{
+	Super::OnUnPossess();
+
+	if (IsLocalController() && HUD)
+	{
+		// Open the character select screen
+		LoadCharacterSelectScreen();
+	}
 }
 
 void AMonsterController::StartButtonEvent()
@@ -109,10 +135,19 @@ void AMonsterController::SpawnSelectedMonster_Implementation()
 	}
 
 	// Request game mode to spawn the monster for this controller
-	gameMode->SpawnMonsterForController(this);
+	if (CanSpawnMonster())
+	{
+		gameMode->SpawnMonsterForController(this);
+		SelectedMonster = NULL;
+	}
 }
 #pragma endregion
 
+
+bool AMonsterController::CanSpawnMonster()
+{
+	return (SelectedMonster != NULL);
+}
 
 void AMonsterController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {

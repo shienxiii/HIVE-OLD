@@ -30,9 +30,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 		TSubclassOf<UHiveWarHUD_Base> HUD_BP = NULL;
 
-	/**
-	 * The selected monster class that will be spawned when game begins or when respawn countdown is finished
-	 */
+	// The selected monster class that will be spawned when game begins or when respawn countdown is finished
 	UPROPERTY(Replicated, BlueprintReadOnly)
 		TSubclassOf<AMonsterBase> SelectedMonster = NULL;
 
@@ -50,7 +48,20 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupInputComponent() override;
 
+	UFUNCTION(Client, Reliable)
+		virtual void SetupPlayerHUD();
+
 	void PawnRestarted(AMonsterBase* InMonster);
+
+	UFUNCTION(Client, Reliable)
+		virtual void LoadWaitScreen();
+
+	UFUNCTION(Client, Reliable)
+		virtual void LoadCharacterSelectScreen();
+
+	virtual void OnUnPossess() override;
+
+	
 
 #pragma region Events
 	UFUNCTION()
@@ -70,6 +81,8 @@ public:
 
 	UFUNCTION(Reliable, Server, WithValidation)
 		void SpawnSelectedMonster();
+
+	bool CanSpawnMonster();
 
 	TSubclassOf<AMonsterBase> GetSelectedMonster() { return SelectedMonster; }
 #pragma endregion

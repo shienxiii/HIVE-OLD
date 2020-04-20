@@ -82,7 +82,7 @@ void UCharacterSelectBase::CharacterSelectEvent(TSubclassOf<class AMonsterBase> 
 {
 	if (!OwningPlayer)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("No Owning Player"));
+		UE_LOG(LogTemp, Warning, TEXT("No valid owning player"));
 		return;
 	}
 
