@@ -29,7 +29,7 @@ void AMonsterController::Tick(float DeltaTime)
 
 	AHiveWarGameState* gameState = Cast<AHiveWarGameState>(UGameplayStatics::GetGameState(this));
 
-	if (gameState)
+	if (gameState && gameState->GetRemainingPreparationTime() > 0.0f)
 	{
 		FString s = FString("Preparation Time: ");
 		s.Append(FString::SanitizeFloat(gameState->GetRemainingPreparationTime()));
