@@ -20,9 +20,9 @@ class HIVE_API UCharacterSlotBase : public UButton
 protected:
 	UCharacterSelectBase* CharacterSelector;
 
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Character, meta = (AllowPrivateAccess = "true", DisplayThumbnail = "true", DisplayName = "PlayerImage", AllowedClasses = "Texture,MaterialInterface,SlateTextureAtlasInterface", DisallowedClasses = "MediaTexture"))
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Character, meta = (AllowPrivateAccess = "true", DisplayThumbnail = "true", DisplayName = "PlayerImage", DisallowedClasses = "MediaTexture"))
-		UTexture* PlayerImage;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Character, meta = (AllowPrivateAccess = "true", DisplayThumbnail = "true", DisplayName = "CharacterImage", DisallowedClasses = "MediaTexture"))
+		UTexture* CharacterImage;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Character, meta = (AllowPrivateAccess = "true", DisplayThumbnail = "true", DisplayName = "PlayerCharacter"))
 		TSubclassOf<AMonsterBase> Monster;

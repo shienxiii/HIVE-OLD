@@ -75,9 +75,6 @@ public:
 	 */
 	virtual void SynchronizeProperties() override;
 
-	UFUNCTION()
-		virtual void OpenInGameMenu();
-
 	bool SwitchActivePanel(EHUDActiveWidget InNewActiveWidget);
 
 

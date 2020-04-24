@@ -18,18 +18,6 @@ void UInGameMenuBase::NativeOnInitialized()
 	bIsFocusable = true;
 }
 
-void UInGameMenuBase::ReturnPressedEvent()
-{
-	/*if (QuitButton->OnClicked.IsBound())
-	{
-		QuitButton->OnClicked.Broadcast();
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, TEXT("Cancel Event"));
-	}*/
-}
-
 void UInGameMenuBase::QuitPressedEvent()
 {
 	UHiveGameInstance* GM = GetGameInstance<UHiveGameInstance>();

@@ -20,14 +20,8 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 		UButton* ReturnBtn;
 
-	//virtual void InitializeInputComponent() override;
-
 public:
 	virtual void NativeOnInitialized() override;
-	/*virtual FReply NativeOnFocusReceived(const FGeometry& InGeometry, const FFocusEvent& InFocusEvent) override;
-	virtual void NativeOnFocusLost(const FFocusEvent& InFocusEvent) override;
-	virtual void RegisterInput() { RegisterInputComponent(); }
-	virtual void StartButtonEvent();*/
 
 	UFUNCTION()
 		virtual void ReturnClickEvent();

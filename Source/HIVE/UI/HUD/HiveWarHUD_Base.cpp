@@ -34,7 +34,7 @@ void UHiveWarHUD_Base::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
-	// Handle the positioning of the lock on icon
+	// Handle the visibility and positioning of the lock on icon
 	LockOnIcon->SetVisibility(OwningMonster && OwningMonster->GetCurrentLockOnTarget() ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 
 	if (!LockOnIcon->IsVisible()) { return; }
@@ -46,14 +46,6 @@ void UHiveWarHUD_Base::SynchronizeProperties()
 {
 	Super::SynchronizeProperties();
 	OwningPlayer = Cast<AMonsterController>(GetOwningPlayer());
-}
-
-void UHiveWarHUD_Base::OpenInGameMenu()
-{
-	if (Switcher->GetActiveWidget() == PlayerHUD)
-	{
-		SwitchActivePanel(EHUDActiveWidget::HAW_INGAMEMENU);
-	}
 }
 
 bool UHiveWarHUD_Base::SwitchActivePanel(EHUDActiveWidget InNewActiveWidget)
