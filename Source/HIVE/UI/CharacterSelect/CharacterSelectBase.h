@@ -38,27 +38,19 @@ private:
 protected:
 	AMonsterController* OwningPlayer = nullptr;
 
-	/**
-	 * The base material for all the slot
-	 */
+	// The base material for all the slot
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Select", meta = (AllowPrivateAccess = "true", DisplayThumbnail = "true"))
 		UMaterialInterface* NormalMat;
 
-	/**
-	 * The base material for all the slot when hovered
-	 */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Character Select")
+	// The base material for all the slot when hovered
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Select", meta = (AllowPrivateAccess = "true", DisplayThumbnail = "true"))
 		UMaterialInterface* HoverMat;
 
-	/**
-	 * The base material for all the slot when clicked
-	 */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Character Select")
+	// The base material for all the slot when clicked
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Select", meta = (AllowPrivateAccess = "true", DisplayThumbnail = "true"))
 		UMaterialInterface* ClickMat;
 
-	/**
-	 * The UPanelWidget that will be the point of reference for all the character options
-	 */
+	// The UPanelWidget that will be the point of reference for all the character options
 	UPROPERTY(meta = (BindWidget))
 		UPanelWidget* CharacterOptions;
 
@@ -66,20 +58,13 @@ protected:
 public:
 	virtual void NativeOnInitialized() override;
 
-	/**
-	 * Override synchronise the property of this UUserWidget on both editor and game
-	 */
+	// Override synchronise the property of this UUserWidget on both editor and game
 	virtual void SynchronizeProperties() override;
 
-	/**
-	 * Refreshes all the UCharacterPanelBase under CharacterOptions
-	 */
-	UFUNCTION(BlueprintCallable)
-		void RefreshCharacterPanel();
+	// Refreshes all the UCharacterPanelBase under CharacterOptions
+	void RefreshCharacterPanel();
 
-	/**
-	 * The event to be called when a character is selected to pass the selected character to the player controller
-	 */
+	// The event to be called when a character is selected to pass the selected character to the player controller
 	void CharacterSelectEvent(TSubclassOf<class AMonsterBase> InSelectedMonster);
 
 };

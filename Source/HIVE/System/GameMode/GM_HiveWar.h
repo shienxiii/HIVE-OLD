@@ -8,17 +8,9 @@
 #include "GameFramework/GameMode.h"
 #include "GM_HiveWar.generated.h"
 
-
+class AHiveWarGameState;
 class AMonsterController;
 
-
-UENUM()
-enum class EGamePhase : uint8
-{
-	GP_PREGAME,
-	GP_MIDGAME,
-	GP_ENDGAME
-};
 
 USTRUCT()
 struct FTeamSpawnArea
@@ -52,9 +44,13 @@ public:
 	}
 
 
-	int32 AvailableSpawnPoints();
+
 	TArray<AMonsterSpawnPoint*> GetSpawnPoints() { return SpawnPoints; }
 	TArray<APlayerState*> GetMembersList() { return Members; }
+
+	int32 AvailableSpawnPoints(){ return SpawnPoints.Num() - Members.Num(); }
+	int32 GetMemberCount() { return Members.Num(); }
+
 
 	bool AddSpawnPoint(AMonsterSpawnPoint* InNewSpawnPoint);
 	bool AddToTeam(APlayerState* InPlayerState);
@@ -73,13 +69,10 @@ class HIVE_API AGM_HiveWar : public AGameMode
 	GENERATED_BODY()
 
 protected:
-	TMap<ETeamEnum, FTeamSpawnArea> TeamSpawnPoints;
+	TMap<ETeamEnum, FTeamSpawnArea> TeamSpawnMap;
 	TArray<AMonsterController*> PlayerList;
 
 	int32 MatchPlayerCount = 2;
-
-	// Boolean to decide if the game is in a state where they can spawn the player character
-	bool bCanSpawnPlayerCharacter = false;
 
 	
 	// Called when the game starts or when spawned
@@ -89,9 +82,9 @@ public:
 	AGM_HiveWar();
 	virtual void Tick(float DeltaTime) override;
 
-	void SpawnMonsterForController(AMonsterController* InPlayerControl);
 
 	virtual void PostLogin(APlayerController* InPlayerController) override;
+	virtual void Logout(AController* ExitingPlayer) override;
 
 	virtual void BeginTeamAllocation();
 
@@ -103,9 +96,14 @@ public:
 	 */
 	virtual ETeamEnum AllocateToTeam(APlayerState* InPlayerState);
 
+
+	void SpawnMonsterForController(AMonsterController* InPlayerControl);
+
 	UFUNCTION(Exec)
 		void StartGame();
 
 	UFUNCTION()
 		void GameOver(AActor* InDeadHive);
+
+	AHiveWarGameState* GetHiveWarGameState();
 };

@@ -21,7 +21,7 @@ void AGM_HiveWar::BeginPlay()
 {
 	Super::BeginPlay();
 
-	TeamSpawnPoints = TMap<ETeamEnum, FTeamSpawnArea>();
+	TeamSpawnMap = TMap<ETeamEnum, FTeamSpawnArea>();
 
 	// Find all spawn points
 	TArray<AActor*> spawnPoints;
@@ -34,13 +34,13 @@ void AGM_HiveWar::BeginPlay()
 		AMonsterSpawnPoint* spawn = Cast<AMonsterSpawnPoint>(spawnPoints[i]);
 
 		// Find the team in the TMap
-		FTeamSpawnArea* team = TeamSpawnPoints.Find(spawn->GetTeam());
+		FTeamSpawnArea* team = TeamSpawnMap.Find(spawn->GetTeam());
 
 		if (!team)
 		{
 			// If the team is not found, create it and assign the newly created team to the team pointer
-			TeamSpawnPoints.Add(spawn->GetTeam(), FTeamSpawnArea(spawn->GetTeam()));
-			team = TeamSpawnPoints.Find(spawn->GetTeam());
+			TeamSpawnMap.Add(spawn->GetTeam(), FTeamSpawnArea(spawn->GetTeam()));
+			team = TeamSpawnMap.Find(spawn->GetTeam());
 		}
 
 		// Add the spawn point to the relevant team
@@ -62,6 +62,122 @@ void AGM_HiveWar::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+
+
+void AGM_HiveWar::PostLogin(APlayerController* InPlayerController)
+{
+	Super::PostLogin(InPlayerController);
+
+	AMonsterController* controller = Cast<AMonsterController>(InPlayerController);
+	check(controller);
+
+	controller->SetupPlayerHUD();
+	PlayerList.Add(controller);
+
+	if (PlayerList.Num() < MatchPlayerCount)
+	{
+		// Not enough players in the game yet, show the waiting screen
+		controller->LoadWaitScreen();
+	}
+	else if (PlayerList.Num() == MatchPlayerCount)
+	{
+		BeginTeamAllocation();
+
+		for (AMonsterController* control : PlayerList)
+		{
+			control->LoadCharacterSelectScreen();
+		}
+	}
+	else
+	{
+		check(false); // force a crash if there are more players than allowed
+	}
+}
+
+void AGM_HiveWar::Logout(AController* ExitingPlayer)
+{
+	// Assume this will only happen while waiting
+	AMonsterController* player = Cast<AMonsterController>(ExitingPlayer);
+
+	if (player)
+	{
+		PlayerList.Remove(player);
+	}
+}
+
+void AGM_HiveWar::BeginTeamAllocation()
+{
+
+	for (AMonsterController* player : PlayerList)
+	{
+		AMonsterPlayerState* state = player->GetPlayerState<AMonsterPlayerState>();
+		check(state);
+
+		ETeamEnum allocatedTeam = AllocateToTeam(state);
+
+		if (allocatedTeam == ETeamEnum::TE_INVALID)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Red, "Invalid allocation");
+		}
+		else
+		{
+			GetHiveWarGameState()->SetToTeam(state, allocatedTeam);
+		}
+
+	}
+
+	GetHiveWarGameState()->SetPreparationTimer();
+}
+
+ETeamEnum AGM_HiveWar::AllocateToTeam(APlayerState* InPlayerState)
+{
+	// Make sure the PlayerState being passed implemented ITeamInterface
+	ITeamInterface* player = Cast<ITeamInterface>(InPlayerState);
+	check(player);
+
+	// Go through the spawn points that are not TE_NEUTRAL or TE_INVALID to decide which team to assign player to
+	TArray<ETeamEnum> validKeys;
+	TeamSpawnMap.GetKeys(validKeys);
+	validKeys.Remove(ETeamEnum::TE_NEUTRAL);
+	validKeys.Remove(ETeamEnum::TE_INVALID);
+	validKeys.Sort();
+
+	// This local variable value will change to reflect which team the InPlayerState will be allocated to
+	ETeamEnum teamID = ETeamEnum::TE_INVALID;
+
+	for (ETeamEnum key : validKeys)
+	{
+		bool spaceAvailable = (TeamSpawnMap.Find(key))->AvailableSpawnPoints() > 0;
+
+		if (spaceAvailable && teamID == ETeamEnum::TE_INVALID)
+		{
+			teamID = key;
+		}
+		else if(spaceAvailable)
+		{
+			bool swapTeamID = TeamSpawnMap.Find(key)->GetMemberCount() < TeamSpawnMap.Find(teamID)->GetMemberCount();
+
+			teamID = swapTeamID ? key : teamID;
+		}
+	}
+
+	if (teamID == ETeamEnum::TE_INVALID)
+	{
+		// no point continuing
+		return teamID;
+	}
+
+	FTeamSpawnArea* area = TeamSpawnMap.Find(teamID);
+	
+	if (area->AddToTeam(InPlayerState))
+	{
+		return teamID;
+	}
+
+	return ETeamEnum::TE_INVALID;
+}
+
+
 void AGM_HiveWar::SpawnMonsterForController(AMonsterController* InPlayerControl)
 {
 	// Needs update the most
@@ -75,95 +191,6 @@ void AGM_HiveWar::SpawnMonsterForController(AMonsterController* InPlayerControl)
 	InPlayerControl->Possess(myMonster);
 }
 
-void AGM_HiveWar::PostLogin(APlayerController* InPlayerController)
-{
-	Super::PostLogin(InPlayerController);
-
-	AMonsterController* controller = Cast<AMonsterController>(InPlayerController);
-	controller->SetupPlayerHUD();
-	PlayerList.Add(controller);
-
-	if (PlayerList.Num() < MatchPlayerCount)
-	{
-		controller->LoadWaitScreen();
-	}
-	else if (PlayerList.Num() == MatchPlayerCount)
-	{
-		BeginTeamAllocation();
-
-		for (AMonsterController* control : PlayerList)
-		{
-			control->LoadCharacterSelectScreen();
-		}
-	}
-}
-
-void AGM_HiveWar::BeginTeamAllocation()
-{
-	bCanSpawnPlayerCharacter = true;
-	TArray<APlayerState*> currentPlayers = GetGameState<AHiveWarGameState>()->PlayerArray;
-
-	for (int i = 0; i < currentPlayers.Num(); i++)
-	{
-		if (AllocateToTeam(currentPlayers[i]) == ETeamEnum::TE_INVALID)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Red, "Invalid allocation");
-		}
-	}
-}
-
-ETeamEnum AGM_HiveWar::AllocateToTeam(APlayerState* InPlayerState)
-{
-	// Make sure the PlayerState being passed implemented ITeamInterface
-	ITeamInterface* player = Cast<ITeamInterface>(InPlayerState);
-	check(player);
-
-	// Go through the spawn points that are not TE_NEUTRAL or TE_INVALID to decide which team to assign player to
-	TArray<ETeamEnum> validKeys;
-	TeamSpawnPoints.GetKeys(validKeys);
-	validKeys.Remove(ETeamEnum::TE_NEUTRAL);
-	validKeys.Remove(ETeamEnum::TE_INVALID);
-	validKeys.Sort();
-
-	// This local variable value will change to reflect which team the InController will be allocated to
-	ETeamEnum teamID = ETeamEnum::TE_INVALID;
-
-	// Go through all key that are not TE_NEUTRAL or TE_INVALID
-	for (int i = 0; i < validKeys.Num(); i++)
-	{
-		// Check if there are space available for the controller to join the team
-		bool spaceAvailable = (TeamSpawnPoints.Find(validKeys[i])->AvailableSpawnPoints()) > 0;
-
-		// Make sure spaceAvailable is the condition of all checks that changes the teamID local variable to the current key
-		if (spaceAvailable && teamID == ETeamEnum::TE_INVALID)
-		{
-			teamID = validKeys[i];
-		}
-		else if(spaceAvailable)
-		{
-			bool changeToCurrentKey = (TeamSpawnPoints.Find(validKeys[i])->GetMembersList().Num()) < (TeamSpawnPoints.Find(teamID)->GetMembersList().Num());
-			
-
-			teamID = changeToCurrentKey ? validKeys[i] : teamID;
-		}
-	}
-
-
-	if (teamID == ETeamEnum::TE_INVALID)
-	{
-		// no point continuing
-		return teamID;
-	}
-
-	FTeamSpawnArea* area = TeamSpawnPoints.Find(teamID);
-	
-	if (area->AddToTeam(InPlayerState))
-	{
-		return teamID;
-	}
-
-	return ETeamEnum::TE_INVALID;
-}
 
 void AGM_HiveWar::StartGame()
 {
@@ -213,13 +240,13 @@ void AGM_HiveWar::GameOver(AActor* InDeadHive)
 	////InDeadHive->Destroy();
 }
 
-
-#pragma region TeamSpawnArea
-int32 FTeamSpawnArea::AvailableSpawnPoints()
+AHiveWarGameState* AGM_HiveWar::GetHiveWarGameState()
 {
-	return SpawnPoints.Num() - Members.Num();
+	return GetGameState<AHiveWarGameState>();
 }
 
+
+#pragma region TeamSpawnArea
 bool FTeamSpawnArea::AddSpawnPoint(AMonsterSpawnPoint* InNewSpawnPoint)
 {
 	if (SpawnPoints.Find(InNewSpawnPoint) != INDEX_NONE)
@@ -235,18 +262,19 @@ bool FTeamSpawnArea::AddSpawnPoint(AMonsterSpawnPoint* InNewSpawnPoint)
 
 bool FTeamSpawnArea::AddToTeam(APlayerState* InPlayerState)
 {
-	ITeamInterface* state = Cast<ITeamInterface>(InPlayerState);
+	// Access the ITeamInterface of the player state
+	ITeamInterface* teamInterface = Cast<ITeamInterface>(InPlayerState);
 
-	if (!state || AvailableSpawnPoints() <= 0)
+	if (!teamInterface || AvailableSpawnPoints() <= 0)
 	{
 		return false;
 	}
 
-	state->AssignTeam(TeamID);
+	// Update the player state team interface
+	teamInterface->AssignTeam(TeamID);
+	teamInterface->SetDefaultSpawnPoint(SpawnPoints[Members.Num()]);
 
-	//SpawnPoints[Members.Num()]->LinkPlayer(InPlayerState);
-	state->SetDefaultSpawnPoint(SpawnPoints[Members.Num()]);
-
+	// Add the members to the struct
 	Members.Add(InPlayerState);
 	
 	return true;

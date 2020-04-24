@@ -31,47 +31,47 @@ protected:
 		TSubclassOf<UHiveWarHUD_Base> HUD_BP = NULL;
 
 	// The selected monster class that will be spawned when game begins or when respawn countdown is finished
-	UPROPERTY(Replicated, BlueprintReadOnly)
-		TSubclassOf<AMonsterBase> SelectedMonster = NULL;
+	UPROPERTY(Replicated, BlueprintReadOnly) TSubclassOf<AMonsterBase> SelectedMonster = NULL;
 
-	UPROPERTY(Replicated, BlueprintReadOnly)
-		bool bCanExitGameEnd = false; // Indicator used to ensure that player data is updated on the server before allowing them to exit on game end
+	// Indicator used to ensure that player data is updated on the server before allowing them to exit on game end
+	UPROPERTY(Replicated, BlueprintReadOnly) bool bCanExitGameEnd = false; 
 
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:
+	virtual void Tick(float DeltaTime) override;
+
 	//virtual void Tick(float DeltaTime) override;
 	AMonsterController(const FObjectInitializer& ObjectInitializer);
 
 	// Called to bind functionality to input
 	virtual void SetupInputComponent() override;
 
-	UFUNCTION(Client, Reliable)
-		virtual void SetupPlayerHUD();
+	// Initialize the HUD for the player on the owning client
+	UFUNCTION(Client, Reliable)	virtual void SetupPlayerHUD();
 
+	// Show the waiting screen on the owning client
+	UFUNCTION(Client, Reliable)	virtual void LoadWaitScreen();
+
+	// Show the character select screen on the owning client
+	UFUNCTION(Client, Reliable)	virtual void LoadCharacterSelectScreen();
+
+	UFUNCTION()	void StartButtonEvent();
+
+	// When the player controlled pawn restarted, call this function. Currently called by AMonsterBase::Restart, which gets called when the pawn is possessed
 	void PawnRestarted(AMonsterBase* InMonster);
-
-	UFUNCTION(Client, Reliable)
-		virtual void LoadWaitScreen();
-
-	UFUNCTION(Client, Reliable)
-		virtual void LoadCharacterSelectScreen();
 
 	virtual void OnUnPossess() override;
 
-	
+	AMonsterPlayerState* GetMonsterPlayerState();
 
-#pragma region Events
-	UFUNCTION()
-		void StartButtonEvent();
+#pragma region ImportantEvents
 
-	UFUNCTION()
-		virtual void GameHasEnded(AActor* EndGameFocus, bool bIsWinner) override;
+	UFUNCTION()	virtual void GameHasEnded(AActor* EndGameFocus, bool bIsWinner) override;
 
-	UFUNCTION()
-		virtual void SetCanExitGameEnd();
+	UFUNCTION()	virtual void SetCanExitGameEnd();
 #pragma endregion
 
 #pragma region CharacterSelect
@@ -88,10 +88,6 @@ public:
 #pragma endregion
 
 
-#pragma region Networking
-	// Needs to be implemented to initialize replicated properties
-	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-#pragma endregion
 
 #pragma region TeamInterface
 	// Assign the team on the relevant PlayerState and return a bool indicating whether the assignment is successful or not
@@ -101,4 +97,8 @@ public:
 	UFUNCTION(BlueprintPure)
 		virtual ETeamEnum GetTeam() override;
 #pragma endregion
+
+
+	// Needs to be implemented to initialize replicated properties
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

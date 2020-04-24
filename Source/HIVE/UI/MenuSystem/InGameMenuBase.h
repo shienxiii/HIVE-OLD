@@ -18,7 +18,7 @@ class HIVE_API UInGameMenuBase : public UUserWidget
 
 protected:
 	UPROPERTY(meta = (BindWidget))
-		UButton* ReturnButton;
+		UButton* ReturnButton; // ReturnButton event is current initialized by the HiveWarHUD_Base
 
 	UPROPERTY(meta = (BindWidget))
 		UButton* QuitButton;
@@ -26,9 +26,6 @@ protected:
 
 public:
 	virtual void NativeOnInitialized() override;
-
-	UFUNCTION()
-		void ReturnPressedEvent();
 
 	UFUNCTION()
 		void QuitPressedEvent();
