@@ -5,28 +5,6 @@
 #include "GameFramework/PlayerStart.h"
 #include "Net/UnrealNetwork.h"
 #include "HIVE/Interfaces/TeamInterface.h"
-#include "Engine/World.h"
-#include "TimerManager.h"
-#include "Kismet/KismetSystemLibrary.h"
-#include "Engine/Engine.h"
-
-
-void AMonsterPlayerState::SetSpawnTimer()
-{
-	GetWorldTimerManager().SetTimer(SpawnTimerHandle, this, &AMonsterPlayerState::AuthorizeSpawning, 3.0f);
-}
-
-void AMonsterPlayerState::AuthorizeSpawning()
-{
-	UE_LOG(LogTemp, Warning, TEXT("Spawning Authorized"));
-}
-
-float AMonsterPlayerState::GetSpawnTimerRemainingTime()
-{
-	if (!SpawnTimerHandle.IsValid()) { return -1.0f; }
-
-	return UKismetSystemLibrary::K2_GetTimerRemainingTimeHandle(this, SpawnTimerHandle);
-}
 
 void AMonsterPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {

@@ -8,7 +8,6 @@
 #include "HIVE/UI/HUD/PlayerStatHUD.h"
 #include "HIVE/UI/HUD/HiveWarHUD_Base.h"
 #include "HIVE/Gameplay/PlayerState/MonsterPlayerState.h"
-#include "HIVE/Gameplay/GameState/HiveWarGameState.h"
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
@@ -21,21 +20,6 @@ void AMonsterController::BeginPlay()
 	Super::BeginPlay();
 
 	//SetupPlayerHUD();
-}
-
-void AMonsterController::Tick(float DeltaTime)
-{
-	if (!IsLocalPlayerController()) { return; }
-
-	AHiveWarGameState* gameState = Cast<AHiveWarGameState>(UGameplayStatics::GetGameState(this));
-
-	if (gameState)
-	{
-		FString s = FString("Preparation Time: ");
-		s.Append(FString::SanitizeFloat(gameState->GetRemainingPreparationTime()));
-
-		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Cyan, s);
-	}
 }
 
 AMonsterController::AMonsterController(const FObjectInitializer& ObjectInitializer)
@@ -51,27 +35,15 @@ void AMonsterController::SetupInputComponent()
 
 void AMonsterController::SetupPlayerHUD_Implementation()
 {
-	if (!IsLocalPlayerController() || HUD != NULL) { return; }
+	if (!IsLocalPlayerController())
+	{
+		return;
+	}
 
 	HUD = CreateWidget<UHiveWarHUD_Base>(this, HUD_BP);
 	HUD->SetOwningPlayer(this);
 	HUD->AddToViewport();
-}
-
-
-void AMonsterController::LoadWaitScreen_Implementation()
-{
-	HUD->SwitchActivePanel(EHUDActiveWidget::HAW_WAIT);
-}
-
-void AMonsterController::LoadCharacterSelectScreen_Implementation()
-{
 	HUD->SwitchActivePanel(EHUDActiveWidget::HAW_CHARACTERSELECT);
-}
-
-void AMonsterController::StartButtonEvent()
-{
-	HUD->SwitchActivePanel(EHUDActiveWidget::HAW_INGAMEMENU);
 }
 
 void AMonsterController::PawnRestarted(AMonsterBase* InMonster)
@@ -85,6 +57,15 @@ void AMonsterController::PawnRestarted(AMonsterBase* InMonster)
 	HUD->BindMonster(InMonster);
 }
 
+void AMonsterController::LoadWaitScreen_Implementation()
+{
+	HUD->SwitchActivePanel(EHUDActiveWidget::HAW_WAIT);
+}
+
+void AMonsterController::LoadCharacterSelectScreen_Implementation()
+{
+	HUD->SwitchActivePanel(EHUDActiveWidget::HAW_CHARACTERSELECT);
+}
 
 void AMonsterController::OnUnPossess()
 {
@@ -97,13 +78,16 @@ void AMonsterController::OnUnPossess()
 	}
 }
 
-AMonsterPlayerState* AMonsterController::GetMonsterPlayerState()
+void AMonsterController::StartButtonEvent()
 {
-	return GetPlayerState<AMonsterPlayerState>();
+	HUD->OpenInGameMenu();
 }
 
 void AMonsterController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner)
 {
+	//Super::GameHasEnded(EndGameFocus, bIsWinner);
+	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Cyan, TEXT("GameEnd"));
+
 	HUD->SwitchActivePanel(EHUDActiveWidget::HAW_ENDSCREEN);
 	SetViewTargetWithBlend(EndGameFocus, 0.5f);
 }
@@ -165,6 +149,14 @@ bool AMonsterController::CanSpawnMonster()
 	return (SelectedMonster != NULL);
 }
 
+void AMonsterController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AMonsterController, SelectedMonster);
+
+}
+
 
 #pragma region TeamInterface
 bool AMonsterController::AssignTeam(ETeamEnum InTeam)
@@ -172,7 +164,7 @@ bool AMonsterController::AssignTeam(ETeamEnum InTeam)
 	if (InTeam == ETeamEnum::TE_NEUTRAL || InTeam == ETeamEnum::TE_INVALID) { return false; }
 
 	// Team is assigned through the controller to the PlayerState for replication purpose
-	ITeamInterface* teamInterface = Cast<ITeamInterface>(GetMonsterPlayerState());
+	ITeamInterface* teamInterface = Cast<ITeamInterface>(GetPlayerState<APlayerState>());
 
 	// return false if this is called on client or the PlayerState does not implement ITeamInterface
 	if (GetLocalRole() != ENetRole::ROLE_Authority || !teamInterface)
@@ -186,7 +178,7 @@ bool AMonsterController::AssignTeam(ETeamEnum InTeam)
 ETeamEnum AMonsterController::GetTeam()
 {
 	// Team is stored on the PlayerState
-	ITeamInterface* teamInterface = Cast<ITeamInterface>(GetMonsterPlayerState());
+	ITeamInterface* teamInterface = Cast<ITeamInterface>(GetPlayerState<APlayerState>());
 
 	if (teamInterface)
 	{
@@ -196,13 +188,3 @@ ETeamEnum AMonsterController::GetTeam()
 	return ITeamInterface::GetTeam();
 }
 #pragma endregion
-
-
-void AMonsterController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(AMonsterController, SelectedMonster);
-	DOREPLIFETIME(AMonsterController, bCanExitGameEnd);
-
-}

@@ -20,21 +20,21 @@ void UCharacterSlotBase::SyncButton(UCharacterSelectBase* InCharacterSelector, U
 	CharacterSelector = InCharacterSelector;
 
 	UMaterialInstanceDynamic* normal = UMaterialInstanceDynamic::Create(NormalMat, this);
-	normal->SetTextureParameterValue("UI_Image", CharacterImage);
+	normal->SetTextureParameterValue("UI_Image", PlayerImage);
 
 	WidgetStyle.Normal.SetResourceObject(normal);
 	WidgetStyle.Normal.SetImageSize(FVector2D(150.0f, 150.0f));
 	WidgetStyle.Normal.DrawAs = ESlateBrushDrawType::Image;
 
 	UMaterialInstanceDynamic* hover = UMaterialInstanceDynamic::Create(HoverMat, this);
-	hover->SetTextureParameterValue("UI_Image", CharacterImage);
+	hover->SetTextureParameterValue("UI_Image", PlayerImage);
 
 	WidgetStyle.Hovered.SetResourceObject(hover);
 	WidgetStyle.Hovered.SetImageSize(FVector2D(150.0f, 150.0f));
 	WidgetStyle.Hovered.DrawAs = ESlateBrushDrawType::Image;
 
 	UMaterialInstanceDynamic* click = UMaterialInstanceDynamic::Create(ClickMat, this);
-	click->SetTextureParameterValue("UI_Image", CharacterImage);
+	click->SetTextureParameterValue("UI_Image", PlayerImage);
 
 	WidgetStyle.Pressed.SetResourceObject(click);
 	WidgetStyle.Pressed.SetImageSize(FVector2D(150.0f, 150.0f));

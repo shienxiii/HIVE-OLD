@@ -7,7 +7,7 @@
 #include "GameFramework/GameState.h"
 #include "HiveWarGameState.generated.h"
 
-class AMonsterPlayerState;
+
 
 
 /**
@@ -20,34 +20,20 @@ class HIVE_API AHiveWarGameState : public AGameState
 	
 protected:
 	UPROPERTY(Replicated)
-		TArray<AMonsterPlayerState*> GreenTeam;
-
-	UPROPERTY(Replicated)
-		TArray<AMonsterPlayerState*> RedTeam;
+		float SpawnCountdown;
 
 	UPROPERTY(ReplicatedUsing = WinningTeamRepEvent)
 		ETeamEnum WinningTeam = ETeamEnum::TE_INVALID;
 
-	UPROPERTY(Replicated)
-		FTimerHandle PreparationTimerHandle;
-
 public:
 	AHiveWarGameState();
-	~AHiveWarGameState();
 
-	virtual void Tick(float DeltaTime) override;
+	void UpdateGameStartTime(float InUpdatedTime) { SpawnCountdown = InUpdatedTime; }
+	float GetSpawnCountdown() { return SpawnCountdown; }
 	void SetWinningTeam(ETeamEnum InWinningTeam);
 
 	UFUNCTION()
 		void WinningTeamRepEvent();
-
-	TArray<AMonsterPlayerState*> GetGreenTeam() { return GreenTeam; }
-	TArray<AMonsterPlayerState*> GetRedTeam() { return RedTeam; }
-	bool SetToTeam(AMonsterPlayerState* InPlayerState, ETeamEnum InTeam);
-	float GetRemainingPreparationTime();
-	void SetPreparationTimer(float InTime = 10.0f);
-
-	void PrintTeam();
 
 #pragma region Networking
 	/**

@@ -24,17 +24,8 @@ protected:
 	UPROPERTY(Replicated, BlueprintReadOnly)
 		APlayerStart* DefaultSpawnPoint = nullptr;
 
-	UPROPERTY(Replicated, BlueprintReadOnly)
-		float SpawnCooldown = 0.0f;
-
-	FTimerHandle SpawnTimerHandle;
-
 public:
-
-	virtual void SetSpawnTimer();
-	virtual void AuthorizeSpawning();
-	float GetSpawnTimerRemainingTime();
-
+	
 #pragma region Networking
 	/**
 	 * Needs to be implemented to initialize replicated properties
