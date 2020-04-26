@@ -25,17 +25,11 @@ void AMonsterController::BeginPlay()
 
 void AMonsterController::Tick(float DeltaTime)
 {
+	Super::Tick(DeltaTime);
+
 	if (!IsLocalPlayerController()) { return; }
 
-	AHiveWarGameState* gameState = Cast<AHiveWarGameState>(UGameplayStatics::GetGameState(this));
-
-	if (gameState && gameState->GetRemainingPreparationTime() > 0.0f)
-	{
-		FString s = FString("Preparation Time: ");
-		s.Append(FString::SanitizeFloat(gameState->GetRemainingPreparationTime()));
-
-		GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Cyan, s);
-	}
+	//AHiveWarGameState* gameState = Cast<AHiveWarGameState>(UGameplayStatics::GetGameState(this));
 }
 
 AMonsterController::AMonsterController(const FObjectInitializer& ObjectInitializer)
@@ -122,9 +116,9 @@ bool AMonsterController::UpdateSelectedMonster_Validate(TSubclassOf<AMonsterBase
 	return true;
 }
 
-void AMonsterController::UpdateSelectedMonster_Implementation(TSubclassOf<AMonsterBase> InNewMonster)
+void AMonsterController::UpdateSelectedMonster_Implementation(TSubclassOf<AMonsterBase> InSelectedMonster)
 {
-	SelectedMonster = InNewMonster;
+	GetMonsterPlayerState()->SetSelectedMonster(InSelectedMonster);
 	SpawnSelectedMonster();
 }
 
@@ -136,7 +130,7 @@ bool AMonsterController::SpawnSelectedMonster_Validate()
 void AMonsterController::SpawnSelectedMonster_Implementation()
 {
 	// This function should only be run on the server
-	if (GetLocalRole() < ENetRole::ROLE_Authority || GetTeam() == ETeamEnum::TE_INVALID || GetTeam() == ETeamEnum::TE_NEUTRAL || !SelectedMonster)
+	if (GetLocalRole() < ENetRole::ROLE_Authority || GetTeam() == ETeamEnum::TE_INVALID || GetTeam() == ETeamEnum::TE_NEUTRAL || !GetSelectedMonster())
 	{
 		return;
 	}
@@ -154,16 +148,21 @@ void AMonsterController::SpawnSelectedMonster_Implementation()
 	if (CanSpawnMonster())
 	{
 		gameMode->SpawnMonsterForController(this);
-		SelectedMonster = NULL;
+		GetMonsterPlayerState()->SetSelectedMonster(NULL);
 	}
 }
-#pragma endregion
 
 
 bool AMonsterController::CanSpawnMonster()
 {
-	return (SelectedMonster != NULL);
+	return (GetMonsterPlayerState()->GetSelectedMonster() != NULL);
 }
+
+TSubclassOf<AMonsterBase> AMonsterController::GetSelectedMonster()
+{
+	return GetMonsterPlayerState()->GetSelectedMonster();
+}
+#pragma endregion
 
 
 #pragma region TeamInterface
@@ -202,7 +201,6 @@ void AMonsterController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AMonsterController, SelectedMonster);
 	DOREPLIFETIME(AMonsterController, bCanExitGameEnd);
 
 }

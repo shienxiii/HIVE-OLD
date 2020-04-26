@@ -28,12 +28,18 @@ float AMonsterPlayerState::GetSpawnTimerRemainingTime()
 	return UKismetSystemLibrary::K2_GetTimerRemainingTimeHandle(this, SpawnTimerHandle);
 }
 
+void AMonsterPlayerState::SetSelectedMonster(TSubclassOf<AMonsterBase>  InSelectedMonster)
+{
+	SelectedMonster = InSelectedMonster;
+}
+
 void AMonsterPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AMonsterPlayerState, TeamID);
 	DOREPLIFETIME(AMonsterPlayerState, DefaultSpawnPoint);
+	DOREPLIFETIME(AMonsterPlayerState, SelectedMonster);
 }
 
 bool AMonsterPlayerState::AssignTeam(ETeamEnum InTeamID)

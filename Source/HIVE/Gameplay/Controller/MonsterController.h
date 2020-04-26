@@ -30,8 +30,6 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 		TSubclassOf<UHiveWarHUD_Base> HUD_BP = NULL;
 
-	// The selected monster class that will be spawned when game begins or when respawn countdown is finished
-	UPROPERTY(Replicated, BlueprintReadOnly) TSubclassOf<AMonsterBase> SelectedMonster = NULL;
 
 	// Indicator used to ensure that player data is updated on the server before allowing them to exit on game end
 	UPROPERTY(Replicated, BlueprintReadOnly) bool bCanExitGameEnd = false; 
@@ -84,7 +82,7 @@ public:
 
 	bool CanSpawnMonster();
 
-	TSubclassOf<AMonsterBase> GetSelectedMonster() { return SelectedMonster; }
+	TSubclassOf<AMonsterBase> GetSelectedMonster();
 #pragma endregion
 
 

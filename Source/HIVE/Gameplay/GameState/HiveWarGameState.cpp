@@ -78,17 +78,6 @@ bool AHiveWarGameState::SetToTeam(AMonsterPlayerState* InPlayerState, ETeamEnum 
 	return true;
 }
 
-float AHiveWarGameState::GetRemainingPreparationTime()
-{
-	if (!PreparationTimerHandle.IsValid()) { return -1.0f; }
-
-	return UKismetSystemLibrary::K2_GetTimerRemainingTimeHandle(this, PreparationTimerHandle);
-}
-
-void AHiveWarGameState::SetPreparationTimer(float InTime)
-{
-	GetWorldTimerManager().SetTimer(PreparationTimerHandle, this, &AHiveWarGameState::PrintTeam, InTime);
-}
 
 void AHiveWarGameState::PrintTeam()
 {
@@ -111,5 +100,4 @@ void AHiveWarGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME(AHiveWarGameState, WinningTeam);
 	DOREPLIFETIME(AHiveWarGameState, GreenTeam);
 	DOREPLIFETIME(AHiveWarGameState, RedTeam);
-	DOREPLIFETIME(AHiveWarGameState, PreparationTimerHandle);
 }

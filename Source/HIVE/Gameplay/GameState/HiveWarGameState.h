@@ -28,9 +28,6 @@ protected:
 	UPROPERTY(ReplicatedUsing = WinningTeamRepEvent)
 		ETeamEnum WinningTeam = ETeamEnum::TE_INVALID;
 
-	UPROPERTY(Replicated)
-		FTimerHandle PreparationTimerHandle;
-
 public:
 	AHiveWarGameState();
 	~AHiveWarGameState();
@@ -44,8 +41,6 @@ public:
 	TArray<AMonsterPlayerState*> GetGreenTeam() { return GreenTeam; }
 	TArray<AMonsterPlayerState*> GetRedTeam() { return RedTeam; }
 	bool SetToTeam(AMonsterPlayerState* InPlayerState, ETeamEnum InTeam);
-	float GetRemainingPreparationTime();
-	void SetPreparationTimer(float InTime = 10.0f);
 
 	void PrintTeam();
 

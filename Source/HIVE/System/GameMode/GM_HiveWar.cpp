@@ -125,8 +125,6 @@ void AGM_HiveWar::BeginTeamAllocation()
 		}
 
 	}
-
-	GetHiveWarGameState()->SetPreparationTimer();
 }
 
 ETeamEnum AGM_HiveWar::AllocateToTeam(APlayerState* InPlayerState)

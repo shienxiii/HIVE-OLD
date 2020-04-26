@@ -8,6 +8,7 @@
 #include "MonsterPlayerState.generated.h"
 
 class APlayerStart;
+class AMonsterBase;
 
 /**
  * NOTE: A PlayerState contains information about a player that is replicated and visible to all players
@@ -29,11 +30,17 @@ protected:
 
 	FTimerHandle SpawnTimerHandle;
 
+	// The selected monster class that will be spawned when game begins or when respawn countdown is finished
+	UPROPERTY(Replicated, BlueprintReadOnly) TSubclassOf<AMonsterBase> SelectedMonster = NULL;
+
 public:
 
 	virtual void SetSpawnTimer();
 	virtual void AuthorizeSpawning();
 	float GetSpawnTimerRemainingTime();
+
+	void SetSelectedMonster(TSubclassOf<AMonsterBase>  InSelectedMonster);
+	TSubclassOf<AMonsterBase> GetSelectedMonster() { return SelectedMonster; }
 
 #pragma region Networking
 	/**

@@ -34,7 +34,7 @@ public:
 		void SyncButton(UCharacterSelectBase* InCharacterSelector, UMaterialInterface* NormalMat, UMaterialInterface* HoverMat, UMaterialInterface* ClickMat);
 
 	UFUNCTION()
-	void CharacterSelectedEvent();
+		void CharacterSelectedEvent();
 
 	//UObject* GetPlayerImage() { return PlayerImage; }
 	TSubclassOf<AMonsterBase> GetMonsterClass() { return Monster; }
