@@ -139,9 +139,9 @@ void AMonsterBase::LightAttack()
 {
 	if (!bCanRegisterAttackInput) { return; }
 
+	AttackChain++;
 	AttackRegister = EAttackType::AT_LIGHT;
-
-	Server_RegisterAttack(EAttackType::AT_LIGHT);
+	Server_RegisterAttack(EAttackType::AT_LIGHT, AttackChain);
 }
 
 void AMonsterBase::HeavyAttack()
@@ -149,7 +149,7 @@ void AMonsterBase::HeavyAttack()
 	if (!bCanRegisterAttackInput) { return; }
 
 	AttackRegister = EAttackType::AT_HEAVY;
-	Server_RegisterAttack(EAttackType::AT_HEAVY);
+	Server_RegisterAttack(EAttackType::AT_HEAVY, AttackChain);
 }
 
 void AMonsterBase::ExecuteDodge()
@@ -167,14 +167,19 @@ void AMonsterBase::ExecuteDodge()
 #pragma endregion
 
 #pragma region Attack
-bool AMonsterBase::Server_RegisterAttack_Validate(EAttackType InAttack)
+bool AMonsterBase::Server_RegisterAttack_Validate(EAttackType InAttack, int InChainCount)
 {
 	return true;
 }
 
 
-void AMonsterBase::Server_RegisterAttack_Implementation(EAttackType InAttack)
+void AMonsterBase::Server_RegisterAttack_Implementation(EAttackType InAttack, int InChainCount)
 {
+	// For the time being, make is so that attack chain count is relative to the owning client
+	if (InAttack == EAttackType::AT_LIGHT)
+	{
+		AttackChain = InChainCount;
+	}
 	AttackRegister = InAttack;
 }
 
@@ -183,6 +188,8 @@ void AMonsterBase::RecoverFromAttack()
 	bCanMove = true;
 	bCanRegisterAttackInput = true;
 	AttackRegister = EAttackType::AT_NULL;
+	ResetAttackChain();
+	GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, TEXT("RecoverFromAttack()"));
 }
 #pragma endregion
 
@@ -317,6 +324,7 @@ void AMonsterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(AMonsterBase, Health);
 	DOREPLIFETIME(AMonsterBase, MaxHealth);
 	DOREPLIFETIME(AMonsterBase, CurrentTarget);
+	//DOREPLIFETIME(AMonsterBase, AttackChain);
 	DOREPLIFETIME(AMonsterBase, AttackRegister);
 }
 
@@ -352,6 +360,16 @@ AMonsterController* AMonsterBase::GetMonsterController()
 	return Cast<AMonsterController>(GetController());
 }
 
+
+EAttackType AMonsterBase::ConsumeAttackRegister()
+{
+	if (AttackRegister == EAttackType::AT_NULL) { return AttackRegister; }
+	
+	EAttackType attackVal = AttackRegister;
+	AttackRegister = EAttackType::AT_NULL;
+
+	return attackVal;
+}
 
 void AMonsterBase::HitBoxOverlapEvent(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {

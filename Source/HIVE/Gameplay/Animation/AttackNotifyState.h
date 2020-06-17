@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "HIVE/Gameplay/Monster/MonsterBase.h"
 #include "Animation/AnimNotifies/AnimNotifyState.h"
 #include "AttackNotifyState.generated.h"
 
@@ -17,6 +18,8 @@ class HIVE_API UAttackNotifyState : public UAnimNotifyState
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float BaseDamage = 5.0f;
+
+
 
 public:
 	/*virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration) override;

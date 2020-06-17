@@ -18,7 +18,8 @@ class HIVE_API UMonsterAnimBase : public UAnimInstance
 	GENERATED_BODY()
 	
 protected:
-	AMonsterBase* OwningMonster = NULL;
+	UPROPERTY(BlueprintReadOnly)
+		AMonsterBase* OwningMonster = NULL;
 
 	UPROPERTY(BlueprintReadOnly)
 		float ForwardAxis = 0.0f;
@@ -26,7 +27,12 @@ protected:
 		float RightAxis = 0.0f;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		UAnimMontage* MeleeMontage = NULL;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 		UAnimMontage* DeathMontage = NULL;
+
+
 
 	UPROPERTY()
 		bool bCanBeginNextAttack = true;
@@ -41,12 +47,15 @@ public:
 	void ToggleHitbox(UShapeComponent* InHitBox, ECollisionEnabled::Type InEnable);
 	void ToggleHitbox(TArray<UShapeComponent*> InHitBoxes, ECollisionEnabled::Type InEnable);
 
-	UFUNCTION(BlueprintPure)
-		EAttackType GetMonsterAttack();
-
 	UFUNCTION(BlueprintCallable)
 		void PlayDeathMontage();
 
 	UFUNCTION(BlueprintPure)
 		bool IsAlive() { return bIsAlive; }
+
+	UFUNCTION(BlueprintNativeEvent)
+		void OnLightAttack();
+
+	UFUNCTION(BlueprintNativeEvent)
+		void OnHeavyAttack();
 };

@@ -31,6 +31,10 @@ protected:
 	bool bCanMove = true;
 	bool bCanRegisterAttackInput = true;
 
+	// Used as an indicator for chained attacks
+	UPROPERTY(BlueprintReadWrite)
+		int32 AttackChain = -1;
+
 	// This property is updated and being read by the animation blueprint to determine the next attack
 	UPROPERTY(BlueprintReadWrite, Replicated)
 		EAttackType AttackRegister = EAttackType::AT_NULL;
@@ -97,6 +101,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void ExecuteDodge();
 
+	UFUNCTION(BlueprintCallable)
+		void ToggleCanRegisterAttackInput(bool InValue) { bCanRegisterAttackInput = InValue; }
+
+	UFUNCTION(BlueprintCallable)
+		void ToggleCanMove(bool InValue) { bCanMove = InValue; }
 #pragma endregion
 
 	// Returns the character movement component type defined to a UMonsterMovementComponent
@@ -105,7 +114,9 @@ public:
 
 #pragma region Attack
 	UFUNCTION(Server, Reliable, WithValidation)
-		virtual void Server_RegisterAttack(EAttackType InAttack);
+		virtual void Server_RegisterAttack(EAttackType InAttack, int InChainCount);
+
+
 
 	/**
 	 * Resets all boolean that relates to attacking
@@ -113,6 +124,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void RecoverFromAttack();
 
+	int32 GetAttackChain() { return AttackChain; }
+	void ResetAttackChain() { AttackChain = -1; }
 #pragma endregion
 
 #pragma region LockOn
@@ -170,14 +183,14 @@ public:
 	virtual ETeamEnum GetTeam() override;
 #pragma endregion
 
-	//Get the player controller casted into AMonsterController player controller.Returns null if this monster is controlled by AI or non-child of AMonsterController
+	// Get the player controller casted into AMonsterController. Returns null if this monster is controlled by AI or non-child of AMonsterController
 	AMonsterController* GetMonsterController();
 
 	UFUNCTION(BlueprintPure)
 		float GetHealthPercentRatio() { return Health / MaxHealth; }
 
 	UFUNCTION(BlueprintPure)
-		EAttackType GetAttackRegister() { return AttackRegister; }
+		EAttackType ConsumeAttackRegister();
 
 
 	UFUNCTION(BlueprintCallable)
